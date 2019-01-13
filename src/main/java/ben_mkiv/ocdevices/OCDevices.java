@@ -12,6 +12,7 @@ import li.cil.oc.api.driver.EnvironmentProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -48,11 +49,8 @@ public class OCDevices {
 
     public static Logger logger = Logger.getLogger(MOD_NAME);
 
-    static final boolean verbose = false;
+    static final boolean verbose = true;
 
-    /**
-     * This is the instance of your mod as created by Forge. It will never be null.
-     */
     @Mod.Instance(MOD_ID)
     public static OCDevices INSTANCE;
 
@@ -99,10 +97,12 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
         }
 
+
         @SubscribeEvent
-        public void registerRecipes(RegistryEvent.Register<IRecipe> event){
+        public static void registerRecipes(RegistryEvent.Register<IRecipe> event){
+            if(verbose) logger.info("register recipes");
             ItemStack piston = new ItemStack(Item.getItemFromBlock(net.minecraft.init.Blocks.PISTON));
-            ItemStack iron = new ItemStack(Item.getByNameOrId("minecraft:iron_ingot"));
+            ItemStack iron = new ItemStack(Items.IRON_INGOT);
 
             ItemStack screen3 = li.cil.oc.api.Items.get("screen3").createItemStack(1);
             ItemStack cardContainerTier3 = li.cil.oc.api.Items.get("cardcontainer3").createItemStack(1);
@@ -126,8 +126,9 @@ public class OCDevices {
                     "IPI",
                     'P', piston, 'I', iron, 'S', screen3).setRegistryName(MOD_ID, BlockFlatScreen.DEFAULTITEM.getUnlocalizedName()));
         }
-
     }
+
+
 
     public static class CreativeTab extends CreativeTabs {
         public CreativeTab(String unlocalizedName) {

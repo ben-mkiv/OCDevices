@@ -1,6 +1,5 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
-import ben_mkiv.ocdevices.OCDevices;
 import li.cil.oc.api.API;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.ManagedEnvironment;

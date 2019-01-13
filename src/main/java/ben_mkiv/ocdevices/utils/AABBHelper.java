@@ -9,8 +9,8 @@ public class AABBHelper {
     public static AxisAlignedBB rotateVertical(AxisAlignedBB bb, EnumFacing newFacing){
         //allways assume bb facing NORTH as input
         switch(newFacing.ordinal()){
-            case 1: return new AxisAlignedBB(bb.minX, 1d-bb.minZ, bb.minY, bb.maxX, 1d-bb.maxZ, bb.maxY); // 90°  (down)
-            case 0: return new AxisAlignedBB(bb.minX, bb.minZ, 1d-bb.minY, bb.maxX, bb.maxZ, 1d-bb.maxY); // 270°(up)
+            case 1: return new AxisAlignedBB(bb.minX, 1d-bb.minZ, bb.minY, bb.maxX, 1d-bb.maxZ, bb.maxY); // 90  (down)
+            case 0: return new AxisAlignedBB(bb.minX, bb.minZ, 1d-bb.minY, bb.maxX, bb.maxZ, 1d-bb.maxY); // 270(up)
             default: return bb;
         }
     }
