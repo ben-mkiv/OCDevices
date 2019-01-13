@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "ocdevices",
+    "name": "OCDevices",
+    "description": "Various devices for OpenComputers",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "ben_mkiv"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": [
+      "opencomputers"
+    ]
+  }
+]
