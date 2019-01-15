@@ -2,16 +2,15 @@ package ben_mkiv.ocdevices;
 
 import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
 import ben_mkiv.ocdevices.common.GuiHandler;
-import ben_mkiv.ocdevices.common.blocks.BlockCardDock;
-import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
+import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityCardDock;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
+import ben_mkiv.ocdevices.common.tileentity.*;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -44,12 +43,12 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "1.0-SNAPSHOT";
-    public static CreativeTab creativeTab = new CreativeTab(MOD_NAME);
+    public static final String VERSION = "snapshot_20190115";
 
-    public static Logger logger = Logger.getLogger(MOD_NAME);
+    public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
 
-    static final boolean verbose = true;
+    public static final Logger logger = Logger.getLogger(MOD_NAME);
+    static final boolean verbose = false;
 
     @Mod.Instance(MOD_ID)
     public static OCDevices INSTANCE;
@@ -58,6 +57,9 @@ public class OCDevices {
     public void preinit(FMLPreInitializationEvent event) {
         BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen();
         BlockCardDock.DEFAULTITEM = new BlockCardDock();
+        BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
+        BlockCase_next.DEFAULTITEM = new BlockCase_next();
+        BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150();
     }
 
     @Mod.EventHandler
@@ -77,6 +79,10 @@ public class OCDevices {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockFlatScreen.DEFAULTITEM), 0, new ModelResourceLocation(BlockFlatScreen.DEFAULTITEM.getRegistryName().toString()));
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCardDock.DEFAULTITEM), 0, new ModelResourceLocation(BlockCardDock.DEFAULTITEM.getRegistryName().toString()));
 
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_next.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_next.DEFAULTITEM.getRegistryName().toString()));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_slim_oc.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_slim_oc.DEFAULTITEM.getRegistryName().toString()));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_ibm_5150.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName().toString()));
+
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlatScreen.class, new RenderFlatScreen());
         }
 
@@ -85,6 +91,10 @@ public class OCDevices {
             if(verbose) logger.info("register items");
             event.getRegistry().register(new ItemBlock(BlockFlatScreen.DEFAULTITEM).setRegistryName(BlockFlatScreen.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCardDock.DEFAULTITEM).setRegistryName(BlockCardDock.DEFAULTITEM.getRegistryName()));
+
+            event.getRegistry().register(new ItemBlock(BlockCase_ibm_5150.DEFAULTITEM).setRegistryName(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockCase_next.DEFAULTITEM).setRegistryName(BlockCase_next.DEFAULTITEM.getRegistryName()));
         }
 
         @SubscribeEvent
@@ -93,8 +103,16 @@ public class OCDevices {
             event.getRegistry().register(BlockFlatScreen.DEFAULTITEM);
             event.getRegistry().register(BlockCardDock.DEFAULTITEM);
 
+            event.getRegistry().register(BlockCase_ibm_5150.DEFAULTITEM);
+            event.getRegistry().register(BlockCase_next.DEFAULTITEM);
+            event.getRegistry().register(BlockCase_slim_oc.DEFAULTITEM);
+
             GameRegistry.registerTileEntity(TileEntityFlatScreen.class, new ResourceLocation(MOD_ID, BlockFlatScreen.NAME));
             GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
+
+            GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
+            GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));
+            GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
         }
 
 
@@ -103,6 +121,8 @@ public class OCDevices {
             if(verbose) logger.info("register recipes");
             ItemStack piston = new ItemStack(Item.getItemFromBlock(net.minecraft.init.Blocks.PISTON));
             ItemStack iron = new ItemStack(Items.IRON_INGOT);
+            ItemStack glasspane = new ItemStack(Blocks.GLASS_PANE);
+            ItemStack quartz = new ItemStack(Items.QUARTZ);
 
             ItemStack screen3 = li.cil.oc.api.Items.get("screen3").createItemStack(1);
             ItemStack cardContainerTier3 = li.cil.oc.api.Items.get("cardcontainer3").createItemStack(1);
@@ -111,6 +131,7 @@ public class OCDevices {
             ItemStack t2microchip = li.cil.oc.api.Items.get("chip2").createItemStack(1);
             ItemStack pcb = li.cil.oc.api.Items.get("printedcircuitboard").createItemStack(1);
             ItemStack cable = li.cil.oc.api.Items.get("cable").createItemStack(1);
+            ItemStack case3 = li.cil.oc.api.Items.get("case3").createItemStack(1);
 
 
             event.getRegistry().register(new ShapedOreRecipe(BlockCardDock.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCardDock.DEFAULTITEM, 1),
@@ -125,6 +146,25 @@ public class OCDevices {
                     "PSP",
                     "IPI",
                     'P', piston, 'I', iron, 'S', screen3).setRegistryName(MOD_ID, BlockFlatScreen.DEFAULTITEM.getUnlocalizedName()));
+
+
+            event.getRegistry().register(new ShapedOreRecipe(BlockCase_slim_oc.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_slim_oc.DEFAULTITEM, 1),
+                    "III",
+                    "ICI",
+                    "III",
+                    'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_slim_oc.DEFAULTITEM.getUnlocalizedName()));
+
+            event.getRegistry().register(new ShapedOreRecipe(BlockCase_next.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_next.DEFAULTITEM, 1),
+                    "QQQ",
+                    "PCQ",
+                    "QQQ",
+                    'C', case3, 'P', glasspane, 'Q', quartz).setRegistryName(MOD_ID, BlockCase_next.DEFAULTITEM.getUnlocalizedName()));
+
+            event.getRegistry().register(new ShapedOreRecipe(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_ibm_5150.DEFAULTITEM, 1),
+                    "   ",
+                    "III",
+                    "ICI",
+                    'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_ibm_5150.DEFAULTITEM.getUnlocalizedName()));
         }
     }
 

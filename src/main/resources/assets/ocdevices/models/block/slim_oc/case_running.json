@@ -1,0 +1,12 @@
+{
+    "parent": "ocdevices:block/slim_oc/case",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "ocdevices:blocks/slim_oc/case_side_running",
+		"2": "ocdevices:blocks/slim_oc/case_top",
+		"3": "ocdevices:blocks/slim_oc/case_front",
+		"4": "ocdevices:blocks/slim_oc/case_top_2",
+		"5": "ocdevices:blocks/slim_oc/case_back"
+	}
+	
+}

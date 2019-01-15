@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
+import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 
 public class TileEntityFlatScreen extends Screen {
@@ -31,11 +32,7 @@ public class TileEntityFlatScreen extends Screen {
     public FlatScreen data = new FlatScreen();
 
     public TileEntityFlatScreen() {
-        this(Tier.Four());
-    }
-
-    public TileEntityFlatScreen(int tier) {
-        super(tier);
+        super(BlockFlatScreen.tier);
 
         // OC reads resolution from the settings to initialize the textbuffer, so we got to set it up on our own to make a T4 screen
         //ItemStack screenItem = Items.get("screen1").createItemStack(1);
@@ -104,7 +101,10 @@ public class TileEntityFlatScreen extends Screen {
 
             default:
             case NONE:
-                boundingBoxes.add(new AxisAlignedBB(0, 0, 0, 1, 1, getData().screenDepthTop));
+                AxisAlignedBB bb = new AxisAlignedBB(0, 0, 1d-precision * getData().screenDepthTop, 1, 1, 1d);
+                bb = AABBHelper.rotateVertical(bb, pitch());
+                bb = AABBHelper.rotateHorizontal(bb, yaw());
+                boundingBoxes.add(bb);
         }
     }
 

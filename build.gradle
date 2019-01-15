@@ -13,15 +13,14 @@ buildscript {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 
-version = modVersion
+version = "snapshot_20190115"
 group = modGroup
 archivesBaseName = modBaseName
 
 
-def openComputersVersion = "MC1.12.2-1.7.+"
 
 minecraft {
-    version = "1.12.2-14.23.4.2705"
+    version = "1.12.2-14.23.5.2768"
     runDir = "run"
     mappings = "snapshot_20180701"
     makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
@@ -36,8 +35,28 @@ repositories {
     }
 }
 
+
+def openComputersVersion = "MC1.12.2-1.7.+"
+def ae2Version = "rv6-stable-1"
+def projredVersion="1.12.2-4.9.0.86"
+
+
 dependencies {
     deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
+
+
+    // all those just for the case block =>
+    provided ("appeng:appliedenergistics2:${ae2Version}:api") {
+        transitive = false
+    }
+
+    provided ("mrtjp:ProjectRed:${projredVersion}:Base") {
+        exclude module: "NotEnoughItems"
+        exclude module: "CodeChickenLib"
+        exclude module: "jei_1.12"
+        exclude module: "ForgeMultipart"
+    }
+
 }
 
 processResources {

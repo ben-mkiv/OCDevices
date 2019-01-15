@@ -25,11 +25,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
+import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 import static net.minecraft.util.EnumFacing.DOWN;
 import static net.minecraft.util.EnumFacing.UP;
 
 public class BlockFlatScreen extends Screen {
-    private final static int tier = Tier.Four();
+    public final static int tier = Tier.Four();
     public final static String NAME = "flat_screen";
     public static Block DEFAULTITEM;
 
@@ -101,11 +103,11 @@ public class BlockFlatScreen extends Screen {
             return FULL_BLOCK_AABB;
 
         FlatScreenHelper fsh = new FlatScreenHelper((TileEntityFlatScreen) te);
-        float minDepth = 1;
+        float minDepth = maxScreenDepth;
         for(float f : fsh.getDepthForBlock((TileEntityFlatScreen) te))
             if(f < minDepth) minDepth = f;
 
-        AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d-minDepth, 1, 1, 1) : minimalBB;
+        AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - (precision*minDepth), 1, 1, 1) : minimalBB;
 
         bb = AABBHelper.rotateVertical(bb, ((TileEntityFlatScreen) te).pitch());
         bb = AABBHelper.rotateHorizontal(bb, ((TileEntityFlatScreen) te).yaw());
@@ -115,7 +117,7 @@ public class BlockFlatScreen extends Screen {
 
     @Override
     public TileEntityFlatScreen createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityFlatScreen(tier);
+        return new TileEntityFlatScreen();
     }
 
     @Override

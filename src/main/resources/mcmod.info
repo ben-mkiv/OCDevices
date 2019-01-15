@@ -5,12 +5,12 @@
     "description": "Various devices for OpenComputers",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "",
+    "url": "https://minecraft.curseforge.com/projects/ocdevices",
     "updateUrl": "",
     "authorList": [
       "ben_mkiv"
     ],
-    "credits": "",
+    "credits": "ZefTheFox (case models and textures)",
     "logoFile": "",
     "screenshots": [],
     "dependencies": [

@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "top": "ocdevices:blocks/machine_side",
+      "front": "ocdevices:blocks/machine_side",
+      "side": "ocdevices:blocks/machine_side"
+    },
+    "model": "ocdevices:slim_oc/case"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "transform": "forge:default-block"
+    }],
+    "facing=north,running=false": { "model": "ocdevices:slim_oc/case" },
+    "facing=south,running=false": { "model": "ocdevices:slim_oc/case", "y": 180 },
+    "facing=west,running=false":  { "model": "ocdevices:slim_oc/case", "y": 270 },
+    "facing=east,running=false":  { "model": "ocdevices:slim_oc/case", "y": 90 },
+    "facing=north,running=true": { "model": "ocdevices:slim_oc/case_running" },
+    "facing=south,running=true": { "model": "ocdevices:slim_oc/case_running", "y": 180 },
+    "facing=west,running=true":  { "model": "ocdevices:slim_oc/case_running", "y": 270 },
+    "facing=east,running=true":  { "model": "ocdevices:slim_oc/case_running", "y": 90 }
+  }
+}
+
+

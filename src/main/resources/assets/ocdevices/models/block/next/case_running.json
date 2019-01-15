@@ -1,0 +1,13 @@
+{
+    "parent": "ocdevices:block/next/case",
+    "textures": {
+		"0": "ocdevices:blocks/next/case_side_running",
+		"7": "ocdevices:blocks/next/case_side",
+		"2": "ocdevices:items/cases/server2",
+		"3": "ocdevices:blocks/next/case_black",
+		"4": "ocdevices:blocks/next/case_back",
+		"5": "ocdevices:items/cases/cpu2",
+		"6": "ocdevices:items/cases/graphicscard2",
+		"particle": "ocdevices:blocks/next/case_top"
+	}
+}
