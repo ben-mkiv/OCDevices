@@ -29,6 +29,8 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
         renderScreenModelTESR();
 
+        renderScreenBackground();
+
         if(tileEntity.buffer().isRenderingEnabled())
             renderScreenContent(tileEntity.buffer());
 
@@ -102,7 +104,21 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         setLightmapDisabled(true);
 
         GlStateManager.color(1, 1, 1, 1);
+
+        GlStateManager.pushMatrix();
+
         buf.renderText();
+
+        if(screen.opacity != 100){
+            // render the whole text again on the backside as the oc method disables the depth mask
+            GlStateManager.translate(0, 0, .0002);
+            GlStateManager.disableCull();
+            buf.renderText();
+            GlStateManager.enableCull();
+        }
+
+        GlStateManager.popMatrix();
+
 
         RenderHelper.enableStandardItemLighting();
         setLightmapDisabled(false);
@@ -110,8 +126,42 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
     }
 
 
+    private void renderScreenBackground(){
+        float opacity = 1f/100f * (float) screen.opacity;
+
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.pushMatrix();
+
+        rotateByBlockOrigin();
+
+        BufferBuilder buff = Tessellator.getInstance().getBuffer();
+        buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+        // front
+        buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, screen.topRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(borderWidth, screen.screenCountY-borderWidth, screen.topLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+
+        // render front backside when the model isnt 100% opaque
+        if(screen.opacity != 100 && screen.opacity > 0){
+            buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+            buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+            buff.pos(borderWidth, screen.screenCountY-borderWidth, screen.topLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+            buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, screen.topRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        }
+
+
+        Tessellator.getInstance().draw();
+
+        GlStateManager.popMatrix();
+        GlStateManager.disableBlend();
+
+    }
+
     private void renderScreenModelTESR(){
-        if(!screen.renderOpaqueModel)
+        if(screen.opacity != 100)
             return;
 
 
@@ -181,7 +231,7 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
     }
 
     private void renderScreenModelFrameTopTESR(float posY){
-        if(!screen.renderOpaqueModel)
+        if(screen.opacity != 100)
             return;
 
         float r = 1f/255 * screen.color.getRed() * 0.5f;
@@ -226,7 +276,7 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
     }
 
     private void renderScreenModelFrameBottomTESR(float posY){
-        if(!screen.renderOpaqueModel)
+        if(screen.opacity != 100)
             return;
 
         float r = 1f/255 * screen.color.getRed() * 0.5f;
@@ -272,7 +322,7 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
 
     private void renderScreenModelFrameLeftRightTESR(float posX){
-        if(!screen.renderOpaqueModel)
+        if(screen.opacity != 100)
             return;
 
         float r = 1f/255 * screen.color.getRed() * 0.5f;

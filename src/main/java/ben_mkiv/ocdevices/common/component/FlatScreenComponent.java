@@ -82,12 +82,31 @@ public class FlatScreenComponent extends Screen {
             return new Object[]{ true };
         }
     */
-    @Callback(doc = "function(boolean:frameless):boolean; enables/disables the screen model")
+    @Callback(doc = "function(boolean:opaque):boolean; enables/disables opacity")
     public Object[] setOpaque(Context context, Arguments args) {
-        getData().setOpaque(args.optBoolean(0, true));
+        return new Object[]{ setOpacity(context, args), "this method is deprecated, please use setOpacity() instead" };
+    }
+
+    @Callback(doc = "function(boolean:opaque OR integer:opacity):boolean; sets opacity, true/false or value from 0-100")
+    public Object[] setOpacity(Context context, Arguments args) {
+        if(args.isBoolean(0))
+            getData().setOpaque(args.checkBoolean(0) ? 100 : 0);
+        else if(args.isInteger(0))
+            getData().setOpaque(args.checkInteger(0));
+        else
+            getData().setOpaque(100);
+
         updateAll();
         return new Object[]{ true };
     }
+
+    /*
+    @Callback(doc = "function(integer:padding):boolean; sets screen padding")
+    public Object[] setPadding(Context context, Arguments args) {
+        getData().setPadding(args.optInteger(0, 0));
+        updateAll();
+        return new Object[]{ true };
+    }*/
 
     @Override
     public void load(net.minecraft.nbt.NBTTagCompound nbt) {

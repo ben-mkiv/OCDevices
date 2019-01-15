@@ -14,9 +14,9 @@ public class FlatScreen {
     public int screenDepthRight = maxScreenDepth;
 
     public int padding = 0;
+    public int opacity = 100;
 
     public boolean frameless = false;
-    public boolean opaque = true;
 
     public BlockLog.EnumAxis tiltAxis = BlockLog.EnumAxis.X;
 
@@ -33,8 +33,8 @@ public class FlatScreen {
         tag.setInteger("right", screenDepthRight);
         tag.setInteger("tilt", tiltAxis.ordinal());
         tag.setInteger("padding", padding);
+        tag.setInteger("opacity", opacity);
         tag.setBoolean("frameless", frameless);
-        tag.setBoolean("opaque", opaque);
 
         return tag;
     }
@@ -45,8 +45,7 @@ public class FlatScreen {
         screenDepthLeft = tag.getInteger("left");
         screenDepthRight = tag.getInteger("right");
         tiltAxis = BlockLog.EnumAxis.values()[tag.getInteger("tilt")];
-
-        setOpaque(opaque = tag.getBoolean("opaque"));
+        opacity = tag.getInteger("opacity");
         setPadding(tag.getInteger("padding"));
         setFrameless(tag.getBoolean("frameless"));
 
@@ -94,7 +93,7 @@ public class FlatScreen {
         frameless = state;
     }
 
-    public void setOpaque(boolean state){
-        opaque = state;
+    public void setOpaque(int value){
+        opacity = value;
     }
 }

@@ -133,7 +133,6 @@ public class OCDevices {
             ItemStack cable = li.cil.oc.api.Items.get("cable").createItemStack(1);
             ItemStack case3 = li.cil.oc.api.Items.get("case3").createItemStack(1);
 
-
             event.getRegistry().register(new ShapedOreRecipe(BlockCardDock.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCardDock.DEFAULTITEM, 1),
                     "mCm",
                     "MPb",

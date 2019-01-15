@@ -23,8 +23,7 @@ public class FlatScreenHelper {
     public Vector3f tiltRotationVector;
 
     public float topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1;
-    public boolean renderOpaqueModel = true;
-
+    public int opacity = 100;
     public Color color;
 
     float factorAC;
@@ -41,6 +40,7 @@ public class FlatScreenHelper {
         color = new Color(te.getColor());
         displayWidth = screenCountX;
         displayHeight = screenCountY;
+        opacity = te.getData().opacity;
         tiltRotationVector = new Vector3f(0, 0, 0);
         tile = te;
         interpretControllerData();
@@ -102,7 +102,6 @@ public class FlatScreenHelper {
     // calculate screen size for current panel tilt
     private void interpretControllerData(){
         FlatScreen data = tile.getData();
-        renderOpaqueModel = data.opaque;
 
         // calculate display size, rotation and renderoffset based on the panels tilt
         switch(data.tiltAxis){
