@@ -135,6 +135,12 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
         rotateByBlockOrigin();
 
+
+        GlStateManager.depthMask(false); // to fix rendering of water behind/next to the screen, anyways look into this if more problems occur https://github.com/CoFH/ThermalExpansion/tree/1.12/src/main/java/cofh/thermalexpansion/render
+
+        if(screen.opacity != 100 && screen.opacity > 0)
+            GlStateManager.disableCull();
+
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
@@ -144,18 +150,12 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
         buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
 
-        // render front backside when the model isnt 100% opaque
-        if(screen.opacity != 100 && screen.opacity > 0){
-            buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-            buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-            buff.pos(borderWidth, screen.screenCountY-borderWidth, screen.topLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-            buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, screen.topRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-        }
 
 
         Tessellator.getInstance().draw();
 
         GlStateManager.popMatrix();
+        GlStateManager.enableCull();
         GlStateManager.disableBlend();
 
     }

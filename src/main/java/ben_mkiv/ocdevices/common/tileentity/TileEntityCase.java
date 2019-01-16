@@ -7,7 +7,7 @@ public class TileEntityCase extends Case {
 
     public TileEntityCase(){
         super(Tier.Three());
-        setColor(12);
+        setColor(0);
     }
 
 }
