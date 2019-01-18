@@ -6,7 +6,6 @@ import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.util.vector.Vector3f;
 import scala.collection.Iterator;
 
 import java.awt.*;
@@ -20,7 +19,7 @@ public class FlatScreenHelper {
     public float displayWidth = 0, displayHeight = 0;
 
     public Vec3d tiltRenderOffset = new Vec3d(0, 0, 0);
-    public Vector3f tiltRotationVector;
+    public Vec3d tiltRotationVector;
 
     public float topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1;
     public int opacity = 100;
@@ -41,7 +40,7 @@ public class FlatScreenHelper {
         displayWidth = screenCountX;
         displayHeight = screenCountY;
         opacity = te.getData().opacity;
-        tiltRotationVector = new Vector3f(0, 0, 0);
+        tiltRotationVector = new Vec3d(0, 0, 0);
         tile = te;
         interpretControllerData();
     }
@@ -111,7 +110,7 @@ public class FlatScreenHelper {
 
                 tri = new Triangle(topRight - bottomRight, screenCountY);
                 displayHeight = tri.c;
-                tiltRotationVector = new Vector3f(topLeft < bottomLeft ? tri.alpha : -tri.alpha, 0, 0);
+                tiltRotationVector = new Vec3d(topLeft < bottomLeft ? tri.alpha : -tri.alpha, 0, 0);
 
                 factorAC = Math.abs(tri.c / (float) screenCountY);
                 break;
@@ -122,7 +121,7 @@ public class FlatScreenHelper {
 
                 tri = new Triangle(topRight - topLeft, screenCountX);
                 displayWidth = tri.c;
-                tiltRotationVector = new Vector3f(0, topRight < topLeft ? tri.alpha : -tri.alpha, 0);
+                tiltRotationVector = new Vec3d(0, topRight < topLeft ? tri.alpha : -tri.alpha, 0);
 
                 factorAC = Math.abs(tri.c / (float) screenCountX);
                 break;

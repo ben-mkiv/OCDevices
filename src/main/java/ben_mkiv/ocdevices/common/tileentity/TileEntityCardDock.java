@@ -45,7 +45,6 @@ public class TileEntityCardDock extends ocComponentTE implements ManagedComponen
         };
     }
 
-
     @Override
     public void update(){
         super.update();

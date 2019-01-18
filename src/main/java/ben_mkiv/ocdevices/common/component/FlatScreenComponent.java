@@ -92,7 +92,7 @@ public class FlatScreenComponent extends Screen {
         if(args.isBoolean(0))
             getData().setOpaque(args.checkBoolean(0) ? 100 : 0);
         else if(args.isInteger(0))
-            getData().setOpaque(args.checkInteger(0));
+            getData().setOpaque(Math.max(0, Math.min(args.checkInteger(0), 100)));
         else
             getData().setOpaque(100);
 

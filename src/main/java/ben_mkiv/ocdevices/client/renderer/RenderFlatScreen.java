@@ -78,8 +78,8 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         float scaleY = screen.screenCountY / sizeY;
 
         // rotate the matrix to align to the panel tilt
-        GlStateManager.rotate(screen.tiltRotationVector.getX(), -1, 0, 0);
-        GlStateManager.rotate(screen.tiltRotationVector.getY(), 0, -1, 0);
+        GlStateManager.rotate((float) screen.tiltRotationVector.x, -1, 0, 0);
+        GlStateManager.rotate((float) screen.tiltRotationVector.y, 0, -1, 0);
 
         // align the rendering on the center/middle of the tilted screen
         GlStateManager.translate((screen.displayWidth-screen.screenCountX)/2f, (screen.displayHeight-screen.screenCountY)/2f, borderWidth);
@@ -136,10 +136,12 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         rotateByBlockOrigin();
 
 
-        GlStateManager.depthMask(false); // to fix rendering of water behind/next to the screen, anyways look into this if more problems occur https://github.com/CoFH/ThermalExpansion/tree/1.12/src/main/java/cofh/thermalexpansion/render
 
-        if(screen.opacity != 100 && screen.opacity > 0)
+
+        if(screen.opacity != 100 && screen.opacity > 0) {
             GlStateManager.disableCull();
+            //GlStateManager.depthMask(false); // to fix rendering of water behind/next to the screen, anyways look into this if more problems occur https://github.com/CoFH/ThermalExpansion/tree/1.12/src/main/java/cofh/thermalexpansion/render
+        }
 
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
