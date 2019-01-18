@@ -135,9 +135,6 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
         rotateByBlockOrigin();
 
-
-
-
         if(screen.opacity != 100 && screen.opacity > 0) {
             GlStateManager.disableCull();
             //GlStateManager.depthMask(false); // to fix rendering of water behind/next to the screen, anyways look into this if more problems occur https://github.com/CoFH/ThermalExpansion/tree/1.12/src/main/java/cofh/thermalexpansion/render
