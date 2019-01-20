@@ -68,6 +68,7 @@ public class OCDevices {
         BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
         BlockCase_next.DEFAULTITEM = new BlockCase_next();
         BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150();
+        BlockCase_workstation.DEFAULTITEM = new BlockCase_workstation();
     }
 
     @Mod.EventHandler
@@ -97,7 +98,6 @@ public class OCDevices {
             RenderCase.statusLED led2 = new RenderCase.statusLED(new Vec3d(-1f/16*1, 0.5001, 1f/16 * 5), 1f/16, 1f/16, EnumFacing.UP);
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_next.class, new RenderCase(led1, led2));
 
-
             led1 = new RenderCase.statusLED(new Vec3d(-1f/16 * 3, 1f/16 * 6, 1f/16* 8), 1f/16 * 2, 1f/16, EnumFacing.NORTH);
             led2 = new RenderCase.statusLED(new Vec3d(1f/16 * 2, 1f/16 * 6, 1f/16* 8), 1f/16, 1f/16, EnumFacing.NORTH);
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_slim_oc.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_slim_oc.DEFAULTITEM.getRegistryName().toString()));
@@ -107,6 +107,11 @@ public class OCDevices {
             led2 = new RenderCase.statusLED(new Vec3d(1f/32*7, -1f/32 * 12, 1f/32 * 14), 1f/32, 1f/32, EnumFacing.NORTH);
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_ibm_5150.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName().toString()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_ibm_5150.class, new RenderCase(led1, led2));
+
+            led1 = new RenderCase.statusLED(new Vec3d(1f/32 * 6, 1f/32 * 11 + 0.001, 1f/32* 14 + 0.003), 1f/16 * 1.25f, 1f/16, EnumFacing.NORTH);
+            led2 = new RenderCase.statusLED(new Vec3d(1f/32 * 8.5, 1f/32 * 11 + 0.001, 1f/32* 14 + 0.003), 1f/16 * 1.25f, 1f/16, EnumFacing.NORTH);
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_workstation.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_workstation.DEFAULTITEM.getRegistryName().toString()));
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_workstation.class, new RenderCase(led1, led2));
         }
 
         @SubscribeEvent
@@ -118,6 +123,7 @@ public class OCDevices {
             event.getRegistry().register(new ItemBlock(BlockCase_ibm_5150.DEFAULTITEM).setRegistryName(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_next.DEFAULTITEM).setRegistryName(BlockCase_next.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockCase_workstation.DEFAULTITEM).setRegistryName(BlockCase_workstation.DEFAULTITEM.getRegistryName()));
         }
 
         @SubscribeEvent
@@ -129,6 +135,7 @@ public class OCDevices {
             event.getRegistry().register(BlockCase_ibm_5150.DEFAULTITEM);
             event.getRegistry().register(BlockCase_next.DEFAULTITEM);
             event.getRegistry().register(BlockCase_slim_oc.DEFAULTITEM);
+            event.getRegistry().register(BlockCase_workstation.DEFAULTITEM);
 
             GameRegistry.registerTileEntity(TileEntityFlatScreen.class, new ResourceLocation(MOD_ID, BlockFlatScreen.NAME));
             GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
@@ -136,6 +143,7 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
+            GameRegistry.registerTileEntity(TileEntityCase_workstation.class, new ResourceLocation(MOD_ID, BlockCase_workstation.NAME));
         }
 
 
@@ -187,6 +195,12 @@ public class OCDevices {
                     "III",
                     "ICI",
                     'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_ibm_5150.DEFAULTITEM.getUnlocalizedName()));
+
+            event.getRegistry().register(new ShapedOreRecipe(BlockCase_workstation.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_workstation.DEFAULTITEM, 1),
+                    "QIQ",
+                    "ICI",
+                    "QIQ",
+                    'C', case3, 'I', iron, 'Q', quartz).setRegistryName(MOD_ID, BlockCase_workstation.DEFAULTITEM.getUnlocalizedName()));
         }
     }
 
