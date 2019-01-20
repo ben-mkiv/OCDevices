@@ -154,6 +154,8 @@ public class OCDevices {
             ItemStack iron = new ItemStack(Items.IRON_INGOT);
             ItemStack glasspane = new ItemStack(Blocks.GLASS_PANE);
             ItemStack quartz = new ItemStack(Items.QUARTZ);
+            ItemStack lapisBlock = new ItemStack(Blocks.LAPIS_BLOCK);
+            ItemStack quartzBlock = new ItemStack(Blocks.QUARTZ_BLOCK);
 
             ItemStack screen3 = li.cil.oc.api.Items.get("screen3").createItemStack(1);
             ItemStack cardContainerTier3 = li.cil.oc.api.Items.get("cardcontainer3").createItemStack(1);
@@ -197,10 +199,10 @@ public class OCDevices {
                     'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_ibm_5150.DEFAULTITEM.getUnlocalizedName()));
 
             event.getRegistry().register(new ShapedOreRecipe(BlockCase_workstation.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_workstation.DEFAULTITEM, 1),
-                    "QIQ",
-                    "ICI",
-                    "QIQ",
-                    'C', case3, 'I', iron, 'Q', quartz).setRegistryName(MOD_ID, BlockCase_workstation.DEFAULTITEM.getUnlocalizedName()));
+                    "QLQ",
+                    "LCL",
+                    "QLQ",
+                    'C', case3, 'L', lapisBlock, 'Q', quartzBlock).setRegistryName(MOD_ID, BlockCase_workstation.DEFAULTITEM.getUnlocalizedName()));
         }
     }
 
