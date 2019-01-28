@@ -48,7 +48,7 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190118";
+    public static final String VERSION = "snapshot_20190121";
 
     public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
 
@@ -98,13 +98,13 @@ public class OCDevices {
             RenderCase.statusLED led2 = new RenderCase.statusLED(new Vec3d(-1f/16*1, 0.5001, 1f/16 * 5), 1f/16, 1f/16, EnumFacing.UP);
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_next.class, new RenderCase(led1, led2));
 
-            led1 = new RenderCase.statusLED(new Vec3d(-1f/16 * 3, 1f/16 * 6, 1f/16* 8), 1f/16 * 2, 1f/16, EnumFacing.NORTH);
-            led2 = new RenderCase.statusLED(new Vec3d(1f/16 * 2, 1f/16 * 6, 1f/16* 8), 1f/16, 1f/16, EnumFacing.NORTH);
+            led1 = new RenderCase.statusLED(new Vec3d(-1f/16 * 3, 1f/16 * 6, 1f/16* 8 + 0.001), 1f/16 * 2, 1f/16, EnumFacing.NORTH);
+            led2 = new RenderCase.statusLED(new Vec3d(1f/16 * 2, 1f/16 * 6, 1f/16* 8 + 0.001), 1f/16, 1f/16, EnumFacing.NORTH);
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_slim_oc.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_slim_oc.DEFAULTITEM.getRegistryName().toString()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_slim_oc.class, new RenderCase(led1, led2));
 
-            led1 = new RenderCase.statusLED(new Vec3d(1f/32*7, -1f/32 * 9, 1f/32 * 14), 1f/32, 1f/32, EnumFacing.NORTH);
-            led2 = new RenderCase.statusLED(new Vec3d(1f/32*7, -1f/32 * 12, 1f/32 * 14), 1f/32, 1f/32, EnumFacing.NORTH);
+            led1 = new RenderCase.statusLED(new Vec3d(1f/32*7, -1f/32 * 9, 1f/32 * 14 + 0.001), 1f/32, 1f/32, EnumFacing.NORTH);
+            led2 = new RenderCase.statusLED(new Vec3d(1f/32*7, -1f/32 * 12, 1f/32 * 14 + 0.001), 1f/32, 1f/32, EnumFacing.NORTH);
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCase_ibm_5150.DEFAULTITEM), 0, new ModelResourceLocation(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName().toString()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_ibm_5150.class, new RenderCase(led1, led2));
 
