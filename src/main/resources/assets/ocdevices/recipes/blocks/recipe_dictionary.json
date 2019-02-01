@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iDi",
+    "MPT",
+    "idi"
+  ],
+  "key": {
+    "d": {
+      "item": "opencomputers:disassembler", "data": 0
+    },
+    "T": {
+      "item": "#opencomputers_texturepicker"
+    },
+    "D": {
+      "item": "#opencomputers_db3"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "M": {
+      "item": "#opencomputers_chip3"
+    }
+  },
+  "result": {
+    "item": "ocdevices:recipe_dictionary"
+  }
+}

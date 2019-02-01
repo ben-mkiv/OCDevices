@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "QLQ",
+    "LCL",
+    "QLQ"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:quartz_block", "data": 0
+    },
+    "L": {
+      "item": "minecraft:lapis_block"
+    },
+    "C": {
+      "item": "opencomputers:case3", "data": 0
+    }
+  },
+  "result": {
+    "item": "ocdevices:case_workstation"
+  }
+}

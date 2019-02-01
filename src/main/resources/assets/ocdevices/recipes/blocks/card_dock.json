@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "mCm",
+    "MPb",
+    "ici"
+  ],
+  "key": {
+    "b": {
+      "item": "#opencomputers_componentbus1"
+    },
+    "c": {
+      "item": "opencomputers:cable", "data": 0
+    },
+    "C": {
+      "item": "#opencomputers_cardcontainer3"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "m": {
+      "item": "#opencomputers_chip2"
+    },
+    "M": {
+      "item": "#opencomputers_chip3"
+    }
+
+  },
+  "result": {
+    "item": "ocdevices:card_dock"
+  }
+}

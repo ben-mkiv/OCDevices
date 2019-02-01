@@ -1,6 +1,7 @@
 itemGroup.OCDevices=OC Devices
 gui.string.cardslot=Card Slot
 tile.card_dock.name=Card Dock
+tile.recipe_dictionary.name=Recipe Dictionary
 tile.case.name=Computer Case
 tile.case_next.name=Case (Next)
 tile.case_slim_oc.name=Case (Slim-OC)

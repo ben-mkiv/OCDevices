@@ -65,6 +65,7 @@ public class OCDevices {
     public void preinit(FMLPreInitializationEvent event) {
         BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen();
         BlockCardDock.DEFAULTITEM = new BlockCardDock();
+        BlockRecipeDictionary.DEFAULTITEM = new BlockRecipeDictionary();
         BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
         BlockCase_next.DEFAULTITEM = new BlockCase_next();
         BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150();
@@ -89,6 +90,8 @@ public class OCDevices {
             if(verbose) logger.info("register models");
 
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCardDock.DEFAULTITEM), 0, new ModelResourceLocation(BlockCardDock.DEFAULTITEM.getRegistryName().toString()));
+
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockRecipeDictionary.DEFAULTITEM), 0, new ModelResourceLocation(BlockRecipeDictionary.DEFAULTITEM.getRegistryName().toString()));
 
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockFlatScreen.DEFAULTITEM), 0, new ModelResourceLocation(BlockFlatScreen.DEFAULTITEM.getRegistryName().toString()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlatScreen.class, new RenderFlatScreen());
@@ -119,6 +122,7 @@ public class OCDevices {
             if(verbose) logger.info("register items");
             event.getRegistry().register(new ItemBlock(BlockFlatScreen.DEFAULTITEM).setRegistryName(BlockFlatScreen.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCardDock.DEFAULTITEM).setRegistryName(BlockCardDock.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockRecipeDictionary.DEFAULTITEM).setRegistryName(BlockRecipeDictionary.DEFAULTITEM.getRegistryName()));
 
             event.getRegistry().register(new ItemBlock(BlockCase_ibm_5150.DEFAULTITEM).setRegistryName(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
@@ -131,6 +135,7 @@ public class OCDevices {
             if(verbose) logger.info("register blocks");
             event.getRegistry().register(BlockFlatScreen.DEFAULTITEM);
             event.getRegistry().register(BlockCardDock.DEFAULTITEM);
+            event.getRegistry().register(BlockRecipeDictionary.DEFAULTITEM);
 
             event.getRegistry().register(BlockCase_ibm_5150.DEFAULTITEM);
             event.getRegistry().register(BlockCase_next.DEFAULTITEM);
@@ -139,70 +144,12 @@ public class OCDevices {
 
             GameRegistry.registerTileEntity(TileEntityFlatScreen.class, new ResourceLocation(MOD_ID, BlockFlatScreen.NAME));
             GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
+            GameRegistry.registerTileEntity(TileEntityRecipeDictionary.class, new ResourceLocation(MOD_ID, BlockRecipeDictionary.NAME));
 
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_workstation.class, new ResourceLocation(MOD_ID, BlockCase_workstation.NAME));
-        }
-
-
-        @SubscribeEvent
-        public static void registerRecipes(RegistryEvent.Register<IRecipe> event){
-            if(verbose) logger.info("register recipes");
-            ItemStack piston = new ItemStack(Item.getItemFromBlock(net.minecraft.init.Blocks.PISTON));
-            ItemStack iron = new ItemStack(Items.IRON_INGOT);
-            ItemStack glasspane = new ItemStack(Blocks.GLASS_PANE);
-            ItemStack quartz = new ItemStack(Items.QUARTZ);
-            ItemStack lapisBlock = new ItemStack(Blocks.LAPIS_BLOCK);
-            ItemStack quartzBlock = new ItemStack(Blocks.QUARTZ_BLOCK);
-
-            ItemStack screen3 = li.cil.oc.api.Items.get("screen3").createItemStack(1);
-            ItemStack cardContainerTier3 = li.cil.oc.api.Items.get("cardcontainer3").createItemStack(1);
-            ItemStack componentBus1 = li.cil.oc.api.Items.get("componentbus1").createItemStack(1);
-            ItemStack t3microchip = li.cil.oc.api.Items.get("chip3").createItemStack(1);
-            ItemStack t2microchip = li.cil.oc.api.Items.get("chip2").createItemStack(1);
-            ItemStack pcb = li.cil.oc.api.Items.get("printedcircuitboard").createItemStack(1);
-            ItemStack cable = li.cil.oc.api.Items.get("cable").createItemStack(1);
-            ItemStack case3 = li.cil.oc.api.Items.get("case3").createItemStack(1);
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockCardDock.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCardDock.DEFAULTITEM, 1),
-                    "mCm",
-                    "MPb",
-                    "ici",
-                    'b', componentBus1, 'c', cable, 'C', cardContainerTier3, 'P', pcb, 'i', iron, 'm', t2microchip, 'M', t3microchip).setRegistryName(MOD_ID, BlockCardDock.DEFAULTITEM.getUnlocalizedName()));
-
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockFlatScreen.DEFAULTITEM.getRegistryName(), new ItemStack(BlockFlatScreen.DEFAULTITEM, 1),
-                    "IPI",
-                    "PSP",
-                    "IPI",
-                    'P', piston, 'I', iron, 'S', screen3).setRegistryName(MOD_ID, BlockFlatScreen.DEFAULTITEM.getUnlocalizedName()));
-
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockCase_slim_oc.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_slim_oc.DEFAULTITEM, 1),
-                    "III",
-                    "ICI",
-                    "III",
-                    'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_slim_oc.DEFAULTITEM.getUnlocalizedName()));
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockCase_next.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_next.DEFAULTITEM, 1),
-                    "QQQ",
-                    "PCQ",
-                    "QQQ",
-                    'C', case3, 'P', glasspane, 'Q', quartz).setRegistryName(MOD_ID, BlockCase_next.DEFAULTITEM.getUnlocalizedName()));
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_ibm_5150.DEFAULTITEM, 1),
-                    "   ",
-                    "III",
-                    "ICI",
-                    'C', case3, 'I', iron).setRegistryName(MOD_ID, BlockCase_ibm_5150.DEFAULTITEM.getUnlocalizedName()));
-
-            event.getRegistry().register(new ShapedOreRecipe(BlockCase_workstation.DEFAULTITEM.getRegistryName(), new ItemStack(BlockCase_workstation.DEFAULTITEM, 1),
-                    "QLQ",
-                    "LCL",
-                    "QLQ",
-                    'C', case3, 'L', lapisBlock, 'Q', quartzBlock).setRegistryName(MOD_ID, BlockCase_workstation.DEFAULTITEM.getUnlocalizedName()));
         }
     }
 
