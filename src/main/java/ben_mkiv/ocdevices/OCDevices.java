@@ -6,6 +6,7 @@ import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.tileentity.*;
+import ben_mkiv.ocdevices.config.Config;
 import ben_mkiv.ocdevices.proxy.CommonProxy;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
@@ -63,6 +64,8 @@ public class OCDevices {
 
     @Mod.EventHandler
     public void preinit(FMLPreInitializationEvent event) {
+        Config.preInit();
+
         BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen();
         BlockCardDock.DEFAULTITEM = new BlockCardDock();
         BlockRecipeDictionary.DEFAULTITEM = new BlockRecipeDictionary();

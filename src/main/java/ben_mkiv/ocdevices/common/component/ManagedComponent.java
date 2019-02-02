@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.component;
 
+import ben_mkiv.ocdevices.OCDevices;
 import li.cil.oc.api.Driver;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.network.ManagedEnvironment;
@@ -14,8 +15,14 @@ public class ManagedComponent {
     private String boundToAddress = "";
     private ManagedComponentHost componentHost;
 
-    public ManagedComponent(ManagedComponentHost host){
-        componentHost = host;
+    private boolean autoConnectToHost = false;
+    private boolean autoBind = false;
+
+
+    public ManagedComponent(ManagedComponentHost host, boolean connectToHost, boolean bind){
+        this.componentHost = host;
+        this.autoConnectToHost = connectToHost;
+        this.autoBind = bind;
     }
 
     public ItemStack getComponentItem(){
@@ -26,7 +33,6 @@ public class ManagedComponent {
         if(environment != null && environment.canUpdate())
             environment.update();
     }
-
 
     private void resetCardEnvironment(){
         boundToAddress = "";
@@ -73,6 +79,13 @@ public class ManagedComponent {
     public void disconnect(){
         if(getBoundMachine() != null)
             unbindMachine(getBoundMachine());
+        try {
+            if (autoConnectToHost && node() != null && componentHost.node() != null) {
+                componentHost.node().network().disconnect(componentHost.node(), node());
+            }
+        } catch(Exception ex){
+            OCDevices.logger.warning("failed to disconnect managed component, this shouldnt happen");
+        }
 
         resetCardEnvironment();
     }
@@ -87,10 +100,9 @@ public class ManagedComponent {
     private void connect(ItemStack newStack){
         setupEnvironment(newStack);
 
-        if(environment != null) {
-            //connectCardToHost();
+        if(environment != null && autoConnectToHost) {
+            connectCardToHost();
         }
-
 
         inventory.setStackInSlot(0, newStack);
     }
@@ -112,14 +124,11 @@ public class ManagedComponent {
         componentHost.node().network().disconnect(node, node());
     }
 
-
-
     public void onConnect(Node arg0) {
         // reconnect the internal card component when the host connects to the carddock
         if(boundToAddress.length() > 0 && arg0.address().equals(boundToAddress))
             bindMachine(arg0);
     }
-
 
 
     public void readFromNBT(NBTTagCompound data) {

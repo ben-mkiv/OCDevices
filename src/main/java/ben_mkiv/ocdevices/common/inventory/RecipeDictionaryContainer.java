@@ -1,7 +1,8 @@
 package ben_mkiv.ocdevices.common.inventory;
 
-import ben_mkiv.ocdevices.common.inventory.slots.CardDockSlot;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityCardDock;
+import ben_mkiv.ocdevices.common.inventory.slots.RecipeDictionaryDatabaseSlot;
+import ben_mkiv.ocdevices.common.inventory.slots.RecipeDictionarySlot;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityRecipeDictionary;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -13,13 +14,12 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class CardDockContainer extends Container {
+public class RecipeDictionaryContainer extends Container {
 
-    private TileEntityCardDock te;
+    private TileEntityRecipeDictionary te;
 
-    public CardDockContainer(IInventory playerInventory, TileEntityCardDock te) {
+    public RecipeDictionaryContainer(IInventory playerInventory, TileEntityRecipeDictionary te) {
         this.te = te;
-
         addOwnSlots();
         addPlayerSlots(playerInventory);
     }
@@ -43,8 +43,10 @@ public class CardDockContainer extends Container {
     }
 
     private void addOwnSlots() {
-        IItemHandler sideHandler = this.te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.EAST);
-        this.addSlotToContainer(new CardDockSlot(te, sideHandler, 0, 80, 36));
+        IItemHandler itemInventory = this.te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+        IItemHandler componentInventory = this.te.getComponentInventory();
+        this.addSlotToContainer(new RecipeDictionarySlot(te, itemInventory, 0, 80, 36));
+        this.addSlotToContainer(new RecipeDictionaryDatabaseSlot(te, componentInventory, 0, 148, 85));
     }
 
     @Nonnull
@@ -80,4 +82,5 @@ public class CardDockContainer extends Container {
         return true;
     }
 }
+
 

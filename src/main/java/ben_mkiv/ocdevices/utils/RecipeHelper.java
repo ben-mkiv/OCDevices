@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.utils;
 
+import ben_mkiv.ocdevices.common.component.ManagedDatabaseComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -7,9 +8,11 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RecipeHelper{
-    ArrayList<IRecipe> recipeCache = new ArrayList<>();
+    public ArrayList<IRecipe> recipeCache = new ArrayList<>();
     ItemStack recipeOutput = ItemStack.EMPTY;
 
     public RecipeHelper(ItemStack output){
@@ -50,6 +53,7 @@ public class RecipeHelper{
                 ArrayList<Object> slotData = new ArrayList<>();
 
                 for (ItemStack stack : ingredient.getMatchingStacks()) {
+                    /*
                     ArrayList<Object> itemData = new ArrayList<>();
                     //add item registry name
                     itemData.add(stack.getItem().getRegistryName().toString());
@@ -60,12 +64,14 @@ public class RecipeHelper{
                         itemData.add(stack.getTagCompound().toString());
 
                     slotData.add(itemData.toArray());
+                    */
+                    slotData.add(ManagedDatabaseComponent.getStackData(stack));
                 }
 
                 retData.add(slotData.toArray());
 
                 //fill empty slots
-                for (int column = recipeWidth; column < 3; column++)
+                for (int column = slot%recipeWidth; column < 3; column++)
                     retData.add(new Object[]{});
 
                 slot++;
@@ -76,9 +82,13 @@ public class RecipeHelper{
                 for (int column = recipeWidth; column < 3; column++)
                     retData.add(new Object[]{});
 
-            recipes.add(new Object[]{ recipeOutput.getItem().getRegistryName(), recipeOutput.getMetadata(), recipeOutput.getCount(), isShaped, retData.toArray() });
-        }
+            Map<String, Object> outputData = new HashMap<>();
+            outputData.put("output", ManagedDatabaseComponent.getStackData(recipeOutput));
+            outputData.put("isShaped", isShaped);
+            outputData.put("ingredients", retData.toArray());
 
+            recipes.add(outputData);
+        }
 
         return recipes;
     }
