@@ -43,15 +43,18 @@ import java.util.logging.Logger;
         modid = OCDevices.MOD_ID,
         name = OCDevices.MOD_NAME,
         version = OCDevices.VERSION,
-        dependencies = "required-after:opencomputers"
+        dependencies = "required-after:opencomputers",
+        guiFactory = OCDevices.GUIFACTORY
 )
 public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190121";
+    public static final String VERSION = "snapshot_20190202";
 
     public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
+
+    public static final String GUIFACTORY = "ben_mkiv.ocdevices.config.ConfigGUI";
 
     public static final Logger logger = Logger.getLogger(MOD_NAME);
     static final boolean verbose = false;
@@ -73,6 +76,10 @@ public class OCDevices {
         BlockCase_next.DEFAULTITEM = new BlockCase_next();
         BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150();
         BlockCase_workstation.DEFAULTITEM = new BlockCase_workstation();
+
+        BlockKeyboard.DEFAULTITEM = new BlockKeyboard();
+
+        proxy.preinit();
     }
 
     @Mod.EventHandler
@@ -95,6 +102,8 @@ public class OCDevices {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockCardDock.DEFAULTITEM), 0, new ModelResourceLocation(BlockCardDock.DEFAULTITEM.getRegistryName().toString()));
 
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockRecipeDictionary.DEFAULTITEM), 0, new ModelResourceLocation(BlockRecipeDictionary.DEFAULTITEM.getRegistryName().toString()));
+
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockKeyboard.DEFAULTITEM), 0, new ModelResourceLocation(BlockKeyboard.DEFAULTITEM.getRegistryName().toString()));
 
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockFlatScreen.DEFAULTITEM), 0, new ModelResourceLocation(BlockFlatScreen.DEFAULTITEM.getRegistryName().toString()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlatScreen.class, new RenderFlatScreen());
@@ -126,6 +135,7 @@ public class OCDevices {
             event.getRegistry().register(new ItemBlock(BlockFlatScreen.DEFAULTITEM).setRegistryName(BlockFlatScreen.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCardDock.DEFAULTITEM).setRegistryName(BlockCardDock.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockRecipeDictionary.DEFAULTITEM).setRegistryName(BlockRecipeDictionary.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockKeyboard.DEFAULTITEM).setRegistryName(BlockKeyboard.DEFAULTITEM.getRegistryName()));
 
             event.getRegistry().register(new ItemBlock(BlockCase_ibm_5150.DEFAULTITEM).setRegistryName(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
@@ -139,6 +149,7 @@ public class OCDevices {
             event.getRegistry().register(BlockFlatScreen.DEFAULTITEM);
             event.getRegistry().register(BlockCardDock.DEFAULTITEM);
             event.getRegistry().register(BlockRecipeDictionary.DEFAULTITEM);
+            event.getRegistry().register(BlockKeyboard.DEFAULTITEM);
 
             event.getRegistry().register(BlockCase_ibm_5150.DEFAULTITEM);
             event.getRegistry().register(BlockCase_next.DEFAULTITEM);
@@ -148,6 +159,7 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityFlatScreen.class, new ResourceLocation(MOD_ID, BlockFlatScreen.NAME));
             GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
             GameRegistry.registerTileEntity(TileEntityRecipeDictionary.class, new ResourceLocation(MOD_ID, BlockRecipeDictionary.NAME));
+            GameRegistry.registerTileEntity(TileEntityKeyboard.class, new ResourceLocation(MOD_ID, BlockKeyboard.NAME));
 
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));

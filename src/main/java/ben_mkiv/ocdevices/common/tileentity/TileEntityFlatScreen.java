@@ -31,6 +31,8 @@ public class TileEntityFlatScreen extends Screen {
 
     public FlatScreen data = new FlatScreen();
 
+    private boolean hasKeyboard = true;
+
     public TileEntityFlatScreen() {
         super(BlockFlatScreen.tier);
 
@@ -119,6 +121,7 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag){
         tag.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
+        tag.setBoolean("keyboard", hasKeyboard());
 
         return super.writeToNBT(tag);
     }
@@ -135,10 +138,25 @@ public class TileEntityFlatScreen extends Screen {
         }
     }
 
+    @Override
+    public boolean hasKeyboard(){
+        for(TileEntityFlatScreen screen : FlatScreenHelper.getScreens(this))
+            if(screen.hasInternalKeyboard())
+                return true;
+
+        return super.hasKeyboard();
+    }
+
+    public boolean hasInternalKeyboard(){
+        return hasKeyboard;
+    }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
+
+        if(tag.hasKey("keyboard"))
+            hasKeyboard = tag.getBoolean("keyboard");
 
         if(tag.hasKey("screenData"))
             data.readFromNBT(tag.getCompoundTag("screenData"));

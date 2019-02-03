@@ -7,7 +7,7 @@ import net.minecraftforge.common.capabilities.Capability;
 
 import java.util.HashSet;
 
-public class TileEntityCase extends Case {
+public class TileEntityCase extends Case implements ColoredTile {
 
     HashSet<EnumFacing> connectToSides = new HashSet<>();
 

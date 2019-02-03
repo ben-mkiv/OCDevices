@@ -13,7 +13,7 @@ buildscript {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 
-version = "snapshot_20190121"
+version = "snapshot_20190202"
 group = modGroup
 archivesBaseName = modBaseName
 

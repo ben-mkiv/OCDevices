@@ -1,13 +1,19 @@
-itemGroup.OCDevices=OC Devices
+itemGroup.OCDevices=OCDevices
+
+gui.config.title=OCDevices Configuration
+
 gui.string.cardslot=Card Slot
+
 tile.card_dock.name=Card Dock
-tile.recipe_dictionary.name=Recipe Dictionary
 tile.case.name=Computer Case
 tile.case_next.name=Case (Next)
 tile.case_slim_oc.name=Case (Slim-OC)
 tile.case_ibm_5150.name=Case (IBM 5150)
 tile.case_workstation.name=Case (Workstation)
+tile.keyboard.name=Keyboard
+tile.recipe_dictionary.name=Recipe Dictionary
 tile.flat_screen.name=Flatscreen Panel
+
 oc:container.tileentitycase=Computer
 oc:container.tileentitycase_slim_oc=Computer
 oc:container.tileentitycase_next=Computer

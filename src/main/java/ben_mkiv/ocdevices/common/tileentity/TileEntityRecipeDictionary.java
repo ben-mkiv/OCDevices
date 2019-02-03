@@ -109,7 +109,7 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
         if(args.count() == 0)
             return new Object[]{ false, "specify a slot" };
 
-        return new Object[]{ loadRecipeFromDatabase(args.checkInteger(0), args.optInteger(1, 0)) };
+        return new Object[]{ loadRecipeFromDatabase(args.checkInteger(0) - 1, args.optInteger(1, 0)) };
     }
 
     private boolean loadRecipeFromDatabase(int slot){
@@ -170,7 +170,10 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
         for(Map.Entry<Integer, HashSet<ItemStack>> slotItems : ingredients.entrySet()){
             int i=0;
             for(ItemStack stack : slotItems.getValue()){
-                db.setStackInSlot(slotItems.getKey() * i, stack);
+                int dbSlot = slotItems.getKey() + (9*i);
+                db.setStackInSlot(dbSlot, stack);
+                OCDevices.logger.warning("set: " + dbSlot + " => " + stack.getDisplayName());
+                i++;
             }
         }
 
@@ -260,7 +263,7 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
         return new Object[]{ ItemStack.areItemStacksEqual(db.getStackInSlot(slot), itemStack) };
     }*/
 
-    @Callback(doc = "function(Integer:index[, Integer:slot]):boolean;")
+    @Callback(doc = "function(Integer:index):boolean;")
     public Object[] getDatabase(Context context, Arguments args) {
         ArrayList<Object> list = new ArrayList<>();
 

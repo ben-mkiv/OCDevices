@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "top": "ocdevices:blocks/machine_side",
+      "front": "ocdevices:blocks/machine_side",
+      "side": "ocdevices:blocks/machine_side"
+    },
+    "model": "ocdevices:keyboard"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block" }],
+    "pitch=down,yaw=north": { "model": "ocdevices:keyboard" },
+    "pitch=down,yaw=east":  { "model": "ocdevices:keyboard", "y": 90 },
+    "pitch=down,yaw=south": { "model": "ocdevices:keyboard", "y": 180 },
+    "pitch=down,yaw=west":  { "model": "ocdevices:keyboard", "y": 270 },
+    "pitch=north,yaw=north": { "model": "ocdevices:keyboard", "x": -90, "y": 180 },
+    "pitch=north,yaw=east":  { "model": "ocdevices:keyboard", "x": -90, "y": 270 },
+    "pitch=north,yaw=south": { "model": "ocdevices:keyboard", "x": -90 },
+    "pitch=north,yaw=west":  { "model": "ocdevices:keyboard", "x": -90, "y": 90 },
+    "pitch=up,yaw=north": { "model": "ocdevices:keyboard", "x": 90, "y": 180 },
+    "pitch=up,yaw=east":  { "model": "ocdevices:keyboard", "x": 90, "y": 270 },
+    "pitch=up,yaw=south": { "model": "ocdevices:keyboard", "x": 90 },
+    "pitch=up,yaw=west":  { "model": "ocdevices:keyboard", "x": 90, "y": 90 }
+  }
+}

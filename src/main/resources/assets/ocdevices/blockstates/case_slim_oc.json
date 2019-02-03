@@ -10,9 +10,7 @@
   },
   "variants": {
     "normal": [{}],
-    "inventory": [{
-      "transform": "forge:default-block"
-    }],
+    "inventory": [{ "transform": "forge:default-block" }],
     "facing=north,running=false": { "model": "ocdevices:case_slim_oc" },
     "facing=south,running=false": { "model": "ocdevices:case_slim_oc", "y": 180 },
     "facing=west,running=false":  { "model": "ocdevices:case_slim_oc", "y": 270 },
