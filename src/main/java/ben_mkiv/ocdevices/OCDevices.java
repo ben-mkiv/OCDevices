@@ -48,7 +48,7 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190202";
+    public static final String VERSION = "snapshot_20190204";
 
     public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
 
@@ -69,15 +69,16 @@ public class OCDevices {
     public void preinit(FMLPreInitializationEvent event) {
         Config.preInit();
 
-        BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen();
         BlockCardDock.DEFAULTITEM = new BlockCardDock();
+        BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen();
+        BlockKeyboard.DEFAULTITEM = new BlockKeyboard();
         BlockRecipeDictionary.DEFAULTITEM = new BlockRecipeDictionary();
-        BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
-        BlockCase_next.DEFAULTITEM = new BlockCase_next();
+
         BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150();
+        BlockCase_next.DEFAULTITEM = new BlockCase_next();
+        BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
         BlockCase_workstation.DEFAULTITEM = new BlockCase_workstation();
 
-        BlockKeyboard.DEFAULTITEM = new BlockKeyboard();
 
         proxy.preinit();
 
@@ -143,8 +144,8 @@ public class OCDevices {
             event.getRegistry().register(new ItemBlock(BlockKeyboard.DEFAULTITEM).setRegistryName(BlockKeyboard.DEFAULTITEM.getRegistryName()));
 
             event.getRegistry().register(new ItemBlock(BlockCase_ibm_5150.DEFAULTITEM).setRegistryName(BlockCase_ibm_5150.DEFAULTITEM.getRegistryName()));
-            event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_next.DEFAULTITEM).setRegistryName(BlockCase_next.DEFAULTITEM.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(BlockCase_slim_oc.DEFAULTITEM).setRegistryName(BlockCase_slim_oc.DEFAULTITEM.getRegistryName()));
             event.getRegistry().register(new ItemBlock(BlockCase_workstation.DEFAULTITEM).setRegistryName(BlockCase_workstation.DEFAULTITEM.getRegistryName()));
         }
 
@@ -166,9 +167,9 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityRecipeDictionary.class, new ResourceLocation(MOD_ID, BlockRecipeDictionary.NAME));
             GameRegistry.registerTileEntity(TileEntityKeyboard.class, new ResourceLocation(MOD_ID, BlockKeyboard.NAME));
 
+            GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));
-            GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_workstation.class, new ResourceLocation(MOD_ID, BlockCase_workstation.NAME));
         }
     }

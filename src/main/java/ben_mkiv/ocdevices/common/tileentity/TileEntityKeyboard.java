@@ -1,17 +1,26 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
+import li.cil.oc.api.network.Node;
+import li.cil.oc.common.component.Screen;
 import li.cil.oc.common.tileentity.Keyboard;
 import li.cil.oc.common.tileentity.traits.Colored;
 import li.cil.oc.server.PacketSender;
+import mcmultipart.api.slot.IPartSlot;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.runtime.TraitSetter;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TileEntityKeyboard extends Keyboard implements Colored, ColoredTile {
     String colorTag = "", colorTagCompat = "";
@@ -66,6 +75,28 @@ public class TileEntityKeyboard extends Keyboard implements Colored, ColoredTile
         }
     }
 
+
+    @Override
+    public void onConnect(Node node){
+        if(node.host() instanceof Screen){
+            for(TileEntity tile : MCMultiPart.getMCMPTiles(this).values()){
+                if(tile instanceof li.cil.oc.common.tileentity.Screen && ((li.cil.oc.common.tileentity.Screen) tile).node().equals(node)){
+                    node.connect(node());
+                }
+            }
+        }
+
+        super.onConnect(node);
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean canConnect(EnumFacing side) {
+        return true;
+        //return super.canConnect(side);
+    }
+
     @Override
     public String li$cil$oc$common$tileentity$traits$Colored$$RenderColorTag(){
         return colorTag;
@@ -111,6 +142,7 @@ public class TileEntityKeyboard extends Keyboard implements Colored, ColoredTile
         colorTag = nbt.getString("colorTag");
         colorTagCompat = nbt.getString("colorTagCompat");
     }
+
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt){

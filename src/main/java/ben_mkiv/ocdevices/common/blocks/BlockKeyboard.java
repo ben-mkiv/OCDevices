@@ -1,11 +1,9 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.common.block.Keyboard;
 import li.cil.oc.util.Color;
-import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,7 +17,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
 
 import static net.minecraft.util.EnumFacing.DOWN;
 import static net.minecraft.util.EnumFacing.UP;
@@ -36,10 +33,8 @@ public class BlockKeyboard extends Keyboard {
     }
 
     /* MCMP */
-    @Optional.Method(modid = "mcmultipart")
-	protected IMultipart getMultiPart() {
-        return MCMultiPart.keyboardMultipart;
-    }
+    //@Optional.Method(modid = "mcmultipart")
+	//protected IMultipart getMultiPart() { return MCMultiPart.keyboardMultipart; }
 
     @Override
     public li.cil.oc.common.tileentity.Keyboard createNewTileEntity(World worldIn, int meta) {
@@ -72,12 +67,20 @@ public class BlockKeyboard extends Keyboard {
 
         ItemStack stack = player.getHeldItem(hand);
 
-        if(!(stack.getItem() instanceof ItemDye))
-            return false;
+        if(stack.getItem() instanceof ItemDye) {
+            keyboard.setColor(Color.dyeColor(stack).getColorValue());
+            return true;
+        }
 
-        keyboard.setColor(Color.dyeColor(stack).getColorValue());
-
-        return true;
+        /*
+        for(TileEntity tile : MCMultiPart.getMCMPTiles(keyboard).values())
+            if(tile instanceof Screen) {
+                IBlockState stateScreen = tile.getWorld().getBlockState(tile.getPos());
+                Block block = stateScreen.getBlock();
+                return ((BlockFlatScreen) block).rightClick(tile.getWorld(), tile.getPos(), player, hand, stack, side, hitX, hitY, hitZ, false);
+            }
+           */
+        return false;
     }
 
     public static TileEntityKeyboard getTileEntity(IBlockAccess world, BlockPos pos){
@@ -111,5 +114,7 @@ public class BlockKeyboard extends Keyboard {
             te.trySetPitchYaw(pitch, yaw);
         }
     }
+
+
 
 }

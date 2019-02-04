@@ -1,6 +1,7 @@
 package ben_mkiv.ocdevices.common.component;
 
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
@@ -8,6 +9,8 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.common.component.Screen;
+import li.cil.oc.common.tileentity.Keyboard;
+import net.minecraft.tileentity.TileEntity;
 
 public class FlatScreenComponent extends Screen {
     public FlatScreenComponent(EnvironmentHost container){
@@ -39,6 +42,15 @@ public class FlatScreenComponent extends Screen {
     }
 
     public void onConnect(Node node){
+
+        if(node.host() instanceof li.cil.oc.server.component.Keyboard){
+            for(TileEntity tile : MCMultiPart.getMCMPTiles(screen()).values()){
+                if(tile instanceof Keyboard && ((Keyboard) tile).node().equals(node)){
+                    node.connect(node());
+                }
+            }
+        }
+        
         if(false && node.host() instanceof TileEntityFlatScreen){
             TileEntityFlatScreen te = (TileEntityFlatScreen) node.host();
             super.onConnect(node);

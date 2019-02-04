@@ -3,6 +3,7 @@ package ben_mkiv.ocdevices.common.tileentity;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import li.cil.oc.api.Driver;
 import li.cil.oc.api.internal.TextBuffer;
@@ -11,6 +12,11 @@ import li.cil.oc.common.Tier;
 import li.cil.oc.common.capabilities.*;
 import li.cil.oc.common.tileentity.Keyboard;
 import li.cil.oc.common.tileentity.Screen;
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.container.IPartInfo;
+import mcmultipart.api.slot.EnumFaceSlot;
+import mcmultipart.api.slot.IPartSlot;
+import mcmultipart.api.world.IMultipartBlockAccess;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,6 +25,10 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -140,8 +150,13 @@ public class TileEntityFlatScreen extends Screen {
     }
 
     @Override
+    public boolean canConnect(EnumFacing side){
+        return true;
+    }
+
+    @Override
     public Node sidedNode(EnumFacing side) {
-        if(hasKeyboard(side))
+        if(hasKeyboardInSameBlock() || hasKeyboard(side))
             return node();
 
         return super.sidedNode(side);
@@ -150,6 +165,9 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public boolean hasKeyboard(){
         for(TileEntityFlatScreen screen : FlatScreenHelper.getScreens(this)){
+            if(screen.hasKeyboardInSameBlock())
+                return true;
+
             for(EnumFacing side : EnumFacing.values())
                 if(screen.hasKeyboard(side))
                     return true;
@@ -158,9 +176,26 @@ public class TileEntityFlatScreen extends Screen {
         return false;
     }
 
-    public boolean hasKeyboard(EnumFacing side){
+    @Override
+    public void onConnect(Node node){
+        if(node.host() instanceof li.cil.oc.server.component.Keyboard){
+            for(TileEntity tile : MCMultiPart.getMCMPTiles(this).values()){
+                if(tile instanceof Keyboard && ((Keyboard) tile).node().equals(node)){
+                    node.connect(node());
+                }
+            }
+        }
+
+        super.onConnect(node);
+    }
+
+    private boolean hasKeyboardInSameBlock(){
+        return MCMultiPart.hasEnvironmentInSameBlock(this, Keyboard.class);
+    }
+
+    private boolean hasKeyboard(EnumFacing side){
         if(side == null)
-            return false;
+            return hasKeyboardInSameBlock();
 
         if(!this.getWorld().isBlockLoaded(this.getPos().offset(side)))
             return false;
@@ -178,6 +213,11 @@ public class TileEntityFlatScreen extends Screen {
         return environment.tileEntity() instanceof Keyboard;
     }
 
+    @Override
+    public boolean hasCapability(Capability capability, EnumFacing side){
+        // may disable faces which arent covered when the screen isnt a full block...
+        return super.hasCapability(capability, side);
+    }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
@@ -188,6 +228,14 @@ public class TileEntityFlatScreen extends Screen {
 
         // update bb in update() handler, otherwise it wont work
         updateBB = true;
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox(){
+        if(this.width() * this.height() == 1)
+            return FULL_BLOCK_AABB.offset(pos);
+
+        return super.getRenderBoundingBox();
     }
 
 
