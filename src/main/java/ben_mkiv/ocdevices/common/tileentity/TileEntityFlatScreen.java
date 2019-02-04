@@ -1,19 +1,23 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
-
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import li.cil.oc.api.Driver;
 import li.cil.oc.api.internal.TextBuffer;
+import li.cil.oc.api.network.Node;
 import li.cil.oc.common.Tier;
+import li.cil.oc.common.capabilities.*;
+import li.cil.oc.common.tileentity.Keyboard;
 import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,8 +34,6 @@ public class TileEntityFlatScreen extends Screen {
     public ArrayList<AxisAlignedBB> boundingBoxes = new ArrayList<>();
 
     public FlatScreen data = new FlatScreen();
-
-    private boolean hasKeyboard = true;
 
     public TileEntityFlatScreen() {
         super(BlockFlatScreen.tier);
@@ -121,7 +123,6 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag){
         tag.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
-        tag.setBoolean("keyboard", hasKeyboard());
 
         return super.writeToNBT(tag);
     }
@@ -139,24 +140,48 @@ public class TileEntityFlatScreen extends Screen {
     }
 
     @Override
+    public Node sidedNode(EnumFacing side) {
+        if(hasKeyboard(side))
+            return node();
+
+        return super.sidedNode(side);
+    }
+
+    @Override
     public boolean hasKeyboard(){
-        for(TileEntityFlatScreen screen : FlatScreenHelper.getScreens(this))
-            if(screen.hasInternalKeyboard())
-                return true;
+        for(TileEntityFlatScreen screen : FlatScreenHelper.getScreens(this)){
+            for(EnumFacing side : EnumFacing.values())
+                if(screen.hasKeyboard(side))
+                    return true;
+        }
 
-        return super.hasKeyboard();
+        return false;
     }
 
-    public boolean hasInternalKeyboard(){
-        return hasKeyboard;
+    public boolean hasKeyboard(EnumFacing side){
+        if(side == null)
+            return false;
+
+        if(!this.getWorld().isBlockLoaded(this.getPos().offset(side)))
+            return false;
+
+        TileEntity tile = getWorld().getTileEntity(this.getPos().offset(side));
+
+        if(tile == null)
+            return false;
+
+        if(!tile.hasCapability(Capabilities.SidedEnvironmentCapability, side.getOpposite()))
+            return false;
+
+        CapabilitySidedEnvironment.Provider environment = (CapabilitySidedEnvironment.Provider) tile.getCapability(Capabilities.SidedEnvironmentCapability, side.getOpposite());
+
+        return environment.tileEntity() instanceof Keyboard;
     }
+
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-
-        if(tag.hasKey("keyboard"))
-            hasKeyboard = tag.getBoolean("keyboard");
 
         if(tag.hasKey("screenData"))
             data.readFromNBT(tag.getCompoundTag("screenData"));
@@ -187,7 +212,6 @@ public class TileEntityFlatScreen extends Screen {
         super.readFromNBTForClient(tag);
         tier_$eq(Tier.Four());
     }
-
 
     @Override
     public NBTTagCompound getUpdateTag() {

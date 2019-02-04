@@ -33,17 +33,21 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
+    maven {
+        url "http://maven.amadornes.com/" // for MCMultiPart
+    }
 }
 
 
 def openComputersVersion = "MC1.12.2-1.7.+"
 def ae2Version = "rv6-stable-1"
 def projredVersion="1.12.2-4.9.0.86"
-
+def MCMPVersion = "2.5.3"
 
 dependencies {
     deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
 
+    deobfCompile "MCMultiPart2:MCMultiPart:${MCMPVersion}"
 
     // all those just for the case block =>
     provided ("appeng:appliedenergistics2:${ae2Version}:api") {

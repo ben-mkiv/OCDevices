@@ -5,6 +5,7 @@ import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.*;
 import ben_mkiv.ocdevices.config.Config;
 import ben_mkiv.ocdevices.proxy.CommonProxy;
@@ -13,18 +14,16 @@ import li.cil.oc.api.driver.EnvironmentProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,7 +34,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.logging.Logger;
 
@@ -59,6 +57,8 @@ public class OCDevices {
     public static final Logger logger = Logger.getLogger(MOD_NAME);
     static final boolean verbose = false;
 
+    public static boolean MCMultiPart = false;
+
     @Mod.Instance(MOD_ID)
     public static OCDevices INSTANCE;
 
@@ -80,6 +80,11 @@ public class OCDevices {
         BlockKeyboard.DEFAULTITEM = new BlockKeyboard();
 
         proxy.preinit();
+
+        MCMultiPart = Loader.isModLoaded("mcmultipart");
+
+        if(MCMultiPart)
+            new MCMultiPart();
     }
 
     @Mod.EventHandler

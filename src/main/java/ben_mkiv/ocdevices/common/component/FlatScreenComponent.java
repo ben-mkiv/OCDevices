@@ -8,7 +8,6 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.common.component.Screen;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class FlatScreenComponent extends Screen {
     public FlatScreenComponent(EnvironmentHost container){

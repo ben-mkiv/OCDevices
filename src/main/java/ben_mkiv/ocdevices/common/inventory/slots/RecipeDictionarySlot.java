@@ -1,9 +1,6 @@
 package ben_mkiv.ocdevices.common.inventory.slots;
 
 import ben_mkiv.ocdevices.common.tileentity.TileEntityRecipeDictionary;
-import li.cil.oc.api.Driver;
-import li.cil.oc.api.driver.DriverItem;
-import li.cil.oc.integration.opencomputers.DriverUpgradeDatabase;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
