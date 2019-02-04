@@ -8,6 +8,9 @@
     "4": "ocdevices:blocks/workstation/case_back",
     "particle": "ocdevices:blocks/workstation/case_front"
   },
+  "display": {
+    "gui": { "rotation": [ 22.5, 205, 0 ], "scale": [0.75, 0.75, 0.75 ] }
+  },
   "elements": [
     {
       "from": [3, 0, 2],
