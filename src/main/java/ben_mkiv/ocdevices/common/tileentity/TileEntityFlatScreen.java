@@ -1,5 +1,7 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.OCDevices;
+import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
@@ -12,11 +14,7 @@ import li.cil.oc.common.Tier;
 import li.cil.oc.common.capabilities.*;
 import li.cil.oc.common.tileentity.Keyboard;
 import li.cil.oc.common.tileentity.Screen;
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.container.IPartInfo;
-import mcmultipart.api.slot.EnumFaceSlot;
-import mcmultipart.api.slot.IPartSlot;
-import mcmultipart.api.world.IMultipartBlockAccess;
+import li.cil.oc.util.BlockPosition;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,12 +23,12 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.MatchError;
+import scala.Serializable;
+import scala.collection.mutable.Set;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -130,13 +128,6 @@ public class TileEntityFlatScreen extends Screen {
         }
     }
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag){
-        tag.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
-
-        return super.writeToNBT(tag);
-    }
-
     boolean updateBB = false;
 
     @Override
@@ -147,11 +138,6 @@ public class TileEntityFlatScreen extends Screen {
             updateBB = false;
             updateScreenBB();
         }
-    }
-
-    @Override
-    public boolean canConnect(EnumFacing side){
-        return true;
     }
 
     @Override
@@ -174,19 +160,6 @@ public class TileEntityFlatScreen extends Screen {
         }
 
         return false;
-    }
-
-    @Override
-    public void onConnect(Node node){
-        if(node.host() instanceof li.cil.oc.server.component.Keyboard){
-            for(TileEntity tile : MCMultiPart.getMCMPTiles(this).values()){
-                if(tile instanceof Keyboard && ((Keyboard) tile).node().equals(node)){
-                    node.connect(node());
-                }
-            }
-        }
-
-        super.onConnect(node);
     }
 
     private boolean hasKeyboardInSameBlock(){
@@ -220,6 +193,13 @@ public class TileEntityFlatScreen extends Screen {
     }
 
     @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tag){
+        tag.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
+
+        return super.writeToNBT(tag);
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
 
@@ -247,10 +227,17 @@ public class TileEntityFlatScreen extends Screen {
     }
 
 
+    @Override
+    public void writeToNBTForServer(NBTTagCompound nbt){
+        super.writeToNBTForServer(nbt);
+    }
+
+
     //override the tier tag as its limited to t1-t3 in Screen.class
     @Override
     public void readFromNBTForServer(NBTTagCompound tag){
         super.readFromNBTForServer(tag);
+
         tier_$eq(Tier.Four());
     }
 
@@ -277,6 +264,9 @@ public class TileEntityFlatScreen extends Screen {
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         readFromNBT(packet.getNbtCompound());
     }
+
+
+
 
 
 }

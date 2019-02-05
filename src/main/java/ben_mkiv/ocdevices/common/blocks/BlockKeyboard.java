@@ -1,8 +1,10 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.common.block.Keyboard;
+import li.cil.oc.common.tileentity.Screen;
 import li.cil.oc.util.Color;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -31,10 +33,6 @@ public class BlockKeyboard extends Keyboard {
         setUnlocalizedName(NAME);
         setCreativeTab(OCDevices.creativeTab);
     }
-
-    /* MCMP */
-    //@Optional.Method(modid = "mcmultipart")
-	//protected IMultipart getMultiPart() { return MCMultiPart.keyboardMultipart; }
 
     @Override
     public li.cil.oc.common.tileentity.Keyboard createNewTileEntity(World worldIn, int meta) {
@@ -72,15 +70,19 @@ public class BlockKeyboard extends Keyboard {
             return true;
         }
 
-        /*
+
         for(TileEntity tile : MCMultiPart.getMCMPTiles(keyboard).values())
             if(tile instanceof Screen) {
-                IBlockState stateScreen = tile.getWorld().getBlockState(tile.getPos());
-                Block block = stateScreen.getBlock();
-                return ((BlockFlatScreen) block).rightClick(tile.getWorld(), tile.getPos(), player, hand, stack, side, hitX, hitY, hitZ, false);
+                return activateScreen(world, pos, player, hand, side);
             }
-           */
+
         return false;
+    }
+
+    private static boolean activateScreen(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing){
+        IBlockState s = world.getBlockState(pos);
+        Block b = s.getBlock();
+        return b.onBlockActivated(world, pos, s, player, hand, facing, 0, 0, 0);
     }
 
     public static TileEntityKeyboard getTileEntity(IBlockAccess world, BlockPos pos){

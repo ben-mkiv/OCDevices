@@ -11,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
 
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
@@ -141,6 +143,29 @@ public class BlockFlatScreen extends Screen {
             // set the new values
             screen.trySetPitchYaw(pitch, placer.getHorizontalFacing().getOpposite());
         }
+    }
+
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest){
+        /*
+        HashSet<TileEntityFlatScreen> screens = new HashSet<>();
+
+        if (!world.isRemote) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityFlatScreen) {
+                screens.addAll(FlatScreenHelper.getScreens((TileEntityFlatScreen) te));
+                screens.remove(te);
+            }
+        }*/
+
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+        /*
+        if(wasRemoved)
+            for(TileEntityFlatScreen screen : screens){
+                screen.checkMultiBlock();
+                screen.updateNeighbours();
+            }
+
+        return wasRemoved;*/
     }
 
 

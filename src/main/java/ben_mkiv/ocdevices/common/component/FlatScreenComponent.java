@@ -50,7 +50,7 @@ public class FlatScreenComponent extends Screen {
                 }
             }
         }
-        
+
         if(false && node.host() instanceof TileEntityFlatScreen){
             TileEntityFlatScreen te = (TileEntityFlatScreen) node.host();
             super.onConnect(node);
