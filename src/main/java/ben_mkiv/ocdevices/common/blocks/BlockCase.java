@@ -4,10 +4,12 @@ import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Case;
+import li.cil.oc.common.block.property.PropertyRotatable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -33,7 +35,7 @@ public class BlockCase extends Case {
     @Override
     public boolean isFullCube(IBlockState state)
     {
-        return true;
+        return false;
     }
 
     @Override
@@ -55,17 +57,9 @@ public class BlockCase extends Case {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, placer, stack);
-        if(world.isRemote)
-            return;
-
-        // as for some reason the facing isnt set correct, we have to fix it here!?
-        TileEntityCase te = getTileEntity(world, pos);
-        if(te != null) {
-            te.setFromFacing(placer.getHorizontalFacing().getOpposite());
-        }
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+        EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
+        return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw);
     }
-
 
 }

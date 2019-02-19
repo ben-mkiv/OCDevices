@@ -1,26 +1,24 @@
 package ben_mkiv.ocdevices.common.component;
 
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.common.component.Screen;
-import li.cil.oc.common.tileentity.Keyboard;
-import net.minecraft.tileentity.TileEntity;
+
 
 public class FlatScreenComponent extends Screen {
     public FlatScreenComponent(EnvironmentHost container){
         super((TileEntityFlatScreen) container);
     }
 
-    int size = 0;
-
     private void updateAll(){
-        ((TileEntityFlatScreen) screen()).updateNeighbours();
+       screen().updateNeighbours();
     }
 
     @Override
@@ -32,46 +30,38 @@ public class FlatScreenComponent extends Screen {
     @Override
     public void update(){
         super.update();
-
-        int curSize = screen().width()*screen().height();
-
-        if(curSize != size) {
-            size = curSize;
-            updateAll();
-        }
     }
 
     public void onConnect(Node node){
+        if(node.host() instanceof li.cil.oc.server.component.Keyboard)
+            if(isKeyboardInMultiblock(node))
+                node.connect(node());
 
-        if(node.host() instanceof li.cil.oc.server.component.Keyboard){
-            for(TileEntity tile : MCMultiPart.getMCMPTiles(screen()).values()){
-                if(tile instanceof Keyboard && ((Keyboard) tile).node().equals(node)){
-                    node.connect(node());
-                }
-            }
+        super.onConnect(node);
+    }
+
+    //todo: make this only check the actual tile the keyboard is in
+    boolean isKeyboardInMultiblock(Node node){
+        for(TileEntityFlatScreen screen : screen().getScreens()){
+            TileEntityKeyboard keyboard = MultiPartHelper.getKeyboardFromTile(screen);
+            if (keyboard != null && keyboard.node() != null && keyboard.node().equals(node))
+                return true;
         }
 
-        if(false && node.host() instanceof TileEntityFlatScreen){
-            TileEntityFlatScreen te = (TileEntityFlatScreen) node.host();
-            super.onConnect(node);
-            te.updateNeighbours();
-        }
-        else
-            super.onConnect(node);
+        return false;
+    }
+
+    @Override //typecast
+    public TileEntityFlatScreen screen(){
+        return (TileEntityFlatScreen) super.screen();
     }
 
     public void onDisconnect(Node node){
-        if(false && node.host() instanceof TileEntityFlatScreen){
-            TileEntityFlatScreen te = (TileEntityFlatScreen) node.host();
-            super.onDisconnect(node);
-            te.updateNeighbours();
-        }
-        else
-            super.onDisconnect(node);
+        super.onDisconnect(node);
     }
 
     private FlatScreen getData(){
-        return ((TileEntityFlatScreen) screen()).getData();
+        return screen().getData();
     }
 
 
@@ -122,12 +112,10 @@ public class FlatScreenComponent extends Screen {
     @Override
     public void load(net.minecraft.nbt.NBTTagCompound nbt) {
         super.load(nbt);
-        size = nbt.getInteger("size");
     }
 
     @Override
     public void save(net.minecraft.nbt.NBTTagCompound nbt) {
-        nbt.setInteger("size", size);
         super.save(nbt);
     }
 

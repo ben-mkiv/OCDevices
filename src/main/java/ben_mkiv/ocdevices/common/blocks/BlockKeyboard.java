@@ -2,16 +2,17 @@ package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
+import li.cil.oc.OpenComputers;
 import li.cil.oc.common.block.Keyboard;
-import li.cil.oc.common.tileentity.Screen;
-import li.cil.oc.util.Color;
+import li.cil.oc.common.block.property.PropertyRotatable;
+import mcmultipart.util.MCMPWorldWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemDye;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -19,9 +20,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import static net.minecraft.util.EnumFacing.DOWN;
-import static net.minecraft.util.EnumFacing.UP;
 
 public class BlockKeyboard extends Keyboard {
     public final static String NAME = "keyboard";
@@ -50,31 +48,25 @@ public class BlockKeyboard extends Keyboard {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side,
-                                    float hitX, float hitY, float hitZ) {
-        // Only execute on the server
-        if (world.isRemote) {
-            return true;
-        }
-
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntityKeyboard keyboard = getTileEntity(world, pos);
 
-        if (keyboard == null) {
-            return false;
+        if (!world.isRemote) {
+            // serverside only check if the player recolored the keyboard
+            return keyboard != null && keyboard.setColor(player.getHeldItem(hand));
         }
 
-        ItemStack stack = player.getHeldItem(hand);
+        // from here client only, check if the keyboard has a screen connected
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(keyboard);
+        if (screen != null) {
+            if (world instanceof MCMPWorldWrapper)
+                world = MCMultiPart.getRealWorld(keyboard);
 
-        if(stack.getItem() instanceof ItemDye) {
-            keyboard.setColor(Color.dyeColor(stack).getColorValue());
+            pos = screen.origin().getPos();
+            player.openGui(OpenComputers.ID(), li.cil.oc.common.GuiType.Screen().id(), world, pos.getX(), pos.getY(), pos.getZ());
+
             return true;
         }
-
-
-        for(TileEntity tile : MCMultiPart.getMCMPTiles(keyboard).values())
-            if(tile instanceof Screen) {
-                return activateScreen(world, pos, player, hand, side);
-            }
 
         return false;
     }
@@ -91,32 +83,14 @@ public class BlockKeyboard extends Keyboard {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, placer, stack);
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+        EnumFacing pitch = facing.getAxis().equals(EnumFacing.Axis.Y) ? facing : EnumFacing.NORTH;
+        EnumFacing yaw = !facing.getAxis().equals(EnumFacing.Axis.Y) ? facing : EnumFacing.fromAngle(placer.rotationYaw);
 
-        //if(true) return;
+        if(pitch.equals(EnumFacing.DOWN))
+            yaw = yaw.getOpposite();
 
-        if(world.isRemote)
-            return;
-
-        // as for some reason the facing isnt set correct, we have to fix it here!?
-        TileEntityKeyboard te = getTileEntity(world, pos);
-        if(te != null) {
-            te.setFromEntityPitchAndYaw(placer);
-
-            EnumFacing pitch = te.pitch();
-
-            if(pitch.equals(UP) || pitch.equals(DOWN)) {
-                pitch = pitch.getOpposite();
-            }
-
-            EnumFacing yaw = !pitch.equals(UP) ? placer.getHorizontalFacing().getOpposite() : placer.getHorizontalFacing();
-
-            // set the new values
-            te.trySetPitchYaw(pitch, yaw);
-        }
+        return getDefaultState().withProperty(PropertyRotatable.Pitch(), pitch).withProperty(PropertyRotatable.Yaw(), yaw);
     }
-
-
 
 }

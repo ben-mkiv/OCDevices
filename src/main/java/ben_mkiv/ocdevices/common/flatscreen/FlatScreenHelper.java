@@ -2,21 +2,17 @@ package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.Triangle;
-import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import scala.collection.Iterator;
 
 import java.awt.*;
-import java.util.HashSet;
 
 public class FlatScreenHelper {
+
     public int screenCountX, screenCountY;
-
-    public EnumFacing facing, pitch;
-
     public float displayWidth = 0, displayHeight = 0;
+    public EnumFacing facing, pitch;
 
     public Vec3d tiltRenderOffset = new Vec3d(0, 0, 0);
     public Vec3d tiltRotationVector;
@@ -25,31 +21,27 @@ public class FlatScreenHelper {
     public int opacity = 100;
     public Color color;
 
-    float factorAC;
+    private float factorAC;
 
-    Triangle tri;
-
-    TileEntityFlatScreen tile;
-
-    public FlatScreenHelper(TileEntityFlatScreen te){
-        screenCountX = te.width();
-        screenCountY = te.height();
-        facing = te.yaw();
-        pitch = te.pitch();
-        color = new Color(te.getColor());
+    public void refresh(TileEntityFlatScreen tile){
+        screenCountX = tile.width();
+        screenCountY = tile.height();
+        facing = tile.yaw();
+        pitch = tile.pitch();
+        color = new Color(tile.getColor());
         displayWidth = screenCountX;
         displayHeight = screenCountY;
-        opacity = te.getData().opacity;
+        opacity = tile.getData().opacity;
         tiltRotationVector = new Vec3d(0, 0, 0);
-        tile = te;
-        interpretControllerData();
+        interpretControllerData(tile.getData());
     }
+
 
     // get the depth for the screen BLOCK in the argument to calculate BB
     public float[] getDepthForBlock(TileEntityFlatScreen screen){
         BlockPos offset = MultiBlockOffset(screen);
 
-        switch(tile.getData().tiltAxis) {
+        switch(screen.getData().tiltAxis) {
             case X:
                 float top, bottom;
 
@@ -82,7 +74,7 @@ public class FlatScreenHelper {
         }
     }
 
-    public static BlockPos MultiBlockOffset(TileEntityFlatScreen screen){
+    private static BlockPos MultiBlockOffset(TileEntityFlatScreen screen){
         BlockPos worldOffset = screen.origin().getPos().subtract(screen.getPos());
 
         int offsetX, offsetY;
@@ -99,8 +91,8 @@ public class FlatScreenHelper {
     }
 
     // calculate screen size for current panel tilt
-    private void interpretControllerData(){
-        FlatScreen data = tile.getData();
+    private void interpretControllerData(FlatScreen data){
+        Triangle tri;
 
         // calculate display size, rotation and renderoffset based on the panels tilt
         switch(data.tiltAxis){
@@ -132,19 +124,6 @@ public class FlatScreenHelper {
         }
 
         tiltRenderOffset = new Vec3d(0, 0, -1 + topLeft);
-    }
-
-    public static HashSet<TileEntityFlatScreen> getScreens(TileEntityFlatScreen screen){
-
-        HashSet<TileEntityFlatScreen> screens = new HashSet<>();
-        Iterator<Screen> screenSet = screen.screens().iterator();
-        while(screenSet.hasNext()){
-            Screen s = screenSet.next();
-            if(s instanceof TileEntityFlatScreen)
-                screens.add((TileEntityFlatScreen) s);
-        }
-
-        return screens;
     }
 
 

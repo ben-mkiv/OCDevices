@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.utils;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -25,5 +26,20 @@ public class AABBHelper {
         }
     }
 
-}
+    public static NBTTagCompound writeToNBT(AxisAlignedBB bb, NBTTagCompound nbt){
+        nbt.setDouble("x1", bb.minX);
+        nbt.setDouble("y1", bb.minY);
+        nbt.setDouble("z1", bb.minZ);
+        nbt.setDouble("x2", bb.maxX);
+        nbt.setDouble("y2", bb.maxY);
+        nbt.setDouble("z2", bb.maxZ);
+        return nbt;
+    }
 
+    public static AxisAlignedBB readFromNBT(NBTTagCompound nbt){
+        return new AxisAlignedBB(
+                nbt.getDouble("x1"), nbt.getDouble("y1"), nbt.getDouble("z1"),
+                nbt.getDouble("x2"), nbt.getDouble("y2"), nbt.getDouble("z2"));
+    }
+
+}

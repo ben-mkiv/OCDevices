@@ -5,6 +5,7 @@ import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
+import ben_mkiv.ocdevices.common.flatscreen.FlatScreenMultiblock;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.*;
 import ben_mkiv.ocdevices.config.Config;
@@ -22,12 +23,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -173,8 +176,6 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityCase_workstation.class, new ResourceLocation(MOD_ID, BlockCase_workstation.NAME));
         }
     }
-
-
 
     public static class CreativeTab extends CreativeTabs {
         public CreativeTab(String unlocalizedName) {

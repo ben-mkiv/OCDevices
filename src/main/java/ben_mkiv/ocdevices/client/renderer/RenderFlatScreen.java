@@ -3,7 +3,6 @@ package ben_mkiv.ocdevices.client.renderer;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.Triangle;
-import li.cil.oc.api.internal.TextBuffer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -11,44 +10,44 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatScreen>{
 
-    private FlatScreenHelper screen;
     float borderWidth = 0f;//1f/32;
 
     @Override
-    public void render(TileEntityFlatScreen tileEntity, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
+    public void render(TileEntityFlatScreen screen, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
 
-        if(!tileEntity.isOrigin())
+        if(!screen.isOrigin())
             return;
 
-        screen = new FlatScreenHelper(tileEntity);
+        if(!screen.getMultiblock().initialized())
+            return;
 
         GlStateManager.disableTexture2D();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
-        renderScreenModelTESR();
+        renderScreenModelTESR(screen.getHelper());
 
-        renderScreenBackground();
+        renderScreenBackground(screen.getHelper());
 
-        if(tileEntity.buffer().isRenderingEnabled())
-            renderScreenContent(tileEntity.buffer());
+        if(screen.buffer().isRenderingEnabled())
+            renderScreenContent(screen);
 
         GlStateManager.popMatrix();
 
         GlStateManager.enableTexture2D();
     }
 
-    private void rotateByBlockOrigin(){
+    private void rotateByBlockOrigin(FlatScreenHelper screenHelper){
         GlStateManager.translate(0.5, 0.5, 0.5);
 
-        switch(screen.facing){
+        switch(screenHelper.facing){
             case WEST: GlStateManager.rotate(-90, 0, 1, 0); break;
             case NORTH: GlStateManager.rotate(180, 0, 1, 0); break;
             case EAST: GlStateManager.rotate(90, 0, 1, 0); break;
         }
 
-        switch(screen.pitch){
+        switch(screenHelper.pitch){
             case DOWN: GlStateManager.rotate(90, 1, 0, 0); break;
             case UP: GlStateManager.rotate(-90, 1, 0, 0); break;
         }
@@ -57,32 +56,32 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
     }
 
 
-    private void renderScreenContent(TextBuffer buf){
-        rotateByBlockOrigin();
+    private void renderScreenContent(TileEntityFlatScreen screen){
+        rotateByBlockOrigin(screen.getHelper());
 
         // Fit area to screen (bottom left = bottom left).
         // and Slightly offset the text on the z-axis so it doesn't clip into the screen.
         GlStateManager.translate(0, 1f, 1.0001f);
 
 
-        GlStateManager.translate(0, screen.screenCountY-1, 0);
+        GlStateManager.translate(0, screen.getHelper().screenCountY-1, 0);
 
-        GlStateManager.translate(screen.tiltRenderOffset.x, screen.tiltRenderOffset.y, screen.tiltRenderOffset.z);
+        GlStateManager.translate(screen.getHelper().tiltRenderOffset.x, screen.getHelper().tiltRenderOffset.y, screen.getHelper().tiltRenderOffset.z);
 
         // Flip text upside down.
         GlStateManager.scale(1, -1, -1);
 
-        float sizeX = buf.renderWidth();
-        float sizeY = buf.renderHeight();
-        float scaleX = screen.screenCountX / sizeX;
-        float scaleY = screen.screenCountY / sizeY;
+        float sizeX = screen.buffer().renderWidth();
+        float sizeY = screen.buffer().renderHeight();
+        float scaleX = screen.getHelper().screenCountX / sizeX;
+        float scaleY = screen.getHelper().screenCountY / sizeY;
 
         // rotate the matrix to align to the panel tilt
-        GlStateManager.rotate((float) screen.tiltRotationVector.x, -1, 0, 0);
-        GlStateManager.rotate((float) screen.tiltRotationVector.y, 0, -1, 0);
+        GlStateManager.rotate((float) screen.getHelper().tiltRotationVector.x, -1, 0, 0);
+        GlStateManager.rotate((float) screen.getHelper().tiltRotationVector.y, 0, -1, 0);
 
         // align the rendering on the center/middle of the tilted screen
-        GlStateManager.translate((screen.displayWidth-screen.screenCountX)/2f, (screen.displayHeight-screen.screenCountY)/2f, borderWidth);
+        GlStateManager.translate(0, 0, borderWidth);
 
         //float tiltedScale = displayWidth > displayHeight ? displayWidth/screenCountX : displayHeight/screenCountY;
         //GlStateManager.scale(tiltedScale, tiltedScale, 1);
@@ -107,13 +106,13 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
         GlStateManager.pushMatrix();
 
-        buf.renderText();
+        screen.buffer().renderText();
 
-        if(screen.opacity != 100){
+        if(screen.getHelper().opacity != 100){
             // render the whole text again on the backside as the oc method disables the depth mask
             GlStateManager.translate(0, 0, .0002);
             GlStateManager.disableCull();
-            buf.renderText();
+            screen.buffer().renderText();
             GlStateManager.enableCull();
         }
 
@@ -126,16 +125,16 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
     }
 
 
-    private void renderScreenBackground(){
-        float opacity = 1f/100f * (float) screen.opacity;
+    private void renderScreenBackground(FlatScreenHelper screenHelper){
+        float opacity = 1f/100f * (float) screenHelper.opacity;
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.pushMatrix();
 
-        rotateByBlockOrigin();
+        rotateByBlockOrigin(screenHelper);
 
-        if(screen.opacity != 100 && screen.opacity > 0) {
+        if(screenHelper.opacity != 100 && screenHelper.opacity > 0) {
             GlStateManager.disableCull();
             //GlStateManager.depthMask(false); // to fix rendering of water behind/next to the screen, anyways look into this if more problems occur https://github.com/CoFH/ThermalExpansion/tree/1.12/src/main/java/cofh/thermalexpansion/render
         }
@@ -144,10 +143,10 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         // front
-        buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, screen.topRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-        buff.pos(borderWidth, screen.screenCountY-borderWidth, screen.topLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-        buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
-        buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, screenHelper.screenCountY-borderWidth, screenHelper.topRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(borderWidth, screenHelper.screenCountY-borderWidth, screenHelper.topLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(borderWidth, borderWidth, screenHelper.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, borderWidth, screenHelper.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
 
 
 
@@ -159,62 +158,62 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
     }
 
-    private void renderScreenModelTESR(){
-        if(screen.opacity != 100)
+    private void renderScreenModelTESR(FlatScreenHelper screenHelper){
+        if(screenHelper.opacity != 100)
             return;
 
 
-        float r = 1f/255 * screen.color.getRed() * 0.3f;
-        float g = 1f/255 * screen.color.getGreen() * 0.3f;
-        float b = 1f/255 * screen.color.getBlue() * 0.3f;
+        float r = 1f/255 * screenHelper.color.getRed() * 0.3f;
+        float g = 1f/255 * screenHelper.color.getGreen() * 0.3f;
+        float b = 1f/255 * screenHelper.color.getBlue() * 0.3f;
 
 
 
         GlStateManager.pushMatrix();
 
-        rotateByBlockOrigin();
+        rotateByBlockOrigin(screenHelper);
 
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         // front
-        buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, screen.topRight-borderWidth).color(0f, 0f, 0f, 1).endVertex();
-        buff.pos(borderWidth, screen.screenCountY-borderWidth, screen.topLeft-borderWidth).color(0f, 0f, 0f, 1).endVertex();
-        buff.pos(borderWidth, borderWidth, screen.bottomLeft-borderWidth).color(0f, 0f, 0f, 1).endVertex();
-        buff.pos(screen.screenCountX-borderWidth, borderWidth, screen.bottomRight-borderWidth).color(0f, 0f, 0f, 1).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, screenHelper.screenCountY-borderWidth, screenHelper.topRight-borderWidth).color(0f, 0f, 0f, 1).endVertex();
+        buff.pos(borderWidth, screenHelper.screenCountY-borderWidth, screenHelper.topLeft-borderWidth).color(0f, 0f, 0f, 1).endVertex();
+        buff.pos(borderWidth, borderWidth, screenHelper.bottomLeft-borderWidth).color(0f, 0f, 0f, 1).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, borderWidth, screenHelper.bottomRight-borderWidth).color(0f, 0f, 0f, 1).endVertex();
 
         // back
-        buff.pos(screen.screenCountX-borderWidth, borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, borderWidth, 0).color(r, g, b, 1).endVertex();
         buff.pos(borderWidth, borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(borderWidth, screen.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX-borderWidth, screen.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(borderWidth, screenHelper.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX-borderWidth, screenHelper.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
 
 
 
         if(borderWidth == 0f){
             // top
-            buff.pos(screen.screenCountX, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-            buff.pos(0, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-            buff.pos(0, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-            buff.pos(screen.screenCountX, screen.screenCountY, screen.topRight).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+            buff.pos(0, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+            buff.pos(0, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, screenHelper.screenCountY, screenHelper.topRight).color(r, g, b, 1).endVertex();
 
             // bottom
-            buff.pos(screen.screenCountX-borderWidth, 0, screen.bottomRight).color(r, g, b, 1).endVertex();
-            buff.pos(borderWidth, 0, screen.bottomLeft).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX-borderWidth, 0, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
+            buff.pos(borderWidth, 0, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
             buff.pos(borderWidth, 0, 0).color(r, g, b, 1).endVertex();
-            buff.pos(screen.screenCountX-borderWidth, 0, 0).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX-borderWidth, 0, 0).color(r, g, b, 1).endVertex();
 
             // left
-            buff.pos(screen.screenCountX, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-            buff.pos(screen.screenCountX, screen.screenCountY, screen.topRight).color(r, g, b, 1).endVertex();
-            buff.pos(screen.screenCountX, 0, screen.bottomRight).color(r, g, b, 1).endVertex();
-            buff.pos(screen.screenCountX, 0, 0).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, screenHelper.screenCountY, screenHelper.topRight).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, 0, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
+            buff.pos(screenHelper.screenCountX, 0, 0).color(r, g, b, 1).endVertex();
 
             // right
             buff.pos(0, 0, 0).color(r, g, b, 1).endVertex();
-            buff.pos(0, 0, screen.bottomLeft).color(r, g, b, 1).endVertex();
-            buff.pos(0, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-            buff.pos(0, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
+            buff.pos(0, 0, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+            buff.pos(0, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+            buff.pos(0, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
         }
 
         Tessellator.getInstance().draw();
@@ -222,95 +221,95 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         GlStateManager.popMatrix();
 
         if(borderWidth != 0f) {
-            renderScreenModelFrameLeftRightTESR(0);
-            renderScreenModelFrameLeftRightTESR(screen.screenCountX - borderWidth);
-            renderScreenModelFrameTopTESR(screen.screenCountY-borderWidth);
-            renderScreenModelFrameBottomTESR(0);
+            renderScreenModelFrameLeftRightTESR(screenHelper, 0);
+            renderScreenModelFrameLeftRightTESR(screenHelper, screenHelper.screenCountX - borderWidth);
+            renderScreenModelFrameTopTESR(screenHelper, screenHelper.screenCountY-borderWidth);
+            renderScreenModelFrameBottomTESR(screenHelper, 0);
         }
     }
 
-    private void renderScreenModelFrameTopTESR(float posY){
-        if(screen.opacity != 100)
+    private void renderScreenModelFrameTopTESR(FlatScreenHelper screenHelper, float posY){
+        if(screenHelper.opacity != 100)
             return;
 
-        float r = 1f/255 * screen.color.getRed() * 0.5f;
-        float g = 1f/255 * screen.color.getGreen() * 0.5f;
-        float b = 1f/255 * screen.color.getBlue() * 0.5f;
+        float r = 1f/255 * screenHelper.color.getRed() * 0.5f;
+        float g = 1f/255 * screenHelper.color.getGreen() * 0.5f;
+        float b = 1f/255 * screenHelper.color.getBlue() * 0.5f;
         GlStateManager.pushMatrix();
 
-        rotateByBlockOrigin();
+        rotateByBlockOrigin(screenHelper);
 
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
-        float topLeft = Math.min(screen.topLeft, screen.topRight) + Triangle.SubB(borderWidth, screen.topLeft/screen.topRight);
+        float topLeft = Math.min(screenHelper.topLeft, screenHelper.topRight) + Triangle.SubB(borderWidth, screenHelper.topLeft/screenHelper.topRight);
 
         // front
-        buff.pos(screen.screenCountX, posY+borderWidth, topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, topLeft).color(r, g, b, 1).endVertex();
         buff.pos(0, posY+borderWidth, topLeft).color(r, g, b, 1).endVertex();
         buff.pos(0, posY, topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY, screen.topRight).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, screenHelper.topRight).color(r, g, b, 1).endVertex();
 
         // back
-        buff.pos(screen.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
 
         // top
-        buff.pos(screen.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY+borderWidth, screen.topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY+borderWidth, screen.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY+borderWidth, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, screenHelper.topLeft).color(r, g, b, 1).endVertex();
 
         // bottom
-        buff.pos(screen.screenCountX, posY, screen.topRight).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY, screen.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, screenHelper.topRight).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
         buff.pos(0, posY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
 
         Tessellator.getInstance().draw();
 
         GlStateManager.popMatrix();
     }
 
-    private void renderScreenModelFrameBottomTESR(float posY){
-        if(screen.opacity != 100)
+    private void renderScreenModelFrameBottomTESR(FlatScreenHelper screenHelper, float posY){
+        if(screenHelper.opacity != 100)
             return;
 
-        float r = 1f/255 * screen.color.getRed() * 0.5f;
-        float g = 1f/255 * screen.color.getGreen() * 0.5f;
-        float b = 1f/255 * screen.color.getBlue() * 0.5f;
+        float r = 1f/255 * screenHelper.color.getRed() * 0.5f;
+        float g = 1f/255 * screenHelper.color.getGreen() * 0.5f;
+        float b = 1f/255 * screenHelper.color.getBlue() * 0.5f;
         GlStateManager.pushMatrix();
 
-        rotateByBlockOrigin();
+        rotateByBlockOrigin(screenHelper);
 
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         // front
-        buff.pos(screen.screenCountX, posY+borderWidth, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY+borderWidth, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY, screen.bottomRight).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY+borderWidth, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
 
         // back
-        buff.pos(screen.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
 
         // bottom
-        buff.pos(screen.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
         buff.pos(0, posY+borderWidth, 0).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY+borderWidth, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY+borderWidth, screen.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY+borderWidth, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY+borderWidth, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
 
         // bottom
-        buff.pos(screen.screenCountX, posY, screen.bottomRight).color(r, g, b, 1).endVertex();
-        buff.pos(0, posY, screen.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
+        buff.pos(0, posY, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
         buff.pos(0, posY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(screen.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(screenHelper.screenCountX, posY, 0).color(r, g, b, 1).endVertex();
 
         Tessellator.getInstance().draw();
 
@@ -320,55 +319,55 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
 
 
-    private void renderScreenModelFrameLeftRightTESR(float posX){
-        if(screen.opacity != 100)
+    private void renderScreenModelFrameLeftRightTESR(FlatScreenHelper screenHelper, float posX){
+        if(screenHelper.opacity != 100)
             return;
 
-        float r = 1f/255 * screen.color.getRed() * 0.5f;
-        float g = 1f/255 * screen.color.getGreen() * 0.5f;
-        float b = 1f/255 * screen.color.getBlue() * 0.5f;
+        float r = 1f/255 * screenHelper.color.getRed() * 0.5f;
+        float g = 1f/255 * screenHelper.color.getGreen() * 0.5f;
+        float b = 1f/255 * screenHelper.color.getBlue() * 0.5f;
         GlStateManager.pushMatrix();
 
-        rotateByBlockOrigin();
+        rotateByBlockOrigin(screenHelper);
 
         BufferBuilder buff = Tessellator.getInstance().getBuffer();
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         // front
-        buff.pos(posX+borderWidth, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX, 0, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX+borderWidth, 0, screen.bottomRight).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX, 0, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, 0, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
 
         // back
         buff.pos(posX+borderWidth, 0, 0).color(r, g, b, 1).endVertex();
         buff.pos(posX, 0, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX+borderWidth, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
 
         // top
-        buff.pos(posX+borderWidth, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX+borderWidth, screen.screenCountY, screen.topRight).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, screenHelper.topRight).color(r, g, b, 1).endVertex();
 
         // bottom
-        buff.pos(posX+borderWidth, 0, screen.bottomRight).color(r, g, b, 1).endVertex();
-        buff.pos(posX, 0, screen.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, 0, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
+        buff.pos(posX, 0, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
         buff.pos(posX, 0, 0).color(r, g, b, 1).endVertex();
         buff.pos(posX+borderWidth, 0, 0).color(r, g, b, 1).endVertex();
 
         // left
-        buff.pos(posX+borderWidth, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX+borderWidth, screen.screenCountY, screen.topRight).color(r, g, b, 1).endVertex();
-        buff.pos(posX+borderWidth, 0, screen.bottomRight).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, screenHelper.screenCountY, screenHelper.topRight).color(r, g, b, 1).endVertex();
+        buff.pos(posX+borderWidth, 0, screenHelper.bottomRight).color(r, g, b, 1).endVertex();
         buff.pos(posX+borderWidth, 0, 0).color(r, g, b, 1).endVertex();
 
         // right
         buff.pos(posX, 0, 0).color(r, g, b, 1).endVertex();
-        buff.pos(posX, 0, screen.bottomLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, screen.topLeft).color(r, g, b, 1).endVertex();
-        buff.pos(posX, screen.screenCountY, 0).color(r, g, b, 1).endVertex();
+        buff.pos(posX, 0, screenHelper.bottomLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, screenHelper.topLeft).color(r, g, b, 1).endVertex();
+        buff.pos(posX, screenHelper.screenCountY, 0).color(r, g, b, 1).endVertex();
 
         Tessellator.getInstance().draw();
 

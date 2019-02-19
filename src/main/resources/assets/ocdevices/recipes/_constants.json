@@ -64,5 +64,11 @@
     "ingredient": {
       "item": "opencomputers:tool", "data": 3
     }
+  },
+  {
+    "name": "opencomputers_keyboard",
+    "ingredient": {
+      "item": "opencomputers:keyboard", "data": 0
+    }
   }
 ]

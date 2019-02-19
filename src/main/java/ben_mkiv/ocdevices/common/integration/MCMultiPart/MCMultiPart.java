@@ -11,9 +11,6 @@ import ben_mkiv.ocdevices.common.integration.MCMultiPart.blocks.KeyboardMultipar
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase_ibm_5150;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
-import li.cil.oc.api.network.SidedEnvironment;
-import li.cil.oc.common.capabilities.Capabilities;
-import li.cil.oc.common.capabilities.CapabilitySidedEnvironment;
 import mcmultipart.api.addon.IMCMPAddon;
 import mcmultipart.api.addon.MCMPAddon;
 import mcmultipart.api.container.IMultipartContainer;
@@ -21,7 +18,6 @@ import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.event.DrawMultipartHighlightEvent;
 import mcmultipart.api.multipart.IMultipartRegistry;
 import mcmultipart.api.ref.MCMPCapabilities;
-import mcmultipart.api.slot.EnumFaceSlot;
 import mcmultipart.api.slot.IPartSlot;
 import mcmultipart.api.world.IMultipartBlockAccess;
 import net.minecraft.block.Block;
@@ -33,7 +29,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,11 +38,9 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.omg.CORBA.Environment;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -147,36 +140,57 @@ public class MCMultiPart implements IMCMPAddon {
         ev.setCanceled(true);
     }
 
+    public static IMultipartContainer getMultipartContainer(TileEntity tile){
+        if(tile == null || tile.isInvalid())
+            return null;
+
+        if (tile instanceof IMultipartContainer)
+            return (IMultipartContainer) tile;
+
+        if(tile.getWorld() instanceof IMultipartBlockAccess) {
+            TileEntity worldTile = getRealWorldAccess(tile).getTileEntity(tile.getPos());
+            if(!tile.equals(worldTile))
+                return getMultipartContainer(worldTile);
+        }
+
+        return null;
+    }
+
     public static HashMap<IPartSlot, TileEntity> getMCMPTiles(TileEntity mcmpTile) {
         HashMap<IPartSlot, TileEntity> list = new HashMap<>();
 
-        if(mcmpTile.isInvalid())
+        IMultipartContainer container = getMultipartContainer(mcmpTile);
+
+        if(container == null)
             return list;
 
-        if (!(mcmpTile.getWorld() instanceof IMultipartBlockAccess))
-            return list;
-
-        IBlockAccess realWorld = ((IMultipartBlockAccess) mcmpTile.getWorld()).getActualWorld();
-        TileEntity tile = realWorld.getTileEntity(mcmpTile.getPos());
-
-
-        if (!(tile instanceof IMultipartContainer))
-            return list;
-
-        for(Map.Entry<IPartSlot, ? extends IPartInfo> part : ((IMultipartContainer) tile).getParts().entrySet()){
+        for(Map.Entry<IPartSlot, ? extends IPartInfo> part : container.getParts().entrySet()){
             if(part.getValue() == null)
                 continue;
 
-            list.put(part.getKey(), part.getValue().getTile().getTileEntity());
+            TileEntity te = part.getValue().getTile().getTileEntity();
+
+            if(te.equals(mcmpTile))
+                continue; //dont add the main tile to its own content list
+
+            list.put(part.getKey(), te);
         }
 
         return list;
     }
 
-    public static boolean hasEnvironmentInSameBlock(TileEntity multipartTile, Class environmentClass){
-        if(multipartTile.isInvalid())
-            return false;
+    public static IBlockAccess getRealWorldAccess(TileEntity mcmpTile){
+        return ((IMultipartBlockAccess) mcmpTile.getWorld()).getActualWorld();
+    }
 
+    public static World getRealWorld(TileEntity mcmpTile){
+        return getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
+    }
+
+
+
+    /*
+    public static boolean hasEnvironmentInSameBlock(TileEntity multipartTile, Class environmentClass){
         for(Map.Entry<IPartSlot, TileEntity> part : getMCMPTiles(multipartTile).entrySet())
             if(environmentClass.isAssignableFrom(part.getValue().getClass()))
                 return true;
@@ -187,9 +201,6 @@ public class MCMultiPart implements IMCMPAddon {
     public static HashMap<EnumFacing, SidedEnvironment> getComponentsInSameBlock(TileEntity multipartTile, Class environmentClass){
         HashMap<EnumFacing, SidedEnvironment> list = new HashMap<>();
 
-        if(multipartTile.isInvalid())
-            return list;
-
         for(TileEntity tile : getMCMPTiles(multipartTile).values())
             for(EnumFacing side : EnumFacing.values())
                 if (tile.hasCapability(Capabilities.SidedEnvironmentCapability, side))
@@ -197,4 +208,13 @@ public class MCMultiPart implements IMCMPAddon {
 
         return list;
     }
+
+    public static boolean isMultiPartTile(TileEntity tile){
+        if(tile instanceof IMultipartContainer)
+            return true;
+
+        return false;
+    }
+    */
+
 }

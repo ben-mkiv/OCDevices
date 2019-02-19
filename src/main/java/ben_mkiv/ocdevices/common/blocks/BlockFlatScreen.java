@@ -1,21 +1,22 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
-import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.AABBHelper;
+import ben_mkiv.ocdevices.utils.UtilsCommon;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Screen;
+import li.cil.oc.common.block.property.PropertyRotatable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -24,13 +25,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
 import java.util.List;
 
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
-import static net.minecraft.util.EnumFacing.DOWN;
-import static net.minecraft.util.EnumFacing.UP;
 
 public class BlockFlatScreen extends Screen {
     public final static int tier = Tier.Four();
@@ -79,40 +77,39 @@ public class BlockFlatScreen extends Screen {
         return false;
     }
 
-
     @Override
     @Deprecated
     public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, AxisAlignedBB entityBox,
                                       @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entity, boolean advanced) {
 
-        TileEntity te = world.getTileEntity(pos);
+        TileEntityFlatScreen te = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
 
-        if(!(te instanceof TileEntityFlatScreen)) {
+        if(te == null) {
             collidingBoxes.add(getBoundingBox(state, world, pos));
             return;
         }
 
-        for(AxisAlignedBB bb : ((TileEntityFlatScreen) te).boundingBoxes)
+        for(AxisAlignedBB bb : te.boundingBoxes)
             addCollisionBoxToList(pos, entityBox, collidingBoxes, bb);
     }
 
     @Override
     @Deprecated
+    @Nonnull
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)    {
-        TileEntity te = source.getTileEntity(pos);
+        TileEntityFlatScreen te = MultiPartHelper.getScreenFromTile(source.getTileEntity(pos));
 
-        if(!(te instanceof TileEntityFlatScreen))
+        if(te == null)
             return FULL_BLOCK_AABB;
 
-        FlatScreenHelper fsh = new FlatScreenHelper((TileEntityFlatScreen) te);
         float minDepth = maxScreenDepth;
-        for(float f : fsh.getDepthForBlock((TileEntityFlatScreen) te))
+        for(float f : te.getHelper().getDepthForBlock(te))
             if(f < minDepth) minDepth = f;
 
         AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - (precision*minDepth), 1, 1, 1) : minimalBB;
 
-        bb = AABBHelper.rotateVertical(bb, ((TileEntityFlatScreen) te).pitch());
-        bb = AABBHelper.rotateHorizontal(bb, ((TileEntityFlatScreen) te).yaw());
+        bb = AABBHelper.rotateVertical(bb, te.pitch());
+        bb = AABBHelper.rotateHorizontal(bb, te.yaw());
 
         return bb;
     }
@@ -123,49 +120,23 @@ public class BlockFlatScreen extends Screen {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, placer, stack);
-        if(world.isRemote)
-            return;
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+        EnumFacing yaw = UtilsCommon.getYawForPlacement(placer, pos, facing);
+        EnumFacing pitch = UtilsCommon.getPitchForPlacement(placer, pos, facing);
 
-        // as for some reason the facing isnt set correct, we have to fix it here!?
-        TileEntity te = world.getTileEntity(pos);
-        if(te instanceof TileEntityFlatScreen) {
-            TileEntityFlatScreen screen = (TileEntityFlatScreen) te;
-            // set the pitch/yaw first, which will be inverted
-            screen.setFromEntityPitchAndYaw(placer);
+        IBlockState state = getDefaultState();
+        state = state.withProperty(PropertyRotatable.Pitch(), pitch);
+        state = state.withProperty(PropertyRotatable.Yaw(), yaw);
 
-
-            EnumFacing pitch = screen.pitch();
-            if(pitch.equals(UP) || pitch.equals(DOWN))
-                pitch = pitch.getOpposite();
-
-            // set the new values
-            screen.trySetPitchYaw(pitch, placer.getHorizontalFacing().getOpposite());
-        }
+        return state;
     }
 
+    @Override
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest){
-        /*
-        HashSet<TileEntityFlatScreen> screens = new HashSet<>();
-
-        if (!world.isRemote) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityFlatScreen) {
-                screens.addAll(FlatScreenHelper.getScreens((TileEntityFlatScreen) te));
-                screens.remove(te);
-            }
-        }*/
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        screen.getMultiblock().split();
 
         return super.removedByPlayer(state, world, pos, player, willHarvest);
-        /*
-        if(wasRemoved)
-            for(TileEntityFlatScreen screen : screens){
-                screen.checkMultiBlock();
-                screen.updateNeighbours();
-            }
-
-        return wasRemoved;*/
     }
 
 

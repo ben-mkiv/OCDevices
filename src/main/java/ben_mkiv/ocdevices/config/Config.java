@@ -48,7 +48,7 @@ public class Config extends PermissionAPI {
         enableCreativeRecipeLookup.setLanguageKey("gui.config.general.enableCreativeRecipeLookup");
         enableCreativeRecipeLookup.setComment("if set to true the recipe dictionary doesnt require an item to lookup recipes");
 
-        Property damageOrDestroyOnRecipeLookup = config.get("general", "damageOrDestroyOnRecipeLookup", true);
+        Property damageOrDestroyOnRecipeLookup = config.get("general", "damageOrDestroyOnRecipeLookup", false);
         damageOrDestroyOnRecipeLookup.setLanguageKey("gui.config.general.damageOrDestroyOnRecipeLookup");
         damageOrDestroyOnRecipeLookup.setComment("if set to true items will be damaged on recipe lookup, or destroyed if they cant handle damage");
 

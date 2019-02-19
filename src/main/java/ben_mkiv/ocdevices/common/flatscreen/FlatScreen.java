@@ -8,17 +8,17 @@ public class FlatScreen {
     public static final float precision = 1f/maxScreenDepth;
     public static final int maxPadding = 16;
 
-    public int screenDepthTop = maxScreenDepth;
-    public int screenDepthBottom = maxScreenDepth;
-    public int screenDepthLeft = maxScreenDepth;
-    public int screenDepthRight = maxScreenDepth;
+    public int screenDepthTop = maxScreenDepth/8;
+    public int screenDepthBottom = maxScreenDepth/8;
+    public int screenDepthLeft = maxScreenDepth/8;
+    public int screenDepthRight = maxScreenDepth/8;
 
     public int padding = 0;
     public int opacity = 100;
 
     public boolean frameless = false;
 
-    public BlockLog.EnumAxis tiltAxis = BlockLog.EnumAxis.X;
+    public BlockLog.EnumAxis tiltAxis = BlockLog.EnumAxis.NONE;
 
     public FlatScreen(){}
 
