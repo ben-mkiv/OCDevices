@@ -2,6 +2,7 @@ package ben_mkiv.ocdevices.common.tileentity;
 
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.tileentity.Case;
+import mcmultipart.api.ref.MCMPCapabilities;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -21,6 +22,9 @@ public class TileEntityCase extends Case implements ColoredTile {
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing){
+        if(capability == MCMPCapabilities.MULTIPART_TILE)
+            return true;
+
         if(!connectToSides.contains(toLocal(facing)))
             return false;
 

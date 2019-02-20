@@ -3,6 +3,7 @@ package ben_mkiv.ocdevices.common.blocks;
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
+import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.OpenComputers;
@@ -49,18 +50,14 @@ public class BlockKeyboard extends Keyboard {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        TileEntityKeyboard keyboard = getTileEntity(world, pos);
-
-        if (!world.isRemote) {
-            // serverside only check if the player recolored the keyboard
-            return keyboard != null && keyboard.setColor(player.getHeldItem(hand));
-        }
+        if(!world.isRemote)
+            return ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
         // from here client only, check if the keyboard has a screen connected
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(keyboard);
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
         if (screen != null) {
             if (world instanceof MCMPWorldWrapper)
-                world = MCMultiPart.getRealWorld(keyboard);
+                world = MCMultiPart.getRealWorld(screen);
 
             pos = screen.origin().getPos();
             player.openGui(OpenComputers.ID(), li.cil.oc.common.GuiType.Screen().id(), world, pos.getX(), pos.getY(), pos.getZ());
@@ -68,7 +65,7 @@ public class BlockKeyboard extends Keyboard {
             return true;
         }
 
-        return false;
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 
     private static boolean activateScreen(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing){

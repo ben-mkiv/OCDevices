@@ -8,6 +8,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -18,8 +19,8 @@ public class RecipeDictionaryContainer extends Container {
 
     private TileEntityRecipeDictionary te;
 
-    public RecipeDictionaryContainer(IInventory playerInventory, TileEntityRecipeDictionary te) {
-        this.te = te;
+    public RecipeDictionaryContainer(IInventory playerInventory, TileEntity te) {
+        this.te = (TileEntityRecipeDictionary) te;
         addOwnSlots();
         addPlayerSlots(playerInventory);
     }

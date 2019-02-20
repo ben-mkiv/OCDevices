@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.integration.MCMultiPart;
 
+import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import net.minecraft.tileentity.TileEntity;
@@ -24,6 +25,17 @@ public class MultiPartHelper {
         for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
             if(getKeyboardFromTile(mpTile) != null)
                 return getKeyboardFromTile(mpTile);
+
+        return null;
+    }
+
+    public static TileEntityCase getCaseFromTile(TileEntity tile){
+        if(tile instanceof TileEntityCase)
+            return (TileEntityCase) tile;
+
+        for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
+            if(getCaseFromTile(mpTile) != null)
+                return getCaseFromTile(mpTile);
 
         return null;
     }

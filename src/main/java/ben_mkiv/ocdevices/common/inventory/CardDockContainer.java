@@ -7,6 +7,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -17,8 +18,8 @@ public class CardDockContainer extends Container {
 
     private TileEntityCardDock te;
 
-    public CardDockContainer(IInventory playerInventory, TileEntityCardDock te) {
-        this.te = te;
+    public CardDockContainer(IInventory playerInventory, TileEntity te) {
+        this.te = (TileEntityCardDock) te;
 
         addOwnSlots();
         addPlayerSlots(playerInventory);

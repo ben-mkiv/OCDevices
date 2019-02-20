@@ -5,6 +5,8 @@ import ben_mkiv.ocdevices.common.inventory.CardDockContainer;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCardDock;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class CardDockGUI extends GuiContainer {
@@ -15,9 +17,9 @@ public class CardDockGUI extends GuiContainer {
 
     private static final ResourceLocation background = new ResourceLocation(OCDevices.MOD_ID, "textures/gui/carddock.png");
 
-    public CardDockGUI(TileEntityCardDock tileEntity, CardDockContainer container) {
-        super(container);
-        te = tileEntity;
+    public CardDockGUI(InventoryPlayer inventoryPlayer, TileEntity tileEntity) {
+        super(new CardDockContainer(inventoryPlayer, tileEntity));
+        te = (TileEntityCardDock) tileEntity;
         xSize = WIDTH;
         ySize = HEIGHT;
     }

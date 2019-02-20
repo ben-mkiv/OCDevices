@@ -5,7 +5,9 @@ import ben_mkiv.ocdevices.common.inventory.RecipeDictionaryContainer;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityRecipeDictionary;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class RecipeDictionaryGUI extends GuiContainer {
@@ -16,9 +18,9 @@ public class RecipeDictionaryGUI extends GuiContainer {
 
     private static final ResourceLocation background = new ResourceLocation(OCDevices.MOD_ID, "textures/gui/recipe_dictionary.png");
 
-    public RecipeDictionaryGUI(TileEntityRecipeDictionary tileEntity, RecipeDictionaryContainer container) {
-        super(container);
-        te = tileEntity;
+    public RecipeDictionaryGUI(InventoryPlayer playerInventory, TileEntity tileEntity) {
+        super(new RecipeDictionaryContainer(playerInventory, tileEntity));
+        te = (TileEntityRecipeDictionary) tileEntity;
         xSize = WIDTH;
         ySize = HEIGHT;
     }
