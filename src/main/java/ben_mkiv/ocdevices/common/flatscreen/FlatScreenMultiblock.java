@@ -2,7 +2,6 @@ package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
-import ben_mkiv.ocdevices.utils.AABBHelper;
 import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.util.EnumFacing;
@@ -12,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.*;
 
 // helper for checking the multiblock structure
+// if anything in here breaks we should blame the squirrels
 public class FlatScreenMultiblock {
 
     private TileEntityFlatScreen origin;
@@ -52,13 +52,12 @@ public class FlatScreenMultiblock {
         screens.add(screen);
         screen.flatScreenMultiblock = this;
 
-        updateBoundingBox();
+        updateStructureBoundingBox();
 
-
-        setupOrigin(origin().pitch(), origin().yaw());
+        setupOrigin();
         setupMultiblockConnection(screen);
 
-        updateSize();
+        updateStructureSize();
         getHelper().refresh(origin);
 
         screen.boundingBoxes = FlatScreenAABB.updateScreenBB(screen);
@@ -102,10 +101,9 @@ public class FlatScreenMultiblock {
     private void mergeMultiblocks(FlatScreenMultiblock source){
         for(TileEntityFlatScreen screen : source.screens())
             mergeIntoMultiBlock(screen);
-        //System.out.println("[merge] new size: "+width()+"x"+height()+"), remote: " + origin().world().isRemote);
     }
 
-    private void updateSize(){
+    private void updateStructureSize(){
         switch (origin().pitch()){
             case UP:
             case DOWN:
@@ -127,13 +125,8 @@ public class FlatScreenMultiblock {
     }
 
     private boolean canMergeWithMutliblock(FlatScreenMultiblock otherMultiblock, EnumFacing.Axis mergeOnAxis){
-        //if(!isInOtherMultiblock(otherMultiblock.origin()) && !otherMultiblock.isInOtherMultiblock(origin()))
-        //    return false;
         if(this.equals(otherMultiblock))
             return false;
-
-        //if(otherMultiblock.screens().size() < 1)
-        //    return false;
 
         // check facing, pitch, color and tier
         if(!origin().canMerge(otherMultiblock.origin()))
@@ -170,7 +163,7 @@ public class FlatScreenMultiblock {
             ((Component) screen.buffer().node()).setVisibility(Visibility.None);
     }
 
-    private void updateBoundingBox() {
+    private void updateStructureBoundingBox() {
         boundingBox = null;
         for (TileEntityFlatScreen screen : screens()){
             if (screen == null || screen.isInvalid())
@@ -183,42 +176,36 @@ public class FlatScreenMultiblock {
         }
     }
 
-    private void setupOrigin(EnumFacing pitch, EnumFacing yaw){
-        int x, z, y = (int) boundingBox.minY;
+    private void setupOrigin(){
+        int x = (int) boundingBox.maxX - 1;
+        int y = (int) boundingBox.minY;
+        int z = (int) boundingBox.maxZ - 1;
 
-        x = (int) boundingBox.maxX - 1;
-        z = (int) boundingBox.maxZ - 1;
-
-        switch(yaw){
+        switch(origin().yaw()){
             case SOUTH: x = (int) boundingBox.minX; break;
             case WEST: z = (int) boundingBox.minZ; break;
         }
 
-        if(pitch.equals(EnumFacing.UP))
-            switch(yaw){
-                case NORTH: z = (int) boundingBox.minZ; break;
-                case EAST: case WEST: x = (int) boundingBox.minX; break;
-            }
+        switch (origin().pitch()){
+            case UP:
+                switch(origin().yaw()){
+                    case NORTH: z = (int) boundingBox.minZ; break;
+                    case WEST: x = (int) boundingBox.minX; break;
+                }
+                break;
 
-        if(pitch.equals(EnumFacing.DOWN)) {
-            System.out.println("yaw: " + yaw.getName() + ", east ordinal: " + EnumFacing.EAST.ordinal());
-            switch (yaw) {
-                case EAST:
-                    System.out.println("east case");
-                    x = (int) boundingBox.minX;
-                    break;
-                case SOUTH:
-                    z = (int) boundingBox.minZ;
-                    break;
-            }
+            case DOWN:
+                switch (origin().yaw()) {
+                    case EAST: x = (int) boundingBox.minX; break;
+                    case SOUTH: z = (int) boundingBox.minZ; break;
+                }
+                break;
         }
-
-
 
         setNewOrigin(MultiPartHelper.getScreenFromTile(origin().getWorld().getTileEntity(new BlockPos(x, y, z))));
     }
 
-    void setNewOrigin(TileEntityFlatScreen newOrigin){
+    private void setNewOrigin(TileEntityFlatScreen newOrigin){
         if(newOrigin != null)
             origin = newOrigin;
     }
