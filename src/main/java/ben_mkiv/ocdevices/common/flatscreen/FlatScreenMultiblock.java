@@ -35,7 +35,7 @@ public class FlatScreenMultiblock {
     public void initialize(){
         mergeIntoMultiBlock(origin);
         searchAndMergeMultiBlocks();
-
+        setupMultiblockConnection();
         timeCreated = System.currentTimeMillis();
     }
 
@@ -55,7 +55,6 @@ public class FlatScreenMultiblock {
         updateStructureBoundingBox();
 
         setupOrigin();
-        setupMultiblockConnection(screen);
 
         updateStructureSize();
         getHelper().refresh(origin);
@@ -153,14 +152,16 @@ public class FlatScreenMultiblock {
         return true;
     }
 
-    private void setupMultiblockConnection(TileEntityFlatScreen screen) {
-        if (origin.getWorld().isRemote)
+    private void setupMultiblockConnection() {
+        if (origin().getWorld().isRemote)
             return;
 
-        if (screen.equals(origin))
-            ((Component) screen.buffer().node()).setVisibility(Visibility.Network);
-        else
-            ((Component) screen.buffer().node()).setVisibility(Visibility.None);
+        for(TileEntityFlatScreen screen : screens) {
+            if (screen.equals(origin()))
+                ((Component) screen.buffer().node()).setVisibility(Visibility.Network);
+            else
+                ((Component) screen.buffer().node()).setVisibility(Visibility.None);
+        }
     }
 
     private void updateStructureBoundingBox() {

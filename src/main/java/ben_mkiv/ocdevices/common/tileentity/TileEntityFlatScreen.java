@@ -244,7 +244,14 @@ public class TileEntityFlatScreen extends Screen {
         nbt.setBoolean("invertTouchMode", invertTouchMode());
         nbt.setInteger("color", getColor());
         nbt.setBoolean("hadRedstone", hadRedstoneInput());
-        buffer().save(nbt);
+
+        NBTTagCompound bufferTag = new NBTTagCompound();
+        buffer().save(bufferTag);
+        nbt.setTag("oc:buffer", bufferTag);
+
+        NBTTagCompound nodeTag = new NBTTagCompound();
+        node().save(nodeTag);
+        nbt.setTag("oc:node", nodeTag);
 
         nbt.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
 
@@ -257,9 +264,17 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public void readFromNBTForServer(NBTTagCompound nbt){
         setColor(nbt.getInteger("color"));
+
+
+        buffer().load(nbt.getCompoundTag("oc:buffer"));
+
+        if(node() != null && node().host().equals(this))
+            node().load(nbt.getCompoundTag("oc:node"));
+
         invertTouchMode_$eq(nbt.getBoolean("invertTouchMode"));
         hadRedstoneInput_$eq(nbt.getBoolean("hadRedstone"));
-        buffer().load(nbt);
+
+
 
         if(nbt.hasKey("screenData"))
             data.readFromNBT(nbt.getCompoundTag("screenData"));

@@ -57,7 +57,7 @@ public class MCMultiPart implements IMCMPAddon {
 
         multipartBlocks.add(new KeyboardMultipart());
         multipartBlocks.add(new FlatScreenMultipart());
-        multipartBlocks.add(new CaseMultipart_ibm_5150());
+        //multipartBlocks.add(new CaseMultipart_ibm_5150()); //disabled, todo: figure out powering/ticking
 
         for(BlockMultipart block : multipartBlocks){
             registry.registerPartWrapper(block.getBlock(), block);
@@ -93,9 +93,9 @@ public class MCMultiPart implements IMCMPAddon {
                         if (e.getObject() instanceof TileEntityKeyboard)
                             tile = new TileEntityMultipart(e.getObject());
                         else if (e.getObject() instanceof TileEntityFlatScreen)
-                            tile = new TileEntityMultipart(e.getObject());
+                            tile = new TileEntityMultipartTicking(e.getObject());
                         else if (e.getObject() instanceof TileEntityCase_ibm_5150)
-                            tile = new TileEntityMultipart(e.getObject());
+                            tile = new TileEntityMultipartTicking(e.getObject());
                     }
 
                     return MCMPCapabilities.MULTIPART_TILE.cast(tile);
@@ -141,7 +141,7 @@ public class MCMultiPart implements IMCMPAddon {
         ev.setCanceled(true);
     }
 
-    public static IMultipartContainer getMultipartContainer(TileEntity tile){
+    private static IMultipartContainer getMultipartContainer(TileEntity tile){
         if(tile == null || tile.isInvalid())
             return null;
 
@@ -157,7 +157,7 @@ public class MCMultiPart implements IMCMPAddon {
         return null;
     }
 
-    public static HashMap<IPartSlot, TileEntity> getMCMPTiles(TileEntity mcmpTile) {
+    static HashMap<IPartSlot, TileEntity> getMCMPTiles(TileEntity mcmpTile) {
         HashMap<IPartSlot, TileEntity> list = new HashMap<>();
 
         IMultipartContainer container = getMultipartContainer(mcmpTile);
@@ -180,42 +180,11 @@ public class MCMultiPart implements IMCMPAddon {
         return list;
     }
 
-    public static IBlockAccess getRealWorldAccess(TileEntity mcmpTile){
+    private static IBlockAccess getRealWorldAccess(TileEntity mcmpTile){
         return ((IMultipartBlockAccess) mcmpTile.getWorld()).getActualWorld();
     }
 
     public static World getRealWorld(TileEntity mcmpTile){
         return getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
     }
-
-
-
-    /*
-    public static boolean hasEnvironmentInSameBlock(TileEntity multipartTile, Class environmentClass){
-        for(Map.Entry<IPartSlot, TileEntity> part : getMCMPTiles(multipartTile).entrySet())
-            if(environmentClass.isAssignableFrom(part.getValue().getClass()))
-                return true;
-
-        return false;
-    }
-
-    public static HashMap<EnumFacing, SidedEnvironment> getComponentsInSameBlock(TileEntity multipartTile, Class environmentClass){
-        HashMap<EnumFacing, SidedEnvironment> list = new HashMap<>();
-
-        for(TileEntity tile : getMCMPTiles(multipartTile).values())
-            for(EnumFacing side : EnumFacing.values())
-                if (tile.hasCapability(Capabilities.SidedEnvironmentCapability, side))
-                    list.put(side, tile.getCapability(Capabilities.SidedEnvironmentCapability, side));
-
-        return list;
-    }
-
-    public static boolean isMultiPartTile(TileEntity tile){
-        if(tile instanceof IMultipartContainer)
-            return true;
-
-        return false;
-    }
-    */
-
 }
