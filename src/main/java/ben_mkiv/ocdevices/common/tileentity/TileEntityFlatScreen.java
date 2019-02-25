@@ -3,19 +3,16 @@ package ben_mkiv.ocdevices.common.tileentity;
 import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
-import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenAABB;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenMultiblock;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
-import li.cil.oc.api.Driver;
-import li.cil.oc.api.internal.TextBuffer;
+import li.cil.oc.api.Network;
 import li.cil.oc.api.network.*;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -243,8 +240,6 @@ public class TileEntityFlatScreen extends Screen {
         nbt.setInteger("ocd:pitch", pitch().ordinal());
 
         nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
-
-        buffer().save(nbt);
     }
 
     @Override

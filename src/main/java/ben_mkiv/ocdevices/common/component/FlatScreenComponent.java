@@ -22,7 +22,7 @@ public class FlatScreenComponent extends Screen {
     @Override
     public void markInitialized(){
         super.markInitialized();
-        screen().updateNeighbours();
+        flatScreen().updateNeighbours();
     }
 
     public void onConnect(Node node){
@@ -33,26 +33,18 @@ public class FlatScreenComponent extends Screen {
         super.onConnect(node);
     }
 
-    //todo: make this only check the actual tile the keyboard is in
-    boolean isKeyboardInMultiblock(Node node){
-        for(TileEntityFlatScreen screen : screen().getScreens()){
-            TileEntityKeyboard keyboard = MultiPartHelper.getKeyboardFromTile(screen);
-            if (keyboard != null && keyboard.node() != null && keyboard.node().equals(node))
-                return true;
-        }
-
-        return false;
+    private boolean isKeyboardInMultiblock(Node node){
+        TileEntityKeyboard keyboard = MultiPartHelper.getKeyboardFromTile(screen());
+        return keyboard != null && keyboard.node() != null && keyboard.node().equals(node);
     }
 
-    @Override //typecast
-    public TileEntityFlatScreen screen(){
-        return (TileEntityFlatScreen) super.screen();
+    private TileEntityFlatScreen flatScreen(){
+        return (TileEntityFlatScreen) super.host();
     }
 
     private FlatScreen getData(){
-        return screen().getData();
+        return flatScreen().getData();
     }
-
 
     /* OC Callbacks */
 
@@ -61,7 +53,7 @@ public class FlatScreenComponent extends Screen {
         int depth = args.optInteger(0, FlatScreen.maxScreenDepth);
         String side = args.optString(1, "all").toLowerCase();
         Object[] returnVals = getData().setDepth(depth, side);
-        screen().updateNeighbours();
+        flatScreen().updateNeighbours();
         return returnVals;
     }
     /*
@@ -86,7 +78,7 @@ public class FlatScreenComponent extends Screen {
         else
             getData().setOpaque(100);
 
-        screen().updateNeighbours();
+        flatScreen().updateNeighbours();
         return new Object[]{ true };
     }
 
