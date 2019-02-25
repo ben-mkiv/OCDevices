@@ -18,6 +18,7 @@ import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.event.DrawMultipartHighlightEvent;
 import mcmultipart.api.multipart.IMultipartRegistry;
+import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.ref.MCMPCapabilities;
 import mcmultipart.api.slot.IPartSlot;
 import mcmultipart.api.world.IMultipartBlockAccess;
@@ -50,6 +51,10 @@ import java.util.Map;
 @MCMPAddon
 public class MCMultiPart implements IMCMPAddon {
     HashSet<BlockMultipart> multipartBlocks = new HashSet<>();
+
+    public MCMultiPart(){
+        OCDevices.MCMultiPart = true;
+    }
 
     @Override
     public void registerParts(IMultipartRegistry registry) {
@@ -185,6 +190,9 @@ public class MCMultiPart implements IMCMPAddon {
     }
 
     public static World getRealWorld(TileEntity mcmpTile){
-        return getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
+        if(mcmpTile instanceof IMultipartTile)
+            return getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
+        else
+            return mcmpTile.getWorld();
     }
 }

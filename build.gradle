@@ -31,10 +31,10 @@ repositories {
     mavenCentral()
     maven {
         name = "OpenComputers"
-        url = "http://maven.cil.li/"
+        url = "https://maven.cil.li/"
     }
     maven {
-        url "http://maven.amadornes.com/" // for MCMultiPart
+        url "https://maven.amadornes.com/" // for MCMultiPart
     }
 }
 

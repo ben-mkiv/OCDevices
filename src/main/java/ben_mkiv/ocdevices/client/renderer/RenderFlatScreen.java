@@ -55,7 +55,6 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         GlStateManager.translate(-0.5, -0.5, -0.5);
     }
 
-
     private void renderScreenContent(TileEntityFlatScreen screen){
         rotateByBlockOrigin(screen.getHelper());
 
@@ -148,26 +147,20 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         buff.pos(borderWidth, borderWidth, screenHelper.bottomLeft-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
         buff.pos(screenHelper.screenCountX-borderWidth, borderWidth, screenHelper.bottomRight-borderWidth).color(0f, 0f, 0f, opacity).endVertex();
 
-
-
         Tessellator.getInstance().draw();
 
         GlStateManager.popMatrix();
         GlStateManager.enableCull();
         GlStateManager.disableBlend();
-
     }
 
     private void renderScreenModelTESR(FlatScreenHelper screenHelper){
         if(screenHelper.opacity != 100)
             return;
 
-
         float r = 1f/255 * screenHelper.color.getRed() * 0.3f;
         float g = 1f/255 * screenHelper.color.getGreen() * 0.3f;
         float b = 1f/255 * screenHelper.color.getBlue() * 0.3f;
-
-
 
         GlStateManager.pushMatrix();
 
@@ -187,8 +180,6 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         buff.pos(borderWidth, borderWidth, 0).color(r, g, b, 1).endVertex();
         buff.pos(borderWidth, screenHelper.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
         buff.pos(screenHelper.screenCountX-borderWidth, screenHelper.screenCountY-borderWidth, 0).color(r, g, b, 1).endVertex();
-
-
 
         if(borderWidth == 0f){
             // top
@@ -315,9 +306,6 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
 
         GlStateManager.popMatrix();
     }
-
-
-
 
     private void renderScreenModelFrameLeftRightTESR(FlatScreenHelper screenHelper, float posX){
         if(screenHelper.opacity != 100)

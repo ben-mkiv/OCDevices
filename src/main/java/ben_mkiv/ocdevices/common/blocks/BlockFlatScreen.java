@@ -9,6 +9,7 @@ import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Screen;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -139,6 +140,13 @@ public class BlockFlatScreen extends Screen {
         return super.removedByPlayer(state, world, pos, player, willHarvest);
     }
 
+
+    // avoid to connect to fences/glass panes
+    @Override
+    @Deprecated
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        return BlockFaceShape.CENTER;
+    }
 
 
 }

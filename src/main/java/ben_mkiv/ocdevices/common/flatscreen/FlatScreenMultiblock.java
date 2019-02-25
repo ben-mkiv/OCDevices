@@ -2,8 +2,6 @@ package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
-import li.cil.oc.api.network.Component;
-import li.cil.oc.api.network.Visibility;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -73,6 +71,9 @@ public class FlatScreenMultiblock {
                 TileEntityFlatScreen offsetScreen = MultiPartHelper.getScreenFromTile(screen.getWorld().getTileEntity(screen.getPos().offset(facing)));
 
                 if(offsetScreen == null || this.equals(offsetScreen.getMultiblock()))
+                    continue;
+
+                if(offsetScreen.getMultiblock() == null)
                     continue;
 
                 list.put(offsetScreen.getMultiblock(), facing.getAxis());
@@ -156,12 +157,8 @@ public class FlatScreenMultiblock {
         if (origin().getWorld().isRemote)
             return;
 
-        for(TileEntityFlatScreen screen : screens) {
-            if (screen.equals(origin()))
-                ((Component) screen.buffer().node()).setVisibility(Visibility.Network);
-            else
-                ((Component) screen.buffer().node()).setVisibility(Visibility.None);
-        }
+        for(TileEntityFlatScreen screen : screens)
+            screen.setConnectivity();
     }
 
     private void updateStructureBoundingBox() {

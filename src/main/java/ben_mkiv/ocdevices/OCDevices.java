@@ -5,7 +5,6 @@ import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
-import ben_mkiv.ocdevices.common.flatscreen.FlatScreenMultiblock;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.tileentity.*;
 import ben_mkiv.ocdevices.config.Config;
@@ -23,14 +22,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -82,12 +78,9 @@ public class OCDevices {
         BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc();
         BlockCase_workstation.DEFAULTITEM = new BlockCase_workstation();
 
-
         proxy.preinit();
 
-        MCMultiPart = Loader.isModLoaded("mcmultipart");
-
-        if(MCMultiPart)
+        if(Loader.isModLoaded("mcmultipart"))
             new MCMultiPart();
     }
 

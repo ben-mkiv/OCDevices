@@ -14,8 +14,8 @@ import scala.runtime.TraitSetter;
 import javax.annotation.Nullable;
 
 public class TileEntityKeyboard extends Keyboard implements Colored, ColoredTile {
-    String colorTag = "", colorTagCompat = "";
-    int color = 0;
+    private String colorTag = "", colorTagCompat = "";
+    private int color = 0;
 
     @Override
     public void li$cil$oc$common$tileentity$traits$Colored$_setter_$li$cil$oc$common$tileentity$traits$Colored$$RenderColorTag_$eq(String var1){

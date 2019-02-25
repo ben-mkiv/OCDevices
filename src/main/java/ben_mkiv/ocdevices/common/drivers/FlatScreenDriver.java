@@ -23,10 +23,7 @@ public class FlatScreenDriver extends BlockFlatScreen implements DriverItem, Env
 
     @Override
     public boolean worksWith(ItemStack stack, Class<? extends EnvironmentHost> host) {
-        if(!worksWith(stack))
-            return false;
-
-        return true;
+        return worksWith(stack);
     }
 
     @Override
@@ -39,9 +36,13 @@ public class FlatScreenDriver extends BlockFlatScreen implements DriverItem, Env
         return new FlatScreenComponent(container);
     }
 
+    public FlatScreenComponent createEnvironment(EnvironmentHost container) {
+        return new FlatScreenComponent(container);
+    }
+
     @Override
     public String slot(ItemStack stack){
-        return Slot.None;
+        return Slot.Upgrade;
     }
 
     @Override

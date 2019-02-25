@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.config.Config;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.tileentity.Case;
 import mcmultipart.api.ref.MCMPCapabilities;
@@ -12,12 +13,16 @@ public class TileEntityCase extends Case implements ColoredTile {
 
     HashSet<EnumFacing> connectToSides = new HashSet<>();
 
-    public TileEntityCase(){
-        super(Tier.Three());
+    public TileEntityCase(int tier){
+        super(tier);
         setColor(0);
         connectToSides.add(EnumFacing.UP);
         connectToSides.add(EnumFacing.DOWN);
         connectToSides.add(EnumFacing.NORTH);
+    }
+
+    public TileEntityCase(){
+        this(Tier.Three());
     }
 
     @Override
@@ -29,6 +34,10 @@ public class TileEntityCase extends Case implements ColoredTile {
             return false;
 
         return super.hasCapability(capability, facing);
+    }
+
+    public static int getTierFromConfig(String caseName){
+        return Config.getConfig().getCategory("cases").get(caseName).getInt() - 1;
     }
 
 }

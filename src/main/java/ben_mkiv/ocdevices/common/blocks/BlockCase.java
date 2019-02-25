@@ -9,6 +9,7 @@ import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Case;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import mcmultipart.util.MCMPWorldWrapper;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,6 +86,13 @@ public class BlockCase extends Case {
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
         EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
         return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw);
+    }
+
+    // avoid to connect to fences/glass panes
+    @Override
+    @Deprecated
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        return BlockFaceShape.CENTER;
     }
 
 }

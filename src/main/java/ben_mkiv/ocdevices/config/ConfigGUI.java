@@ -57,7 +57,8 @@ public class ConfigGUI implements IModGuiFactory {
 
         private static List<IConfigElement> getConfigElements() {
             List<IConfigElement> list = new ArrayList<IConfigElement>();
-            list.add(new DummyConfigElement.DummyCategoryElement("general", "gui.config.general", CategoryEntryCustom.class));
+            list.add(new DummyConfigElement.DummyCategoryElement("recipedict", "gui.config.recipedict", CategoryEntryCustom.class));
+            list.add(new DummyConfigElement.DummyCategoryElement("cases", "gui.config.cases", CategoryEntryCustom.class));
             //list.add(new DummyConfigElement.DummyCategoryElement("client", "gui.config.client", CategoryEntryCustom.class));
             return list;
         }

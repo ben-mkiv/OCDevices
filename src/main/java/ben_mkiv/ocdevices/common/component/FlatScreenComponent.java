@@ -15,21 +15,14 @@ import li.cil.oc.common.component.Screen;
 public class FlatScreenComponent extends Screen {
     public FlatScreenComponent(EnvironmentHost container){
         super((TileEntityFlatScreen) container);
-    }
-
-    private void updateAll(){
-       screen().updateNeighbours();
+        setMaximumResolution(160, 50);
+        setMaximumColorDepth(li.cil.oc.api.internal.TextBuffer.ColorDepth.EightBit);
     }
 
     @Override
     public void markInitialized(){
         super.markInitialized();
-        updateAll();
-    }
-
-    @Override
-    public void update(){
-        super.update();
+        screen().updateNeighbours();
     }
 
     public void onConnect(Node node){
@@ -56,10 +49,6 @@ public class FlatScreenComponent extends Screen {
         return (TileEntityFlatScreen) super.screen();
     }
 
-    public void onDisconnect(Node node){
-        super.onDisconnect(node);
-    }
-
     private FlatScreen getData(){
         return screen().getData();
     }
@@ -72,7 +61,7 @@ public class FlatScreenComponent extends Screen {
         int depth = args.optInteger(0, FlatScreen.maxScreenDepth);
         String side = args.optString(1, "all").toLowerCase();
         Object[] returnVals = getData().setDepth(depth, side);
-        updateAll();
+        screen().updateNeighbours();
         return returnVals;
     }
     /*
@@ -97,7 +86,7 @@ public class FlatScreenComponent extends Screen {
         else
             getData().setOpaque(100);
 
-        updateAll();
+        screen().updateNeighbours();
         return new Object[]{ true };
     }
 
@@ -109,14 +98,5 @@ public class FlatScreenComponent extends Screen {
         return new Object[]{ true };
     }*/
 
-    @Override
-    public void load(net.minecraft.nbt.NBTTagCompound nbt) {
-        super.load(nbt);
-    }
-
-    @Override
-    public void save(net.minecraft.nbt.NBTTagCompound nbt) {
-        super.save(nbt);
-    }
 
 }

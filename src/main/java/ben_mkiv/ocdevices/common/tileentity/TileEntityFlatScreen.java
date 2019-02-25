@@ -1,5 +1,7 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
+import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenAABB;
@@ -8,12 +10,11 @@ import ben_mkiv.ocdevices.common.flatscreen.FlatScreenMultiblock;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import li.cil.oc.api.Driver;
 import li.cil.oc.api.internal.TextBuffer;
-import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.*;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -32,7 +33,7 @@ import java.util.HashSet;
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 
 public class TileEntityFlatScreen extends Screen {
-    private final li.cil.oc.api.internal.TextBuffer buffer;
+    private final FlatScreenComponent buffer;
 
     public ArrayList<AxisAlignedBB> boundingBoxes = new ArrayList<>(Arrays.asList(FULL_BLOCK_AABB));
 
@@ -40,25 +41,18 @@ public class TileEntityFlatScreen extends Screen {
     private EnumFacing yaw, pitch;
     private int color = 0;
 
-    public FlatScreenMultiblock flatScreenMultiblock = new FlatScreenMultiblock(this);
+    public FlatScreenMultiblock flatScreenMultiblock = new FlatScreenMultiblock(this);;
 
-    private boolean loaded = false, multiblockInvalid = true;
+    private boolean loaded = false, multiblockInvalid = false;
 
     private boolean isLoaded(){
         return loaded;
     }
 
     public TileEntityFlatScreen() {
-        super(BlockFlatScreen.tier);
-
-        // OC reads resolution from the settings to initialize the textbuffer, so we got to set it up on our own to make a T4 screen
-        // ItemStack screenItem = Items.get("screen1").createItemStack(1);
-        ItemStack screenItem = new ItemStack(BlockFlatScreen.DEFAULTITEM, 1);
-        buffer = (TextBuffer) Driver.driverFor(screenItem, getClass()).createEnvironment(screenItem, this);
-        buffer.setMaximumResolution(160, 50);
-        buffer.setMaximumColorDepth(li.cil.oc.api.internal.TextBuffer.ColorDepth.EightBit);
+        super(Tier.Four());
+        buffer = FlatScreenDriver.driver.createEnvironment(MultiPartHelper.getScreenFromTile(this));
     }
-
 
     public FlatScreen getData(){
         return isOrigin() || origin() == null || origin().isInvalid() || !origin().isLoaded() ? data : origin().getData();
@@ -67,33 +61,42 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public li.cil.oc.api.internal.TextBuffer buffer(){
         return this.buffer;
-    } //keep THIS
+    }
 
     public void updateNeighbours(){
         getHelper().refresh(this);
 
         for(TileEntityFlatScreen screen : getScreens()){
-            screen.boundingBoxes = FlatScreenAABB.updateScreenBB(this);
+            screen.boundingBoxes = FlatScreenAABB.updateScreenBB(screen);
             screen.markDirty();
         }
     }
 
     @Override
     public void update(){
-        super.update();
+        if(!isLoaded()) //for some reason this fails for multiparts on clientside sometimes, so we have to check it -.-
+            onLoad();
 
-        if(isLoaded() && multiblockInvalid) {
+        if(!getMultiblock().initialized())
+            getMultiblock().initialize();
+
+        if(multiblockInvalid) {
             getMultiblock().split();
             multiblockInvalid = false;
         }
 
-        if(!getMultiblock().initialized())
-            getMultiblock().initialize();
+        if(isClient() || isConnected())
+            buffer().update();
     }
 
     @Override
     public Node sidedNode(EnumFacing side) {
-        return hasKeyboardInSameBlock() || hasKeyboard(side) ? node() : super.sidedNode(side);
+        return hasKeyboardInSameBlock() || hasKeyboard(side) || !facing().equals(side) ? node() : super.sidedNode(side);
+    }
+
+    @Override
+    public EnumFacing facing(){
+        return pitch().getAxis().equals(EnumFacing.Axis.Y) ? pitch() : yaw();
     }
 
     @Override
@@ -101,7 +104,6 @@ public class TileEntityFlatScreen extends Screen {
         for(TileEntityFlatScreen screen : getScreens()){
             if(screen.hasKeyboardInSameBlock())
                 return true;
-
             for(EnumFacing side : EnumFacing.values())
                 if(screen.hasKeyboard(side))
                     return true;
@@ -147,9 +149,14 @@ public class TileEntityFlatScreen extends Screen {
         return getMultiblock().getBoundingBox();
     }
 
+    public void setConnectivity(){
+        if (isOrigin())
+            ((Component) buffer().node()).setVisibility(Visibility.Network);
+        else
+            ((Component) buffer().node()).setVisibility(Visibility.None);
+    }
 
     /* OC Screen overrides */
-
     @Override
     public boolean isOrigin(){
         return this.equals(origin());
@@ -178,17 +185,24 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     public void onLoad(){
         super.onLoad();
-        updateRotation();
-        multiblockInvalid = true;
+        updateRotation(getWorld().getBlockState(getPos()));
         loaded = true;
     }
 
-    private void updateRotation(){
+    public void updateRotation(IBlockState state){
         if(yaw != null && pitch != null)
             return;
 
-        yaw = getWorld().getBlockState(getPos()).getValue(PropertyRotatable.Yaw());
-        pitch = getWorld().getBlockState(getPos()).getValue(PropertyRotatable.Pitch());
+        setYaw(state.getValue(PropertyRotatable.Yaw()));
+        setPitch(state.getValue(PropertyRotatable.Pitch()));
+    }
+
+    public void setPitch(EnumFacing pitchIn){
+        pitch = pitchIn;
+    }
+
+    public void setYaw(EnumFacing yawIn){
+        yaw = yawIn;
     }
 
     @Override
@@ -200,15 +214,11 @@ public class TileEntityFlatScreen extends Screen {
 
     @Override
     public void onRotationChanged(){
-        updateRotation();
+        updateRotation(getWorld().getBlockState(getPos()));
         super.onRotationChanged();
         // nbt is parsed in network thread so we have update() to do the actual work
         multiblockInvalid = true;
     }
-
-    @Override
-    public void walk(Entity in){}
-
 
     /* overrides for MCMP compat */
     @Override
@@ -224,91 +234,93 @@ public class TileEntityFlatScreen extends Screen {
         return false;
     }
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt){
-        nbt = super.writeToNBT(nbt);
-        writeToNBTForServer(nbt);
-        return nbt;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound nbt){
-        super.readFromNBT(nbt);
-        readFromNBTForServer(nbt);
-    }
-
     // yes we have to override them... -.-
     @Override
     public void writeToNBTForServer(NBTTagCompound nbt){
         super.writeToNBTForServer(nbt); //required to not break multipart support
-        nbt.setBoolean("invertTouchMode", invertTouchMode());
-        nbt.setInteger("color", getColor());
-        nbt.setBoolean("hadRedstone", hadRedstoneInput());
+        nbt.setInteger("ocd:casecolor", getColor());
+        nbt.setInteger("ocd:yaw", yaw().ordinal());
+        nbt.setInteger("ocd:pitch", pitch().ordinal());
 
-        NBTTagCompound bufferTag = new NBTTagCompound();
-        buffer().save(bufferTag);
-        nbt.setTag("oc:buffer", bufferTag);
+        nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
 
-        NBTTagCompound nodeTag = new NBTTagCompound();
-        node().save(nodeTag);
-        nbt.setTag("oc:node", nodeTag);
-
-        nbt.setTag("screenData", getData().writeToNBT(new NBTTagCompound()));
-
-        nbt.setInteger("yaw", yaw.ordinal());
-        nbt.setInteger("pitch", pitch.ordinal());
-
-        //nbt.setInteger("tier", tier()); //listen here stupid, THIS IS TIER4, not 3, not int2, but Tier4(int3)
+        buffer().save(nbt);
     }
 
     @Override
     public void readFromNBTForServer(NBTTagCompound nbt){
-        setColor(nbt.getInteger("color"));
+        //super.readFromNBTForServer(nbt);
+        setYaw(EnumFacing.values()[nbt.getInteger("ocd:yaw")]);
+        setPitch(EnumFacing.values()[nbt.getInteger("ocd:pitch")]);
 
+        invertTouchMode_$eq(nbt.getBoolean("oc:invertTouchMode"));
+        hadRedstoneInput_$eq(nbt.getBoolean("oc:hadRedstoneInput"));
 
-        buffer().load(nbt.getCompoundTag("oc:buffer"));
+        if(nbt.hasKey("ocd:screenData"))
+            data.readFromNBT(nbt.getCompoundTag("ocd:screenData"));
 
-        if(node() != null && node().host().equals(this))
-            node().load(nbt.getCompoundTag("oc:node"));
+        setColor(nbt.getInteger("ocd:casecolor"));
 
-        invertTouchMode_$eq(nbt.getBoolean("invertTouchMode"));
-        hadRedstoneInput_$eq(nbt.getBoolean("hadRedstone"));
+        buffer().load(nbt);
+    }
 
-
-
-        if(nbt.hasKey("screenData"))
-            data.readFromNBT(nbt.getCompoundTag("screenData"));
-
-        yaw = EnumFacing.values()[nbt.getInteger("yaw")];
-        pitch = EnumFacing.values()[nbt.getInteger("pitch")];
-
-        //tier_$eq(nbt.getInteger("tier"));
+    @Override
+    public Node node(){
+        return buffer().node();
     }
 
     @Override
     public void writeToNBTForClient(NBTTagCompound nbt){
         super.writeToNBTForClient(nbt); //required to not break multipart support
-        nbt.setBoolean("invertTouchMode", invertTouchMode());
-        nbt.setInteger("color", getColor());
-        buffer().save(nbt);
+        nbt.setInteger("ocd:casecolor", getColor());
+        nbt.setInteger("ocd:yaw", yaw.ordinal());
+        nbt.setInteger("ocd:pitch", pitch.ordinal());
 
-        nbt.setInteger("yaw", yaw.ordinal());
-        nbt.setInteger("pitch", pitch.ordinal());
-
-        //nbt.setInteger("tier", tier());
+        if(isOrigin())
+            nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void readFromNBTForClient(NBTTagCompound nbt){
-        setColor(nbt.getInteger("color"));
-        invertTouchMode_$eq(nbt.getBoolean("invertTouchMode"));
+        super.readFromNBTForClient(nbt);
+        setColor(nbt.getInteger("ocd:casecolor"));
+        invertTouchMode_$eq(nbt.getBoolean("oc:invertTouchMode"));
+
+        setYaw(EnumFacing.values()[nbt.getInteger("ocd:yaw")]);
+        setPitch(EnumFacing.values()[nbt.getInteger("ocd:pitch")]);
+
+        if(nbt.hasKey("ocd:screenData")) {
+            getData().readFromNBT(nbt.getCompoundTag("ocd:screenData"));
+            getHelper().refresh(this);
+            for(TileEntityFlatScreen screen : getScreens())
+                screen.boundingBoxes = FlatScreenAABB.updateScreenBB(screen);
+        }
+
         buffer().load(nbt);
+    }
 
-        yaw = EnumFacing.values()[nbt.getInteger("yaw")];
-        pitch = EnumFacing.values()[nbt.getInteger("pitch")];
+    //nbt overrides (probably useless)
+    @Override
+    public void readFromNBT(NBTTagCompound nbt){
+        super.readFromNBT(nbt);
 
-        //tier_$eq(nbt.getInteger("tier"));
+        if(isClient())
+            readFromNBTForClient(nbt);
+        else
+            readFromNBTForServer(nbt);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt){
+        super.writeToNBT(nbt);
+
+        if(isClient())
+            writeToNBTForClient(nbt);
+        else
+            writeToNBTForServer(nbt);
+
+        return nbt;
     }
 
     @Override
@@ -320,7 +332,7 @@ public class TileEntityFlatScreen extends Screen {
 
     @Override
     public NBTTagCompound getUpdateTag() {
-        NBTTagCompound nbt = super.getUpdateTag();
+        NBTTagCompound nbt = new NBTTagCompound(); //super.getUpdateTag();
         writeToNBTForClient(nbt);
         return nbt;
     }
@@ -334,7 +346,13 @@ public class TileEntityFlatScreen extends Screen {
     @Override
     @SideOnly(Side.CLIENT)
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        readFromNBTForClient(packet.getNbtCompound());
+        handleUpdateTag(packet.getNbtCompound());
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void handleUpdateTag(NBTTagCompound nbt){
+        readFromNBTForClient(nbt);
     }
 
     @Override
@@ -349,14 +367,12 @@ public class TileEntityFlatScreen extends Screen {
 
     @Override
     public void setColor(int newColor){
-        super.setColor(newColor);
         color = newColor;
-        onColorChanged();
+        super.setColor(newColor);
     }
 
     // checks if the specified screen has the same color and facing
     public boolean canMerge(TileEntityFlatScreen screen){
-        //if(true) return true;
         if(screen == null || screen.isInvalid())
             return false;
 
