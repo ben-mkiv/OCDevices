@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
@@ -13,9 +14,7 @@ import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.network.*;
 import li.cil.oc.api.prefab.TileEntityEnvironment;
 import li.cil.oc.common.block.property.PropertyRotatable;
-import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -24,6 +23,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -37,6 +38,8 @@ import java.util.HashSet;
 
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 
+
+//todo: implement packets for color, rotation, touchMode state, ... changes instead of syncing whole NBT
 public class TileEntityFlatScreen extends TileEntityEnvironment implements EnvironmentHost, ITickable, Analyzable {
     private FlatScreenComponent buffer;
 
@@ -45,6 +48,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     private FlatScreen data = new FlatScreen();
     private EnumFacing yaw, pitch;
     private int color = 0;
+    private final boolean isClient;
+    private boolean isTouchModeInverted = false;
 
     public FlatScreenMultiblock flatScreenMultiblock = new FlatScreenMultiblock(this);
 
@@ -56,6 +61,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
 
     public TileEntityFlatScreen() {
         super();
+        isClient = FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT);
         buffer = new FlatScreenComponent(this);
     }
 
@@ -89,10 +95,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         }
     }
 
-    public boolean powered(){
-        return true;
-    }
-
     boolean isConnected(){
         return node() != null && node().network() != null;
     }
@@ -102,7 +104,41 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     }
 
     boolean isClient(){
-        return FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT);
+        return isClient;
+    }
+
+    public boolean touchEvent(EntityPlayer player, EnumFacing side, Vec3d hitVect){
+        if(!side.equals(facing()))
+            return false;
+
+        System.out.println("(+) touch event: " + hitVect.toString());
+
+        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this);
+        int offsetX = offset.getX();
+        int offsetY = offset.getY();
+
+        hitVect = hitVect.rotateYaw(yaw().getHorizontalAngle());
+        switch(pitch()){
+            case DOWN: hitVect = hitVect.rotatePitch((float) Math.toRadians(90)); break;
+            case UP: hitVect = hitVect.rotatePitch((float) Math.toRadians(-90)); break;
+        }
+
+        hitVect = hitVect.add(new Vec3d(offsetX, offsetY, 0));
+
+
+        System.out.println("(F) touch event: " + hitVect.toString());
+
+        double x = 0, y = 0;
+
+        int resolutionX = origin().buffer().getViewportWidth();
+        int resolutionY = origin().buffer().getViewportHeight();
+
+        float displayWidth = getHelper().displayWidth;
+        float displayHeight = getHelper().displayHeight;
+
+        origin().buffer().mouseDown(x, y, 0, player);
+
+        return true;
     }
 
     @Override
@@ -223,25 +259,32 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     }
 
     public void setPitch(EnumFacing pitchIn){
+        if(pitchIn.equals(pitch))
+            return;
+
         pitch = pitchIn;
+        onRotationChanged();
     }
 
     public void setYaw(EnumFacing yawIn){
+        if(yawIn.equals(yaw))
+            return;
+
         yaw = yawIn;
+        onRotationChanged();
     }
 
     public void onColorChanged() {
         // nbt is parsed in network thread so we have update() to do the actual work
         multiblockInvalid = true;
+        markDirty();
     }
 
     public void onRotationChanged(){
-        updateRotation(getWorld().getBlockState(getPos()));
         // nbt is parsed in network thread so we have update() to do the actual work
         multiblockInvalid = true;
+        markDirty();
     }
-
-
 
     // yes we have to override them... -.-
     @Override
@@ -249,6 +292,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         nbt.setInteger("ocd:casecolor", getColor());
         nbt.setInteger("ocd:yaw", yaw().ordinal());
         nbt.setInteger("ocd:pitch", pitch().ordinal());
+        nbt.setBoolean("ocd:invertTouch", isTouchModeInverted());
 
         nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
 
@@ -262,6 +306,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         super.readFromNBT(nbt);
         setYaw(EnumFacing.values()[nbt.getInteger("ocd:yaw")]);
         setPitch(EnumFacing.values()[nbt.getInteger("ocd:pitch")]);
+        setTouchModeInverted(nbt.getBoolean("ocd:invertTouch"));
 
         if(nbt.hasKey("ocd:screenData"))
             getData().readFromNBT(nbt.getCompoundTag("ocd:screenData"));
@@ -269,9 +314,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         setColor(nbt.getInteger("ocd:casecolor"));
 
         buffer().load(nbt);
-
-
-        System.out.println("node loaded: " + node().address());
     }
 
     @Override
@@ -281,6 +323,9 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
 
     @Override
     public Node[] onAnalyze(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if(!OCDevices.debug)
+            return new Node[]{ origin().node() };
+
         Node[] nodes = new Node[getScreens().size()];
         int i=0;
         nodes[i++] = (origin().node());
@@ -292,36 +337,9 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         return nodes;
     }
 
-    public void writeToNBTForClient(NBTTagCompound nbt){
-        nbt.setInteger("ocd:casecolor", getColor());
-        nbt.setInteger("ocd:yaw", yaw.ordinal());
-        nbt.setInteger("ocd:pitch", pitch.ordinal());
-
-        if(isOrigin())
-            nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
-
-        buffer().save(nbt);
-    }
-
-    public void readFromNBTForClient(NBTTagCompound nbt){
-        setColor(nbt.getInteger("ocd:casecolor"));
-
-        setYaw(EnumFacing.values()[nbt.getInteger("ocd:yaw")]);
-        setPitch(EnumFacing.values()[nbt.getInteger("ocd:pitch")]);
-
-        if(nbt.hasKey("ocd:screenData")) {
-            getData().readFromNBT(nbt.getCompoundTag("ocd:screenData"));
-            getHelper().refresh(this);
-            for(TileEntityFlatScreen screen : getScreens())
-                screen.boundingBoxes = FlatScreenAABB.updateScreenBB(screen);
-        }
-
-
-        buffer().load(nbt);
-    }
-
     @Override
     public void markDirty(){
+        if(getWorld() == null) return;
         IBlockState state = getWorld().getBlockState(getPos());
         getWorld().notifyBlockUpdate(getPos(), state, state, 3);
         super.markDirty();
@@ -329,9 +347,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
 
     @Override
     public NBTTagCompound getUpdateTag() {
-        NBTTagCompound nbt = new NBTTagCompound(); //super.getUpdateTag();
-        writeToNBTForClient(nbt);
-        return nbt;
+        NBTTagCompound nbt = super.getUpdateTag();
+        return writeToNBT(nbt);
     }
 
     @Nullable
@@ -349,7 +366,14 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     @Override
     @SideOnly(Side.CLIENT)
     public void handleUpdateTag(@Nonnull NBTTagCompound nbt){
-        readFromNBTForClient(nbt);
+        readFromNBT(nbt);
+
+        if(nbt.hasKey("ocd:screenData")) {
+            getData().readFromNBT(nbt.getCompoundTag("ocd:screenData"));
+            getHelper().refresh(this);
+            for(TileEntityFlatScreen screen : getScreens())
+                screen.boundingBoxes = FlatScreenAABB.updateScreenBB(screen);
+        }
     }
 
     public int tier(){
@@ -387,21 +411,28 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         return true;
     }
 
-    @Override
-    public World world(){
-        return MCMultiPart.getRealWorld(this);
+
+    public boolean isTouchModeInverted(){ return isTouchModeInverted; }
+
+    public void setTouchModeInverted(boolean state){
+        if(state == isTouchModeInverted)
+            return;
+
+        isTouchModeInverted = state;
+        markDirty();
     }
 
+
+    // Environment Host Interface
+    @Override
+    public World world(){ return MCMultiPart.getRealWorld(this); }
     @Override
     public double xPosition(){ return getPos().getX(); }
     @Override
     public double yPosition(){ return getPos().getY(); }
     @Override
     public double zPosition(){ return getPos().getZ(); }
-
     @Override
-    public void markChanged(){
-        markDirty();
-    }
+    public void markChanged(){ markDirty(); }
 
 }

@@ -55,6 +55,7 @@ public class OCDevices {
 
     public static final Logger logger = Logger.getLogger(MOD_NAME);
     static final boolean verbose = false;
+    public static final boolean debug = false;
 
     public static boolean MCMultiPart = false;
 

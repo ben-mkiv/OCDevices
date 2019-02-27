@@ -11,6 +11,7 @@ import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.common.component.Screen;
 import li.cil.oc.common.component.TextBuffer;
+import scala.runtime.BoxesRunTime;
 
 
 public class FlatScreenComponent extends TextBuffer {
@@ -94,6 +95,21 @@ public class FlatScreenComponent extends TextBuffer {
         updateAll();
         return new Object[]{ true };
     }*/
+
+    @Callback(direct = true, doc = "function():boolean -- Whether touch mode is inverted (sneak-activate opens GUI, instead of normal activate).")
+    public Object[] isTouchModeInverted(Context computer, Arguments args) {
+        return new Object[]{ screen().isTouchModeInverted() };
+    }
+
+    @Callback(doc = "function(value:boolean):boolean -- Sets whether to invert touch mode (sneak-activate opens GUI, instead of normal activate).")
+    public Object[] setTouchModeInverted(Context computer, Arguments args) {
+        boolean newValue = args.checkBoolean(0);
+        boolean oldValue = this.screen().isTouchModeInverted();
+
+        screen().setTouchModeInverted(newValue);
+
+        return new Object[]{ screen().isTouchModeInverted() };
+    }
 
 
 }

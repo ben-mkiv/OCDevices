@@ -7,9 +7,6 @@ import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import ben_mkiv.ocdevices.utils.UtilsCommon;
-import li.cil.oc.OpenComputers;
-import li.cil.oc.api.Items;
-import li.cil.oc.api.detail.ItemInfo;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Screen;
 import li.cil.oc.common.block.property.PropertyRotatable;
@@ -22,17 +19,16 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -182,14 +178,13 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
 
-            if (state instanceof IExtendedBlockState) {
-                IExtendedBlockState var7 = (IExtendedBlockState)state;
-                if (tile instanceof TileEntityFlatScreen) {
-                    TileEntityFlatScreen var8 = (TileEntityFlatScreen)tile;
-                    state = var7.withProperty(PropertyTile.Tile(), var8).withProperty(PropertyRotatable.Pitch(), var8.pitch()).withProperty(PropertyRotatable.Yaw(), var8.yaw());
-                    return state;
-                }
-            }
+        if (state instanceof IExtendedBlockState && tile instanceof TileEntityFlatScreen) {
+            TileEntityFlatScreen screen = (TileEntityFlatScreen)tile;
+            return ((IExtendedBlockState) state)
+                    .withProperty(PropertyTile.Tile(), screen)
+                    .withProperty(PropertyRotatable.Pitch(), screen.pitch())
+                    .withProperty(PropertyRotatable.Yaw(), screen.yaw());
+        }
 
         return state;
     }
@@ -199,19 +194,26 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         if(!world.isRemote)
             return ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
-        // from here client only, check if the keyboard has a screen connected
+        // client only
         TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if (screen != null) {
-            if (world instanceof MCMPWorldWrapper)
-                world = MCMultiPart.getRealWorld(screen);
+        if (screen == null)
+            return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
-            pos = screen.origin().getPos();
-            player.openGui(OCDevices.MOD_ID, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
+        TileEntityFlatScreen origin = screen.origin();
 
-            return true;
+        boolean touch = !origin.hasKeyboard();
+        touch |=  origin.isTouchModeInverted() && !player.isSneaking();
+        touch |= !origin.isTouchModeInverted() &&  player.isSneaking();
+
+        if(touch) {
+            return screen.touchEvent(player, side, new Vec3d(hitX, hitY, hitZ));
         }
 
-        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+        pos = origin.getPos();
+
+        // open screen gui
+        player.openGui(OCDevices.MOD_ID, GUI_ID, MCMultiPart.getRealWorld(origin), pos.getX(), pos.getY(), pos.getZ());
+        return true;
     }
 
 }

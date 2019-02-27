@@ -17,7 +17,7 @@ public class ScreenGUI extends Screen {
         static Function0<Object> hasPower = new AbstractFunction0<Object>() {
             @Override
             public Object apply() {
-                return screen instanceof TileEntityFlatScreen && ((TileEntityFlatScreen) screen).powered();
+                return screen instanceof TileEntityFlatScreen && ((TileEntityFlatScreen) screen).buffer().getPowerState();
             }
         };
 

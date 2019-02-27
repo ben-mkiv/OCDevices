@@ -74,7 +74,7 @@ public class FlatScreenHelper {
         }
     }
 
-    private static BlockPos MultiBlockOffset(TileEntityFlatScreen screen){
+    public static BlockPos MultiBlockOffset(TileEntityFlatScreen screen){
         BlockPos worldOffset = screen.origin().getPos().subtract(screen.getPos());
 
         int offsetX, offsetY;
