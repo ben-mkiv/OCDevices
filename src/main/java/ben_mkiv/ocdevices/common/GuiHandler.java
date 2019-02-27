@@ -3,8 +3,10 @@ package ben_mkiv.ocdevices.common;
 import ben_mkiv.ocdevices.client.gui.CardDockGUI;
 import ben_mkiv.ocdevices.client.gui.CaseGUI;
 import ben_mkiv.ocdevices.client.gui.RecipeDictionaryGUI;
+import ben_mkiv.ocdevices.client.gui.ScreenGUI;
 import ben_mkiv.ocdevices.common.blocks.BlockCardDock;
 import ben_mkiv.ocdevices.common.blocks.BlockCase;
+import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockRecipeDictionary;
 import ben_mkiv.ocdevices.common.inventory.CardDockContainer;
 import ben_mkiv.ocdevices.common.inventory.CaseContainer;
@@ -50,6 +52,10 @@ public class GuiHandler implements IGuiHandler {
 
             case BlockCase.GUI_ID:
                 return new CaseGUI(player.inventory, te);
+
+            case BlockFlatScreen.GUI_ID:
+                ScreenGUI.screen = te;
+                return new ScreenGUI();
 
             default: return null;
         }

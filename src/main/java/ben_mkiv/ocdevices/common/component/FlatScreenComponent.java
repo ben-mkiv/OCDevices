@@ -10,11 +10,12 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.common.component.Screen;
+import li.cil.oc.common.component.TextBuffer;
 
 
-public class FlatScreenComponent extends Screen {
+public class FlatScreenComponent extends TextBuffer {
     public FlatScreenComponent(EnvironmentHost container){
-        super((TileEntityFlatScreen) container);
+        super(container);
         setMaximumResolution(160, 50);
         setMaximumColorDepth(li.cil.oc.api.internal.TextBuffer.ColorDepth.EightBit);
     }
@@ -31,6 +32,10 @@ public class FlatScreenComponent extends Screen {
                 node.connect(node());
 
         super.onConnect(node);
+    }
+
+    public TileEntityFlatScreen screen(){
+        return (TileEntityFlatScreen) host();
     }
 
     private boolean isKeyboardInMultiblock(Node node){

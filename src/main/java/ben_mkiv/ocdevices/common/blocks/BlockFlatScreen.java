@@ -1,20 +1,33 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
+import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import ben_mkiv.ocdevices.utils.UtilsCommon;
+import li.cil.oc.OpenComputers;
+import li.cil.oc.api.Items;
+import li.cil.oc.api.detail.ItemInfo;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Screen;
 import li.cil.oc.common.block.property.PropertyRotatable;
+import li.cil.oc.common.block.property.PropertyTile;
+import mcmultipart.util.MCMPWorldWrapper;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -22,6 +35,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,16 +47,17 @@ import java.util.List;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 
-public class BlockFlatScreen extends Screen {
+public class BlockFlatScreen extends Block implements ITileEntityProvider {
     public final static int tier = Tier.Three();
     public final static String NAME = "flat_screen";
     public static Block DEFAULTITEM;
+    public static final int GUI_ID = 4;
 
     static final AxisAlignedBB minimalBB = new AxisAlignedBB(0, 0, 0.999, 1, 1, 1);
     static final AxisAlignedBB emptyBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     public BlockFlatScreen() {
-        super(tier);
+        super(Material.IRON);
         setRegistryName(OCDevices.MOD_ID, NAME);
         setUnlocalizedName(NAME);
         setCreativeTab(OCDevices.creativeTab);
@@ -116,7 +133,7 @@ public class BlockFlatScreen extends Screen {
     }
 
     @Override
-    public TileEntityFlatScreen createNewTileEntity(World worldIn, int meta) {
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityFlatScreen();
     }
 
@@ -148,5 +165,53 @@ public class BlockFlatScreen extends Screen {
         return BlockFaceShape.CENTER;
     }
 
+
+    //todo: clean those up
+    public ExtendedBlockState createBlockState() {
+        return new ExtendedBlockState(this, ((new IProperty[]{PropertyRotatable.Pitch(), PropertyRotatable.Yaw()})), (IUnlistedProperty[])((Object[])(new IUnlistedProperty[]{PropertyTile.Tile()})));
+    }
+
+    public int getMetaFromState(IBlockState state) {
+        return ((Enum)state.getValue(PropertyRotatable.Pitch())).ordinal() << 2 | (state.getValue(PropertyRotatable.Yaw())).getHorizontalIndex();
+    }
+
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(PropertyRotatable.Pitch(), EnumFacing.getFront(meta >> 2)).withProperty(PropertyRotatable.Yaw(), EnumFacing.getHorizontal(meta & 3));
+    }
+
+    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+
+            if (state instanceof IExtendedBlockState) {
+                IExtendedBlockState var7 = (IExtendedBlockState)state;
+                if (tile instanceof TileEntityFlatScreen) {
+                    TileEntityFlatScreen var8 = (TileEntityFlatScreen)tile;
+                    state = var7.withProperty(PropertyTile.Tile(), var8).withProperty(PropertyRotatable.Pitch(), var8.pitch()).withProperty(PropertyRotatable.Yaw(), var8.yaw());
+                    return state;
+                }
+            }
+
+        return state;
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if(!world.isRemote)
+            return ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+
+        // from here client only, check if the keyboard has a screen connected
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen != null) {
+            if (world instanceof MCMPWorldWrapper)
+                world = MCMultiPart.getRealWorld(screen);
+
+            pos = screen.origin().getPos();
+            player.openGui(OCDevices.MOD_ID, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
+
+            return true;
+        }
+
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+    }
 
 }
