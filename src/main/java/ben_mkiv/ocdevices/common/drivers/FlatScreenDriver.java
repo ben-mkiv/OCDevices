@@ -2,6 +2,7 @@ package ben_mkiv.ocdevices.common.drivers;
 
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.item.HostAware;
@@ -33,7 +34,7 @@ public class FlatScreenDriver extends BlockFlatScreen implements DriverItem, Env
 
     @Override
     public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost container) {
-        return new FlatScreenComponent(container);
+        return createEnvironment(container);
     }
 
     public FlatScreenComponent createEnvironment(EnvironmentHost container) {

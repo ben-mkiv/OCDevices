@@ -24,6 +24,7 @@ public class FlatScreenMultiblock {
 
     public FlatScreenMultiblock(TileEntityFlatScreen screen){
         origin = MultiPartHelper.getScreenFromTile(screen);
+        screens.add(origin);
     }
 
     public boolean initialized(){
@@ -68,7 +69,12 @@ public class FlatScreenMultiblock {
                 if(!axis.contains(facing.getAxis()))
                     continue;
 
-                TileEntityFlatScreen offsetScreen = MultiPartHelper.getScreenFromTile(screen.getWorld().getTileEntity(screen.getPos().offset(facing)));
+                BlockPos position = screen.getPos().offset(facing);
+
+                if(!screen.getWorld().isBlockLoaded(position))
+                    continue;
+
+                TileEntityFlatScreen offsetScreen = MultiPartHelper.getScreenFromTile(screen.getWorld().getTileEntity(position));
 
                 if(offsetScreen == null || this.equals(offsetScreen.getMultiblock()))
                     continue;

@@ -32,7 +32,7 @@ import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 
 public class BlockFlatScreen extends Screen {
-    public final static int tier = Tier.Four();
+    public final static int tier = Tier.Three();
     public final static String NAME = "flat_screen";
     public static Block DEFAULTITEM;
 

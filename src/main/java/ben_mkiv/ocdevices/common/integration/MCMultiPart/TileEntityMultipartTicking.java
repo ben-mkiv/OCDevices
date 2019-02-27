@@ -18,9 +18,5 @@ public class TileEntityMultipartTicking extends TileEntityMultipart implements I
         return true;
     }
 
-    @Override
-    public ITickable getTickable() {
-        return this;
-    }
 
 }

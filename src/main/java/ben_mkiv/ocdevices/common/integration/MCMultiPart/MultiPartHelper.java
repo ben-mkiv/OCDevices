@@ -8,7 +8,10 @@ import net.minecraft.tileentity.TileEntity;
 public class MultiPartHelper {
 
     public static TileEntityFlatScreen getScreenFromTile(TileEntity tile){
-        if(tile instanceof TileEntityFlatScreen && !tile.isInvalid())
+        if(tile == null || tile.isInvalid())
+            return null;
+
+        if(tile instanceof TileEntityFlatScreen)
             return (TileEntityFlatScreen) tile;
 
         for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
@@ -19,6 +22,9 @@ public class MultiPartHelper {
     }
 
     public static TileEntityKeyboard getKeyboardFromTile(TileEntity tile){
+        if(tile == null || tile.isInvalid())
+            return null;
+
         if(tile instanceof TileEntityKeyboard)
             return (TileEntityKeyboard) tile;
 
@@ -30,6 +36,9 @@ public class MultiPartHelper {
     }
 
     public static TileEntityCase getCaseFromTile(TileEntity tile){
+        if(tile == null || tile.isInvalid())
+            return null;
+
         if(tile instanceof TileEntityCase)
             return (TileEntityCase) tile;
 

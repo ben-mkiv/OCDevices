@@ -3,6 +3,7 @@ package ben_mkiv.ocdevices.common.integration.MCMultiPart.blocks;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.BlockMultipart;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
+import li.cil.oc.api.API;
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.EnumCenterSlot;
 import net.minecraft.block.Block;
