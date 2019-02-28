@@ -1,7 +1,7 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
+import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
@@ -116,8 +116,9 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
             return FULL_BLOCK_AABB;
 
         float minDepth = maxScreenDepth;
-        for(float f : te.getHelper().getDepthForBlock(te))
-            if(f < minDepth) minDepth = f;
+        FlatScreenHelper helper = te.getHelper();
+        minDepth = Math.min(Math.min(minDepth, helper.topLeft), helper.bottomLeft);
+        minDepth = Math.min(Math.min(minDepth, helper.topRight), helper.bottomRight);
 
         AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - minDepth, 1, 1, 1) : minimalBB;
 

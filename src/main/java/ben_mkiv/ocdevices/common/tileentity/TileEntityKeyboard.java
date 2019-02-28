@@ -1,12 +1,17 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import li.cil.oc.common.tileentity.Keyboard;
+import li.cil.oc.common.tileentity.Screen;
 import li.cil.oc.common.tileentity.traits.Colored;
 import li.cil.oc.server.PacketSender;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.runtime.TraitSetter;
@@ -16,6 +21,32 @@ import javax.annotation.Nullable;
 public class TileEntityKeyboard extends Keyboard implements Colored, ColoredTile {
     private String colorTag = "", colorTagCompat = "";
     private int color = 0;
+
+    public TileEntity getOrigin(){
+        TileEntity screen = getScreen(getPos()); // check for screen in same block
+        if(screen != null)
+            return screen;
+
+        //todo: tell the client the real origin instead of using the first adjacent one
+        for(EnumFacing facing : EnumFacing.values()){
+            screen = getScreen(getPos().offset(facing)); // check for adjacent screens
+            if(screen != null)
+                return screen;
+        }
+
+        return null;
+    }
+
+    private TileEntity getScreen(BlockPos pos){
+        TileEntity tile = getWorld().getTileEntity(pos);
+        if(tile instanceof TileEntityFlatScreen)
+            return MultiPartHelper.getScreenFromTile(tile).origin();
+        else if(tile instanceof Screen)
+            return ((Screen) tile).origin();
+        else
+            return null;
+    }
+
 
     @Override
     public void li$cil$oc$common$tileentity$traits$Colored$_setter_$li$cil$oc$common$tileentity$traits$Colored$$RenderColorTag_$eq(String var1){

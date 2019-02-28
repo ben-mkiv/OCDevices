@@ -1,7 +1,6 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
@@ -9,7 +8,7 @@ import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.OpenComputers;
 import li.cil.oc.common.block.Keyboard;
 import li.cil.oc.common.block.property.PropertyRotatable;
-import mcmultipart.util.MCMPWorldWrapper;
+import li.cil.oc.common.tileentity.Screen;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,6 +22,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+
+import static ben_mkiv.ocdevices.common.blocks.BlockFlatScreen.GUI_ID;
 
 public class BlockKeyboard extends Keyboard {
     public final static String NAME = "keyboard";
@@ -56,18 +57,26 @@ public class BlockKeyboard extends Keyboard {
             return ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
         // from here client only, check if the keyboard has a screen connected
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if (screen != null) {
-            if (world instanceof MCMPWorldWrapper)
-                world = MultiPartHelper.getRealWorld(screen);
-
-            pos = screen.origin().getPos();
-            player.openGui(OpenComputers.ID(), li.cil.oc.common.GuiType.Screen().id(), world, pos.getX(), pos.getY(), pos.getZ());
-
+        TileEntityKeyboard keyboard = getTileEntity(world, pos);
+        if(keyboard != null && openScreenGUI(player, keyboard.getOrigin()))
             return true;
-        }
 
         return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+    }
+
+    private boolean openScreenGUI(@Nonnull EntityPlayer player, TileEntity screen){
+        if(screen == null)
+            return false;
+
+        BlockPos pos = screen.getPos();
+        if(screen instanceof TileEntityFlatScreen)
+            player.openGui(OCDevices.MOD_ID, GUI_ID, MultiPartHelper.getRealWorld(screen), pos.getX(), pos.getY(), pos.getZ());
+        else if(screen instanceof Screen)
+            player.openGui(OpenComputers.ID(), li.cil.oc.common.GuiType.Screen().id(), screen.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+        else
+            return false;
+
+        return true;
     }
 
     private static boolean activateScreen(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing){

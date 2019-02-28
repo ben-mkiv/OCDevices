@@ -64,6 +64,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
 
     private boolean loaded = false, multiblockInvalid = false;
 
+    boolean joinedNetwork = false;
+
     private boolean isLoaded(){
         return loaded;
     }
@@ -139,58 +141,54 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
     }
 
     boolean isConnected(){
-        return node() != null && node().network() != null;
+        return joinedNetwork || (node() != null && node().network() != null);
     }
 
     void joinNetwork(){
-        if(!isClient() && !isConnected()) API.network.joinOrCreateNetwork(this);
+        if(!isClient() && !isConnected()){
+            API.network.joinOrCreateNetwork(this);
+            joinedNetwork = true;
+        }
     }
 
     boolean isClient(){
         return isClient;
     }
 
-    //todo: rewrite the rotate methods to easy math like in pitch subcase
     public boolean touchEvent(EntityPlayer player, EnumFacing side, Vec3d hitVect){
         if(!side.equals(facing()))
             return false;
 
-        //System.out.println("(+) " + hitVect.toString());
-
         switch(yaw()) {
             case NORTH:
-                hitVect = hitVect.rotateYaw((float) Math.toRadians(-180)).addVector(1, 0, 0); break;
+                hitVect = new Vec3d(1 - hitVect.x, hitVect.y, -hitVect.z); break;
             case EAST:
-                hitVect = hitVect.rotateYaw((float) Math.toRadians(-90)).addVector(1, 0, 0); break;
+                hitVect = new Vec3d(1 - hitVect.z, hitVect.y, hitVect.x); break;
             case WEST:
-                hitVect = hitVect.rotateYaw((float) Math.toRadians(90)); break;
+                hitVect = new Vec3d(hitVect.z, hitVect.y, -hitVect.x); break;
         }
 
         switch(pitch()){
             case DOWN:
-                hitVect = hitVect.rotatePitch((float) Math.toRadians(-90));
                 switch(yaw()){
                     case NORTH:
-                    case WEST: hitVect = new Vec3d(hitVect.x, 1-hitVect.y, 0); break;
+                    case WEST: hitVect = new Vec3d(hitVect.x, 1+hitVect.z, hitVect.y); break;
                     case SOUTH:
-                    case EAST: hitVect = new Vec3d(hitVect.x, -hitVect.y, 0); break;
+                    case EAST: hitVect = new Vec3d(hitVect.x, hitVect.z, hitVect.y); break;
                 }
                 break;
             case UP:
-                hitVect = hitVect.rotatePitch((float) Math.toRadians(-90));
                 switch(yaw()){
-                    case EAST:
-                    case SOUTH: hitVect = hitVect.addVector(0, 1, 0); break;
+                    case SOUTH:
+                    case EAST: hitVect = new Vec3d(hitVect.x, 1-hitVect.z, hitVect.y); break;
+                    case NORTH:
+                    case WEST: hitVect = new Vec3d(hitVect.x, -hitVect.z, hitVect.y); break;
                 }
                 break;
         }
 
-        //System.out.println("(Q)  " + hitVect.toString());
-
         BlockPos offset = FlatScreenHelper.MultiBlockOffset(this); //unprojected offset in the multiblock
         hitVect = hitVect.add(new Vec3d(offset.getX(), offset.getY(), 0));
-
-        //System.out.println("(F) " + hitVect.toString());
 
         double x = (double) origin().buffer().getViewportWidth() / getHelper().displayWidth;
         x*= hitVect.x;
@@ -208,7 +206,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
         if(!isLoaded()) //for some reason this fails for multiparts on clientside sometimes, so we have to check it -.-
             onLoad();
 
-        joinNetwork();
+        if(!isClient() && !joinedNetwork)
+            joinNetwork();
 
         if(!getMultiblock().initialized()) {
             getMultiblock().initialize();
@@ -219,11 +218,10 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
             multiblockInvalid = false;
         }
 
-        if(!isOrigin())
-            return;
-
-        if(isClient() || isConnected())
-            buffer().update();
+        if(isOrigin()) {
+            if (isClient() || isConnected())
+                buffer().update();
+        }
     }
 
     public EnumFacing facing(){

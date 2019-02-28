@@ -29,8 +29,7 @@ public class BlockRecipeDictionary extends ocComponentBlock implements ITileEnti
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side,
-                                    float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         // Only execute on the server
         if (world.isRemote) {
             return true;
