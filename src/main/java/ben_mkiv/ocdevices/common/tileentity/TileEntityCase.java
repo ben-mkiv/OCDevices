@@ -10,8 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import java.util.HashSet;
 
 public class TileEntityCase extends Case implements ColoredTile {
-
-    HashSet<EnumFacing> connectToSides = new HashSet<>();
+    final HashSet<EnumFacing> connectToSides = new HashSet<>();
 
     public TileEntityCase(int tier){
         super(tier);
@@ -36,7 +35,7 @@ public class TileEntityCase extends Case implements ColoredTile {
         return super.hasCapability(capability, facing);
     }
 
-    public static int getTierFromConfig(String caseName){
+    static int getTierFromConfig(String caseName){
         return Config.getConfig().getCategory("cases").get(caseName).getInt() - 1;
     }
 

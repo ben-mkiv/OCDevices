@@ -16,9 +16,9 @@ import java.awt.*;
 public class RenderCase extends TileEntitySpecialRenderer<TileEntityCase> {
 
     public static class statusLED{
-        Vec3d ledLocation;
-        float ledWidth, ledHeight;
-        EnumFacing ledSide;
+        final Vec3d ledLocation;
+        final float ledWidth, ledHeight;
+        final EnumFacing ledSide;
 
         public statusLED(Vec3d pos, float width, float height, EnumFacing side){
             ledLocation = pos;
@@ -57,7 +57,7 @@ public class RenderCase extends TileEntitySpecialRenderer<TileEntityCase> {
         }
     }
 
-    private statusLED powerLED, hddLED;
+    private final statusLED powerLED, hddLED;
 
     public RenderCase(statusLED power, statusLED hdd){
         powerLED = power;

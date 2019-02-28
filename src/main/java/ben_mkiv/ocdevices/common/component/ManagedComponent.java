@@ -10,13 +10,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class ManagedComponent {
-    private ItemStackHandler inventory = new ItemStackHandler(1);
+    private final ItemStackHandler inventory = new ItemStackHandler(1);
+    private final ManagedComponentHost componentHost;
+
     private ManagedEnvironment environment;
     private String boundToAddress = "";
-    private ManagedComponentHost componentHost;
 
-    private boolean autoConnectToHost = false;
-    private boolean autoBind = false;
+    private boolean autoConnectToHost;
+    private boolean autoBind;
 
 
     public ManagedComponent(ManagedComponentHost host, boolean connectToHost, boolean bind){

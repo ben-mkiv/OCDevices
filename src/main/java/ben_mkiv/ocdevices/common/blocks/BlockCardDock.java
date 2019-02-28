@@ -13,6 +13,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class BlockCardDock extends ocComponentBlock implements ITileEntityProvider {
     public static final int GUI_ID = 1;
     public static final String NAME = "card_dock";
@@ -23,7 +25,7 @@ public class BlockCardDock extends ocComponentBlock implements ITileEntityProvid
     }
 
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
+    public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
         return new TileEntityCardDock();
     }
 
@@ -43,7 +45,7 @@ public class BlockCardDock extends ocComponentBlock implements ITileEntityProvid
     }
 
 
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest){
+    public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest){
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityCardDock) {

@@ -14,16 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ManagedDatabaseComponent implements Database, ManagedEnvironment {
-    final static String NAME = "managed_database";
+    private final static String NAME = "managed_database";
 
-    ItemStackHandler inventory;
-    EnvironmentHost host;
-    Node node;
-    String databaseName;
+    private final Node node;
+
+    private ItemStackHandler inventory;
+    private String databaseName;
 
     public ManagedDatabaseComponent(EnvironmentHost container, int size, String dbName){
         inventory = new ItemStackHandler(size);
-        host = container;
         node = Network.newNode(this, Visibility.Network).withComponent(NAME).withConnector(16).create();
         databaseName = dbName;
     }

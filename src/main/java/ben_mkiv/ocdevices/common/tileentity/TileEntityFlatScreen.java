@@ -14,11 +14,10 @@ import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.network.*;
 import li.cil.oc.api.prefab.TileEntityEnvironment;
 import li.cil.oc.common.block.property.PropertyRotatable;
-import li.cil.oc.common.capabilities.Capabilities;
-import li.cil.oc.common.capabilities.CapabilitySidedEnvironment;
-import li.cil.oc.common.capabilities.CapabilitySidedEnvironment$;
 import li.cil.oc.common.tileentity.Keyboard;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -29,6 +28,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -38,22 +38,27 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 
 
 //todo: implement packets for color, rotation, touchMode state, ... changes instead of syncing whole NBT
-public class TileEntityFlatScreen extends TileEntityEnvironment implements EnvironmentHost, ITickable, Analyzable {
+//todo: add redstone support?
+//todo: add arrow or more generic hit by entity support?
+
+public class TileEntityFlatScreen extends TileEntityEnvironment implements SidedEnvironment, EnvironmentHost, ITickable, Analyzable {
     private final FlatScreenComponent buffer;
     private final boolean isClient;
 
     public ArrayList<AxisAlignedBB> boundingBoxes = new ArrayList<>(Arrays.asList(FULL_BLOCK_AABB));
 
-    private FlatScreen data = new FlatScreen();
+    private final FlatScreen data = new FlatScreen();
     private EnumFacing yaw, pitch;
     private int color = 0;
     private boolean isTouchModeInverted = false;
+    private final HashMap<EntityLivingBase, Vec3i> walkMap = new HashMap<>();
 
     public FlatScreenMultiblock flatScreenMultiblock = new FlatScreenMultiblock(this);
 
@@ -86,6 +91,33 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         }
     }
 
+    private void walk(EntityLivingBase entity, Vec3i pos){
+        if(walkMap.containsKey(entity) && walkMap.get(entity).equals(pos))
+            return;
+
+        walkMap.remove(entity);
+        walkMap.put(entity, pos);
+        node().sendToReachable("computer.signal", "walk", pos.getX(), pos.getY());
+    }
+
+    public void walk(Entity entity){
+        if(isClient || !(entity instanceof EntityLivingBase))
+            return;
+
+        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this);
+        origin().walk((EntityLivingBase) entity, new Vec3i(offset.getX() + 1, offset.getY() + 1, 0));
+    }
+
+    @Override
+    public Node sidedNode(EnumFacing face){
+        return canConnect(face) ? node() : null;
+    }
+
+    @Override
+    public boolean canConnect(EnumFacing face){
+        return !face.equals(facing()) || getKeyboard(face) != null;
+    }
+
     private void pauseMachine(){
         if(node() == null || node().network() == null)
             return;
@@ -99,52 +131,71 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         }
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        if (node() != null)
+            node().remove();
+    }
+
     boolean isConnected(){
         return node() != null && node().network() != null;
     }
 
     void joinNetwork(){
-        if(!isConnected()) API.network.joinOrCreateNetwork(this);
+        if(!isClient() && !isConnected()) API.network.joinOrCreateNetwork(this);
     }
 
     boolean isClient(){
         return isClient;
     }
 
+    //todo: rewrite the rotate methods to easy math like in pitch subcase
     public boolean touchEvent(EntityPlayer player, EnumFacing side, Vec3d hitVect){
         if(!side.equals(facing()))
             return false;
 
-        System.out.println("(+) touch event: " + hitVect.toString());
-
-        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this);
-        int offsetX = offset.getX();
-        int offsetY = offset.getY();
+        //System.out.println("(+) " + hitVect.toString());
 
         switch(yaw()) {
-            case EAST: hitVect = hitVect.rotateYaw((float) Math.toRadians(-90)).addVector(1, 0, 0); break;
-            case WEST: hitVect = hitVect.rotateYaw((float) Math.toRadians(90)); break;
+            case NORTH:
+                hitVect = hitVect.rotateYaw((float) Math.toRadians(-180)).addVector(1, 0, 0); break;
+            case EAST:
+                hitVect = hitVect.rotateYaw((float) Math.toRadians(-90)).addVector(1, 0, 0); break;
+            case WEST:
+                hitVect = hitVect.rotateYaw((float) Math.toRadians(90)); break;
         }
 
         switch(pitch()){
-            case DOWN: hitVect = hitVect.rotatePitch((float) Math.toRadians(90)); break;
-            case UP:   hitVect = hitVect.rotatePitch((float) Math.toRadians(-90)); break;
+            case DOWN:
+                hitVect = hitVect.rotatePitch((float) Math.toRadians(-90));
+                switch(yaw()){
+                    case NORTH:
+                    case WEST: hitVect = new Vec3d(hitVect.x, 1-hitVect.y, 0); break;
+                    case SOUTH:
+                    case EAST: hitVect = new Vec3d(hitVect.x, -hitVect.y, 0); break;
+                }
+                break;
+            case UP:
+                hitVect = hitVect.rotatePitch((float) Math.toRadians(-90));
+                switch(yaw()){
+                    case EAST:
+                    case SOUTH: hitVect = hitVect.addVector(0, 1, 0); break;
+                }
+                break;
         }
 
-        hitVect = hitVect.add(new Vec3d(offsetX, offsetY, 0));
+        //System.out.println("(Q)  " + hitVect.toString());
 
-        System.out.println("x/y: " + offsetX + "/" + offsetY);
-        System.out.println("(F) touch event: " + hitVect.toString());
+        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this); //unprojected offset in the multiblock
+        hitVect = hitVect.add(new Vec3d(offset.getX(), offset.getY(), 0));
 
-        double x = 0, y = 0;
+        //System.out.println("(F) " + hitVect.toString());
 
-        int resolutionX = origin().buffer().getViewportWidth();
-        int resolutionY = origin().buffer().getViewportHeight();
-
-        x = (double) origin().buffer().getViewportWidth() / getHelper().displayWidth;
+        double x = (double) origin().buffer().getViewportWidth() / getHelper().displayWidth;
         x*= hitVect.x;
 
-        y = (double) origin().buffer().getViewportHeight() / getHelper().displayHeight;
+        double y = (double) origin().buffer().getViewportHeight() / getHelper().displayHeight;
         y*= (getHelper().displayHeight - hitVect.y);
 
         origin().buffer().mouseDown(x, y, 0, player);
@@ -156,6 +207,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     public void update(){
         if(!isLoaded()) //for some reason this fails for multiparts on clientside sometimes, so we have to check it -.-
             onLoad();
+
+        joinNetwork();
 
         if(!getMultiblock().initialized()) {
             getMultiblock().initialize();
@@ -185,8 +238,8 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         HashSet<TileEntity> keyboards = new HashSet<>();
         for(TileEntityFlatScreen screen : getScreens()){
             // check for keyboard in same block/tile
-            if(MultiPartHelper.getKeyboardFromTile(this) != null)
-                keyboards.add(MultiPartHelper.getKeyboardFromTile(this));
+            if(MultiPartHelper.getKeyboardFromTile(screen) != null)
+                keyboards.add(MultiPartHelper.getKeyboardFromTile(screen));
             // check for adjacent keyboards
             for(EnumFacing side : EnumFacing.values())
                 if(screen.getKeyboard(side) != null)
@@ -224,7 +277,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox(){
+    public @Nonnull AxisAlignedBB getRenderBoundingBox(){
         return getMultiblock().getBoundingBox();
     }
 
@@ -259,7 +312,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
     @Override
     public void onLoad(){
         super.onLoad();
-        joinNetwork();
         updateRotation(getWorld().getBlockState(getPos()));
         loaded = true;
     }
@@ -353,14 +405,14 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
 
     @Override
     public void markDirty(){
-        if(getWorld() == null) return;
+        if(isClient() || getWorld() == null) return;
         IBlockState state = getWorld().getBlockState(getPos());
         getWorld().notifyBlockUpdate(getPos(), state, state, 3);
         super.markDirty();
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
+    public @Nonnull NBTTagCompound getUpdateTag() {
         NBTTagCompound nbt = super.getUpdateTag();
         return writeToNBT(nbt);
     }
@@ -410,19 +462,10 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
         if(screen == null || screen.isInvalid())
             return false;
 
-        if(!screen.yaw().equals(origin().yaw()))
+        if(!screen.yaw().equals(origin().yaw()) || !screen.pitch().equals(origin().pitch()))
             return false;
 
-        if(!screen.pitch().equals(origin().pitch()))
-            return false;
-
-        if(screen.tier() != origin().tier())
-            return false;
-
-        if(screen.getColor() != origin().getColor())
-            return false;
-
-        return true;
+        return screen.tier() == origin().tier() && screen.getColor() == origin().getColor();
     }
 
 
@@ -434,18 +477,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Envir
 
         isTouchModeInverted = state;
         markDirty();
-    }
-
-    // only connect to keyboards on the front face
-    @Override
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing){
-        if(!facing().equals(facing))
-            return super.hasCapability(capability, facing);
-
-        if(!Capabilities.EnvironmentCapability.equals(capability) && !Capabilities.SidedEnvironmentCapability.equals(capability))
-            return super.hasCapability(capability, facing);
-
-        return getKeyboard(facing) != null;
     }
 
     // Environment Host Interface

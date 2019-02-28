@@ -23,10 +23,7 @@ public class ManagedDatabaseDriver implements DriverItem, EnvironmentProvider, H
 
     @Override
     public boolean worksWith(ItemStack stack, Class<? extends EnvironmentHost> host) {
-        if(!worksWith(stack))
-            return false;
-
-        return true;
+        return worksWith(stack);
     }
 
     @Override

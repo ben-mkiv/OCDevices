@@ -1,8 +1,5 @@
 package ben_mkiv.ocdevices.config;
-
-/**
- * @author ben_mkiv, based on MinecraftByExample Templates
- */
+// @author ben_mkiv, based on MinecraftByExample Templates
 import java.io.File;
 import java.util.HashMap;
 

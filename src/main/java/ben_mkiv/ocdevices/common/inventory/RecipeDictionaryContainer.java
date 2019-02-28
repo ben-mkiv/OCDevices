@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 
 public class RecipeDictionaryContainer extends Container {
 
-    private TileEntityRecipeDictionary te;
+    private final TileEntityRecipeDictionary te;
 
     public RecipeDictionaryContainer(IInventory playerInventory, TileEntity te) {
         this.te = (TileEntityRecipeDictionary) te;

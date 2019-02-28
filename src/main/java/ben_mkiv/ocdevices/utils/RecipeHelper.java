@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RecipeHelper{
-    public ArrayList<IRecipe> recipeCache = new ArrayList<>();
-    ItemStack recipeOutput = ItemStack.EMPTY;
+    public final ArrayList<IRecipe> recipeCache = new ArrayList<>();
 
     public RecipeHelper(ItemStack output){
-        recipeOutput = output.copy();
+        ItemStack recipeOutput = output.copy();
 
         for(IRecipe recipe : CraftingManager.REGISTRY){
             if(!recipe.getRecipeOutput().getItem().equals(recipeOutput.getItem()))

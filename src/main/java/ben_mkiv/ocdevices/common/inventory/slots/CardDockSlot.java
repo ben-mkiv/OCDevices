@@ -11,7 +11,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class CardDockSlot extends SlotItemHandler {
-    protected TileEntityCardDock tileEntity;
+    private final TileEntityCardDock tileEntity;
 
     public CardDockSlot(TileEntityCardDock tileEntity, IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);

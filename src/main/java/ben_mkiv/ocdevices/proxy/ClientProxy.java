@@ -15,6 +15,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
@@ -42,10 +43,13 @@ public class ClientProxy extends CommonProxy{
         public ColorHandler() {}
 
         @Override
-        public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex){
+        public int colorMultiplier(@Nonnull IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex){
+            if(pos == null)
+                return 0;
+
             TileEntity te = worldIn.getTileEntity(pos);
 
-            int color = te != null && te instanceof ColoredTile ? ((Colored) te).getColor() : 0;
+            int color = te instanceof ColoredTile ? ((Colored) te).getColor() : 0;
 
             if(color >= 0 && color <= 15)
                 color = EnumDyeColor.values()[color].getColorValue();

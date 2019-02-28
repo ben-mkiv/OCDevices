@@ -34,6 +34,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.logging.Logger;
 
 @Mod(
@@ -47,7 +48,7 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190227";
+    public static final String VERSION = "snapshot_20190228";
 
     public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
 
@@ -178,7 +179,7 @@ public class OCDevices {
 
         @Override
         @SideOnly(Side.CLIENT)
-        public ItemStack getTabIconItem() {
+        public @Nonnull ItemStack getTabIconItem() {
             return new ItemStack(Item.getItemFromBlock(BlockFlatScreen.DEFAULTITEM));
         }
     }

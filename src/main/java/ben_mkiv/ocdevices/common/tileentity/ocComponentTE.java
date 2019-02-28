@@ -11,9 +11,9 @@ import net.minecraftforge.fml.common.Optional;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
 public class ocComponentTE extends TileEntityEnvironment implements ITickable, ManagedEnvironment {
-    boolean addedToNetwork;
-    String name = "defaultComponent";
-    Visibility visibility;
+    private boolean addedToNetwork;
+    private final String name;
+    private Visibility visibility;
 
     public ocComponentTE(String name, Visibility visibility) {
         this.name = name;

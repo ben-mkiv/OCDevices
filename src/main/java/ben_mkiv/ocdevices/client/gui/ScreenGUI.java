@@ -14,14 +14,14 @@ public class ScreenGUI extends Screen {
     }
 
     static class ScreenCallbacks {
-        static Function0<Object> hasPower = new AbstractFunction0<Object>() {
+        static final Function0<Object> hasPower = new AbstractFunction0<Object>() {
             @Override
             public Object apply() {
                 return screen instanceof TileEntityFlatScreen && ((TileEntityFlatScreen) screen).buffer().getPowerState();
             }
         };
 
-        static Function0<Object> hasKeyboard = new AbstractFunction0<Object>() {
+        static final Function0<Object> hasKeyboard = new AbstractFunction0<Object>() {
             @Override
             public Object apply() {
                 return screen instanceof TileEntityFlatScreen && ((TileEntityFlatScreen) screen).hasKeyboard();

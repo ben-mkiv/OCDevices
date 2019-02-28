@@ -9,6 +9,7 @@ import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Case;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import mcmultipart.util.MCMPWorldWrapper;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,6 +20,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 public class BlockCase extends Case {
     public static final int tier = Tier.Three();
@@ -33,15 +36,13 @@ public class BlockCase extends Case {
 
     @Deprecated
     @Override
-    public boolean isFullBlock(IBlockState state)
-    {
+    public boolean isFullBlock(IBlockState state){
         return true;
     }
 
     @Deprecated
     @Override
-    public boolean isFullCube(IBlockState state)
-    {
+    public boolean isFullCube(IBlockState state){
         return false;
     }
 
@@ -83,7 +84,7 @@ public class BlockCase extends Case {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+    public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
         EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
         return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw);
     }

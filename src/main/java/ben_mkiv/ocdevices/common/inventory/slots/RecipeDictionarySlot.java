@@ -8,7 +8,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class RecipeDictionarySlot extends SlotItemHandler {
-    protected TileEntityRecipeDictionary tileEntity;
+    private final TileEntityRecipeDictionary tileEntity;
 
     public RecipeDictionarySlot(TileEntityRecipeDictionary tileEntity, IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);

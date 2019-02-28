@@ -2,7 +2,6 @@ package ben_mkiv.ocdevices.client.gui;
 
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.inventory.CardDockContainer;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityCardDock;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,21 +9,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class CardDockGUI extends GuiContainer {
-    public static final int WIDTH = 175;
-    public static final int HEIGHT = 195;
-
-    TileEntityCardDock te;
+    private static final int WIDTH = 175;
+    private static final int HEIGHT = 195;
 
     private static final ResourceLocation background = new ResourceLocation(OCDevices.MOD_ID, "textures/gui/carddock.png");
 
     public CardDockGUI(InventoryPlayer inventoryPlayer, TileEntity tileEntity) {
         super(new CardDockContainer(inventoryPlayer, tileEntity));
-        te = (TileEntityCardDock) tileEntity;
         xSize = WIDTH;
         ySize = HEIGHT;
     }
 
-    void drawCenteredString(String string, int y, int color){
+    private void drawCenteredString(String string, int y, int color){
         FontRenderer fr = mc.fontRenderer;
         fr.drawString(string, getXSize()/2 - fr.getStringWidth(string)/2, y, color);
     }

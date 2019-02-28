@@ -11,10 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class RecipeDictionaryGUI extends GuiContainer {
-    public static final int WIDTH = 175;
-    public static final int HEIGHT = 195;
+    private static final int WIDTH = 175;
+    private static final int HEIGHT = 195;
 
-    TileEntityRecipeDictionary te;
+    private final TileEntityRecipeDictionary te;
 
     private static final ResourceLocation background = new ResourceLocation(OCDevices.MOD_ID, "textures/gui/recipe_dictionary.png");
 
@@ -25,7 +25,7 @@ public class RecipeDictionaryGUI extends GuiContainer {
         ySize = HEIGHT;
     }
 
-    void drawCenteredString(String string, int y, int color){
+    private void drawCenteredString(String string, int y, int color){
         mc.fontRenderer.drawString(string, getXSize()/2 - mc.fontRenderer.getStringWidth(string)/2, y, color);
     }
 
@@ -33,7 +33,7 @@ public class RecipeDictionaryGUI extends GuiContainer {
         mc.fontRenderer.drawString(string, x, y, color);
     }
 
-    void drawStringAlignRight(String string, int x, int y, int color){
+    private void drawStringAlignRight(String string, int x, int y, int color){
         mc.fontRenderer.drawString(string, x-mc.fontRenderer.getStringWidth(string), y, color);
     }
 

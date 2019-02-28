@@ -11,10 +11,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class BlockCase_workstation extends BlockCase {
     public static final String NAME = "case_workstation";
     public static Block DEFAULTITEM;
-    static final AxisAlignedBB bb = new AxisAlignedBB(1d/16 * 2, 0, 0, 1d/16 * 14, 1, 1);
+    private static final AxisAlignedBB bb = new AxisAlignedBB(1d/16 * 2, 0, 0, 1d/16 * 14, 1, 1);
 
     public BlockCase_workstation(){
         super(NAME);
@@ -22,7 +24,7 @@ public class BlockCase_workstation extends BlockCase {
 
     @Deprecated
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public @Nonnull AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         TileEntity te = source.getTileEntity(pos);
 
         if(te instanceof TileEntityCase_workstation)

@@ -36,9 +36,9 @@ import java.util.*;
 
 public class TileEntityRecipeDictionary extends ocComponentHostTE {
 
-    ItemStackHandler itemInventory;
+    private final ItemStackHandler itemInventory;
 
-    ArrayList<ManagedDatabaseComponent> databases = new ArrayList<>();
+    private final ArrayList<ManagedDatabaseComponent> databases = new ArrayList<>();
 
     public TileEntityRecipeDictionary() {
         super("recipedict", 1, false, true, false, Visibility.Network);
@@ -284,7 +284,7 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
         return new Object[]{ list.toArray() };
     }
 
-    ManagedDatabaseComponent getDatabaseByName(String name){
+    private ManagedDatabaseComponent getDatabaseByName(String name){
         for(ManagedDatabaseComponent db : databases)
             if(db.getDbName().equals(name))
                 return db;
@@ -304,9 +304,8 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
         }
 
         try {
-            Item item = Item.getByNameOrId(args.checkString(0+argumentsOffsets));
-            ItemStack itemStack = new ItemStack(item, 1, args.optInteger(1+argumentsOffsets, 0));
-            return itemStack;
+            Item item = Item.getByNameOrId(args.checkString(argumentsOffsets));
+            return item != null ? new ItemStack(item, 1, args.optInteger(argumentsOffsets + 1, 0)) : ItemStack.EMPTY;
         } catch (Exception ex){
             return ItemStack.EMPTY;
         }
@@ -424,7 +423,7 @@ public class TileEntityRecipeDictionary extends ocComponentHostTE {
 
 
     @Override
-    public NBTTagCompound getUpdateTag() {
+    public @Nonnull NBTTagCompound getUpdateTag() {
         return writeToNBT(super.getUpdateTag());
     }
 

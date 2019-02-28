@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public class ocComponentBlock extends Block implements DriverItem, HostAware, EnvironmentProvider {
-    private Class componentClass;
-    private int tier = Tier.One();
+    private final Class componentClass;
+    private final int tier = Tier.One();
 
     public static ocComponentBlock blockDefault;
     public static Item itemDefault;

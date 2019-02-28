@@ -2,7 +2,6 @@ package ben_mkiv.ocdevices.common.drivers;
 
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.item.HostAware;
@@ -15,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class FlatScreenDriver extends BlockFlatScreen implements DriverItem, EnvironmentProvider, HostAware {
-    public static FlatScreenDriver driver = new FlatScreenDriver();
+    public final static FlatScreenDriver driver = new FlatScreenDriver();
 
     @Override
     public boolean worksWith(ItemStack stack) {
@@ -34,10 +33,6 @@ public class FlatScreenDriver extends BlockFlatScreen implements DriverItem, Env
 
     @Override
     public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost container) {
-        return createEnvironment(container);
-    }
-
-    public FlatScreenComponent createEnvironment(EnvironmentHost container) {
         return new FlatScreenComponent(container);
     }
 

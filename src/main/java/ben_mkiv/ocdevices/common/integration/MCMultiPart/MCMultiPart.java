@@ -6,7 +6,6 @@ import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.blocks.BlockCase_ibm_5150;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.blocks.BlockKeyboard;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.blocks.CaseMultipart_ibm_5150;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.blocks.FlatScreenMultipart;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.blocks.KeyboardMultipart;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase_ibm_5150;
@@ -50,7 +49,7 @@ import java.util.Map;
 
 @MCMPAddon
 public class MCMultiPart implements IMCMPAddon {
-    HashSet<BlockMultipart> multipartBlocks = new HashSet<>();
+    private final HashSet<BlockMultipart> multipartBlocks = new HashSet<>();
 
     public MCMultiPart(){
         OCDevices.MCMultiPart = true;

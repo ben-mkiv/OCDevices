@@ -8,10 +8,8 @@ import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import ben_mkiv.ocdevices.utils.UtilsCommon;
 import li.cil.oc.common.Tier;
-import li.cil.oc.common.block.Screen;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import li.cil.oc.common.block.property.PropertyTile;
-import mcmultipart.util.MCMPWorldWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -29,6 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -41,7 +40,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
-import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 
 public class BlockFlatScreen extends Block implements ITileEntityProvider {
     public final static int tier = Tier.Four();
@@ -61,7 +59,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
     @Deprecated
     @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos){
+    public @Nonnull AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos){
         if(Minecraft.getMinecraft().player.isSneaking())
             return FULL_BLOCK_AABB.offset(pos);
 
@@ -69,7 +67,8 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
+    @Deprecated
+    public @Nonnull EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.INVISIBLE;
     }
 
@@ -93,7 +92,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
     @Override
     @Deprecated
-    public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, AxisAlignedBB entityBox,
+    public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
                                       @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entity, boolean advanced) {
 
         TileEntityFlatScreen te = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
@@ -129,12 +128,12 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
+    public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
         return new TileEntityFlatScreen();
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+    public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
         EnumFacing yaw = UtilsCommon.getYawForPlacement(placer, pos, facing);
         EnumFacing pitch = UtilsCommon.getPitchForPlacement(placer, pos, facing);
 
@@ -146,9 +145,9 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest){
+    public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest){
         TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        screen.getMultiblock().split();
+        if(screen != null) screen.getMultiblock().split();
 
         return super.removedByPlayer(state, world, pos, player, willHarvest);
     }
@@ -157,25 +156,24 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     // avoid to connect to fences/glass panes
     @Override
     @Deprecated
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+    public @Nonnull BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return BlockFaceShape.CENTER;
     }
 
-
-    //todo: clean those up
-    public ExtendedBlockState createBlockState() {
-        return new ExtendedBlockState(this, ((new IProperty[]{PropertyRotatable.Pitch(), PropertyRotatable.Yaw()})), (IUnlistedProperty[])((Object[])(new IUnlistedProperty[]{PropertyTile.Tile()})));
+    public @Nonnull ExtendedBlockState createBlockState() {
+        return new ExtendedBlockState(this, ((new IProperty[]{PropertyRotatable.Pitch(), PropertyRotatable.Yaw()})), ((new IUnlistedProperty[]{PropertyTile.Tile()})));
     }
 
     public int getMetaFromState(IBlockState state) {
-        return ((Enum)state.getValue(PropertyRotatable.Pitch())).ordinal() << 2 | (state.getValue(PropertyRotatable.Yaw())).getHorizontalIndex();
+        return state.getValue(PropertyRotatable.Pitch()).ordinal() << 2 | state.getValue(PropertyRotatable.Yaw()).getHorizontalIndex();
     }
 
-    public IBlockState getStateFromMeta(int meta) {
+    @Deprecated
+    public @Nonnull IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(PropertyRotatable.Pitch(), EnumFacing.getFront(meta >> 2)).withProperty(PropertyRotatable.Yaw(), EnumFacing.getHorizontal(meta & 3));
     }
 
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public @Nonnull IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
 
         if (state instanceof IExtendedBlockState && tile instanceof TileEntityFlatScreen) {
@@ -212,8 +210,38 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         pos = origin.getPos();
 
         // open screen gui
-        player.openGui(OCDevices.MOD_ID, GUI_ID, MCMultiPart.getRealWorld(origin), pos.getX(), pos.getY(), pos.getZ());
-        return true;
+        if(origin.buffer().getPowerState()) {
+            player.openGui(OCDevices.MOD_ID, GUI_ID, MCMultiPart.getRealWorld(origin), pos.getX(), pos.getY(), pos.getZ());
+            return true;
+        }
+        else {
+            player.sendStatusMessage(new TextComponentString("screen isnt powered"), true);
+        }
+
+        return false;
     }
+
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entityIn){
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen == null)
+            super.onEntityWalk(world, pos, entityIn);
+        else
+            screen.walk(entityIn);
+    }
+
+    @Override
+    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn){
+        // return if the entity is not supposed to activate the current block (as it can collide with multiple blocks)
+        if(!entityIn.getPosition().equals(pos))
+            return;
+
+        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen == null)
+            super.onEntityCollidedWithBlock(world, pos, state, entityIn);
+        else if(screen.pitch().equals(EnumFacing.UP))
+            screen.walk(entityIn);
+    }
+
 
 }

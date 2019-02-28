@@ -1,7 +1,7 @@
 package ben_mkiv.ocdevices.utils;
 
 public class Triangle{
-    public float a, b, c, alpha, beta, gamma = 90;
+    public final float a, b, c, alpha, beta, gamma = 90;
 
     public Triangle(float a, float b){
         this.a = a;

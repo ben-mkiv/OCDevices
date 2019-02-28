@@ -13,10 +13,10 @@ import java.util.*;
 public class FlatScreenMultiblock {
 
     private TileEntityFlatScreen origin;
-    private FlatScreenHelper helper = new FlatScreenHelper();
+    private final FlatScreenHelper helper = new FlatScreenHelper();
     private int width = 0, height = 0;
 
-    private HashSet<TileEntityFlatScreen> screens = new HashSet<>();
+    private final HashSet<TileEntityFlatScreen> screens = new HashSet<>();
 
     private AxisAlignedBB boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 

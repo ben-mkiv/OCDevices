@@ -5,7 +5,7 @@ import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityMultipart implements IMultipartTile {
-    protected TileEntity tile;
+    protected final TileEntity tile;
     private String id;
     private IPartInfo partInfo;
 

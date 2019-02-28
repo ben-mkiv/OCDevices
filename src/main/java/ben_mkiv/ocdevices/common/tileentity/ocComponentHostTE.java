@@ -20,11 +20,11 @@ import java.util.ArrayList;
 
 //todo: refactor to interface/class instead of extending the oc tile
 public class ocComponentHostTE extends ocComponentTE implements ManagedComponentHost, Analyzable {
-    ComponentInventory componentInventory;
+    final ComponentInventory componentInventory;
 
-    private boolean componentInventoryAccessable = false;
+    private final boolean componentInventoryAccessable;
 
-    ArrayList<ManagedComponent> components = new ArrayList<>();
+    final ArrayList<ManagedComponent> components = new ArrayList<>();
 
     public ocComponentHostTE(String name, int componentCount, boolean inventoryAccess, boolean connectToHost, boolean bind, Visibility visibility){
         super(name, visibility);

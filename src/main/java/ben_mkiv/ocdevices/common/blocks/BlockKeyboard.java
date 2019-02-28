@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class BlockKeyboard extends Keyboard {
     public final static String NAME = "keyboard";
     public static Block DEFAULTITEM;
@@ -80,7 +82,7 @@ public class BlockKeyboard extends Keyboard {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+    public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
         EnumFacing pitch = facing.getAxis().equals(EnumFacing.Axis.Y) ? facing : EnumFacing.NORTH;
         EnumFacing yaw = !facing.getAxis().equals(EnumFacing.Axis.Y) ? facing : EnumFacing.fromAngle(placer.rotationYaw);
 

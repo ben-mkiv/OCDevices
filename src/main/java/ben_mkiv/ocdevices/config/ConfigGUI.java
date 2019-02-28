@@ -1,8 +1,5 @@
 package ben_mkiv.ocdevices.config;
-
-/**
- * @author ben_mkiv, based on MinecraftByExample Templates
- */
+// @author ben_mkiv, based on MinecraftByExample Templates
 import ben_mkiv.ocdevices.OCDevices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -56,7 +53,7 @@ public class ConfigGUI implements IModGuiFactory {
         }
 
         private static List<IConfigElement> getConfigElements() {
-            List<IConfigElement> list = new ArrayList<IConfigElement>();
+            List<IConfigElement> list = new ArrayList<>();
             list.add(new DummyConfigElement.DummyCategoryElement("recipedict", "gui.config.recipedict", CategoryEntryCustom.class));
             list.add(new DummyConfigElement.DummyCategoryElement("cases", "gui.config.cases", CategoryEntryCustom.class));
             //list.add(new DummyConfigElement.DummyCategoryElement("client", "gui.config.client", CategoryEntryCustom.class));
