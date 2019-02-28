@@ -1,17 +1,15 @@
 package ben_mkiv.ocdevices.common.component;
 
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.EnvironmentHost;
 import li.cil.oc.api.network.Node;
-import li.cil.oc.common.component.Screen;
 import li.cil.oc.common.component.TextBuffer;
-import scala.runtime.BoxesRunTime;
+import net.minecraft.tileentity.TileEntity;
 
 
 public class FlatScreenComponent extends TextBuffer {
@@ -29,7 +27,7 @@ public class FlatScreenComponent extends TextBuffer {
 
     public void onConnect(Node node){
         if(node.host() instanceof li.cil.oc.server.component.Keyboard)
-            if(isKeyboardInMultiblock(node))
+            if(isKeyboardAdjacent(node))
                 node.connect(node());
 
         super.onConnect(node);
@@ -39,9 +37,12 @@ public class FlatScreenComponent extends TextBuffer {
         return (TileEntityFlatScreen) host();
     }
 
-    private boolean isKeyboardInMultiblock(Node node){
-        TileEntityKeyboard keyboard = MultiPartHelper.getKeyboardFromTile(screen());
-        return keyboard != null && keyboard.node() != null && keyboard.node().equals(node);
+    private boolean isKeyboardAdjacent(Node node){
+        for(TileEntity keyboard : flatScreen().getKeyboards())
+            if(keyboard instanceof Environment && ((Environment) keyboard).node() != null && ((Environment) keyboard).node().equals(node))
+                return true;
+
+        return false;
     }
 
     private TileEntityFlatScreen flatScreen(){

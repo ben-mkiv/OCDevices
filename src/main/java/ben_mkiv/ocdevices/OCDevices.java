@@ -47,7 +47,7 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190204";
+    public static final String VERSION = "snapshot_20190227";
 
     public static final CreativeTab creativeTab = new CreativeTab(MOD_NAME);
 

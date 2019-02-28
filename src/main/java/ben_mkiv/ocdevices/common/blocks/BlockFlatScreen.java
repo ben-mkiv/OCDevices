@@ -44,7 +44,7 @@ import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 
 public class BlockFlatScreen extends Block implements ITileEntityProvider {
-    public final static int tier = Tier.Three();
+    public final static int tier = Tier.Four();
     public final static String NAME = "flat_screen";
     public static Block DEFAULTITEM;
     public static final int GUI_ID = 4;
@@ -120,7 +120,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         for(float f : te.getHelper().getDepthForBlock(te))
             if(f < minDepth) minDepth = f;
 
-        AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - (precision*minDepth), 1, 1, 1) : minimalBB;
+        AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - minDepth, 1, 1, 1) : minimalBB;
 
         bb = AABBHelper.rotateVertical(bb, te.pitch());
         bb = AABBHelper.rotateHorizontal(bb, te.yaw());
