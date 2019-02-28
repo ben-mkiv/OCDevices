@@ -1,11 +1,16 @@
 package ben_mkiv.ocdevices.common.integration.MCMultiPart;
 
+import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class MultiPartHelper {
+    public static World getRealWorld(TileEntity tile){
+        return OCDevices.MCMultiPart ? MCMultiPart.getRealWorld(tile) : tile.getWorld();
+    }
 
     public static TileEntityFlatScreen getScreenFromTile(TileEntity tile){
         if(tile == null || tile.isInvalid())
@@ -14,9 +19,10 @@ public class MultiPartHelper {
         if(tile instanceof TileEntityFlatScreen)
             return (TileEntityFlatScreen) tile;
 
-        for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
-            if(getScreenFromTile(mpTile) != null)
-                return getScreenFromTile(mpTile);
+        if(OCDevices.MCMultiPart)
+            for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
+                if(getScreenFromTile(mpTile) != null)
+                    return getScreenFromTile(mpTile);
 
         return null;
     }
@@ -28,9 +34,10 @@ public class MultiPartHelper {
         if(tile instanceof TileEntityKeyboard)
             return (TileEntityKeyboard) tile;
 
-        for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
-            if(getKeyboardFromTile(mpTile) != null)
-                return getKeyboardFromTile(mpTile);
+        if(OCDevices.MCMultiPart)
+            for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
+                if(getKeyboardFromTile(mpTile) != null)
+                    return getKeyboardFromTile(mpTile);
 
         return null;
     }
@@ -42,9 +49,10 @@ public class MultiPartHelper {
         if(tile instanceof TileEntityCase)
             return (TileEntityCase) tile;
 
-        for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
-            if(getCaseFromTile(mpTile) != null)
-                return getCaseFromTile(mpTile);
+        if(OCDevices.MCMultiPart)
+            for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())
+                if(getCaseFromTile(mpTile) != null)
+                    return getCaseFromTile(mpTile);
 
         return null;
     }

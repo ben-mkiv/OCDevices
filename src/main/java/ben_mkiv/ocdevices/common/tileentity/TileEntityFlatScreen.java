@@ -481,7 +481,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
 
     // Environment Host Interface
     @Override
-    public World world(){ return MCMultiPart.getRealWorld(this); }
+    public World world(){ return MultiPartHelper.getRealWorld(this); }
     @Override
     public double xPosition(){ return getPos().getX(); }
     @Override

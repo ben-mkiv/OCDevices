@@ -59,7 +59,7 @@ public class BlockKeyboard extends Keyboard {
         TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
         if (screen != null) {
             if (world instanceof MCMPWorldWrapper)
-                world = MCMultiPart.getRealWorld(screen);
+                world = MultiPartHelper.getRealWorld(screen);
 
             pos = screen.origin().getPos();
             player.openGui(OpenComputers.ID(), li.cil.oc.common.GuiType.Screen().id(), world, pos.getX(), pos.getY(), pos.getZ());

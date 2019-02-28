@@ -184,14 +184,16 @@ public class MCMultiPart implements IMCMPAddon {
         return list;
     }
 
-    private static IBlockAccess getRealWorldAccess(TileEntity mcmpTile){
+    static IBlockAccess getRealWorldAccess(TileEntity mcmpTile){
         return ((IMultipartBlockAccess) mcmpTile.getWorld()).getActualWorld();
     }
 
-    public static World getRealWorld(TileEntity mcmpTile){
-        if(mcmpTile instanceof IMultipartTile)
-            return getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
+    static World getRealWorld(TileEntity mcmpTile){
+        if(mcmpTile instanceof mcmultipart.api.multipart.IMultipartTile)
+            return MCMultiPart.getRealWorldAccess(mcmpTile).getTileEntity(mcmpTile.getPos()).getWorld();
         else
             return mcmpTile.getWorld();
     }
+
+
 }

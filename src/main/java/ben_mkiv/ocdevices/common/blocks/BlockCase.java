@@ -62,7 +62,7 @@ public class BlockCase extends Case {
         TileEntityCase caseTile = MultiPartHelper.getCaseFromTile(world.getTileEntity(pos));
         if (caseTile != null) {
             if (world instanceof MCMPWorldWrapper)
-                world = MCMultiPart.getRealWorld(caseTile);
+                world = MultiPartHelper.getRealWorld(caseTile);
 
             player.openGui(OCDevices.INSTANCE, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
             return true;

@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.config.Config;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.tileentity.Case;
@@ -26,8 +27,9 @@ public class TileEntityCase extends Case implements ColoredTile {
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing){
-        if(capability == MCMPCapabilities.MULTIPART_TILE)
+        if(OCDevices.MCMultiPart && capability == MCMPCapabilities.MULTIPART_TILE)
             return true;
+
 
         if(!connectToSides.contains(toLocal(facing)))
             return false;

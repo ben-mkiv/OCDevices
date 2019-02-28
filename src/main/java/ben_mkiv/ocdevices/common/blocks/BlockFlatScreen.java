@@ -211,7 +211,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
         // open screen gui
         if(origin.buffer().getPowerState()) {
-            player.openGui(OCDevices.MOD_ID, GUI_ID, MCMultiPart.getRealWorld(origin), pos.getX(), pos.getY(), pos.getZ());
+            player.openGui(OCDevices.MOD_ID, GUI_ID, MultiPartHelper.getRealWorld(origin), pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         else {
