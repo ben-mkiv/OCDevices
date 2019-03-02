@@ -13,7 +13,7 @@ buildscript {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 
-version = "snapshot_20190202"
+version = "snapshot_20190228"
 group = modGroup
 archivesBaseName = modBaseName
 
@@ -48,6 +48,8 @@ dependencies {
     deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
 
     deobfCompile "MCMultiPart2:MCMultiPart:${MCMPVersion}"
+
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 
     // all those just for the case block =>
     provided ("appeng:appliedenergistics2:${ae2Version}:api") {

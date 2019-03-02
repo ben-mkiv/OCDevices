@@ -6,8 +6,11 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import pl.asie.computronics.api.audio.IAudioSource;
+import pl.asie.computronics.oc.driver.DriverCardSound;
 
-public class TileEntityCardDock extends ocComponentHostTE {  
+public class TileEntityCardDock extends ocComponentHostTE implements IAudioSource {
 
     public TileEntityCardDock() {
         super("carddock", 1, true, false, false, Visibility.Neighbors);
@@ -72,5 +75,21 @@ public class TileEntityCardDock extends ocComponentHostTE {
         if(nbt.hasKey("component"))
             components.get(0).readFromNBT(nbt.getCompoundTag("component"));
     }
+
+
+    // Computronics Audio compat
+    @Override
+    public int getSourceId(){
+        if(components.get(0).node() instanceof IAudioSource)
+            return ((IAudioSource) components.get(0).node().host()).getSourceId();
+
+        return -1;
+    }
+
+    @Override
+    public boolean connectsAudio(EnumFacing var1){
+        return components.get(0).node() != null && components.get(0).node().host() instanceof IAudioSource;
+    }
+
 
 }
