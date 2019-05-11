@@ -1,13 +1,14 @@
 package ben_mkiv.ocdevices.common.component;
 
+import ben_mkiv.ocdevices.utils.ocUtils;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.*;
 import li.cil.oc.server.component.Redstone;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+
 
 public class RedstoneComponent extends Redstone.Bundled {
 
@@ -16,7 +17,7 @@ public class RedstoneComponent extends Redstone.Bundled {
     }
 
     @Callback(doc = "function(String:side):boolean; gets the connected block")
-    public Object[] getConnectedBlock(Context context, Arguments args) {
+    public Object[] analyze(Context context, Arguments args) {
         if(args.count() == 0)
             return new Object[] { false, "first argument has to be a valid side" };
 
@@ -31,10 +32,7 @@ public class RedstoneComponent extends Redstone.Bundled {
         if(facing == null)
             return new Object[] { false, "invalid side" };
 
-        IBlockState state = redstone().world().getBlockState(getPos().offset(facing));
-        String blockName = state.getBlock().getRegistryName().toString();
-
-        return new Object[]{ blockName, state.getBlock().getMetaFromState(state) };
+        return new Object[]{ocUtils.analyze(redstone().world(), getPos().offset(facing)) };
     }
 
     private BlockPos getPos(){
