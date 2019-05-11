@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GMG",
+    "TPT",
+    "   "
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "M": {
+      "item": "#opencomputers_chip2"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "T": {
+      "item": "#opencomputers_transistor"
+    }
+  },
+  "result": {
+    "item": "ocdevices:upgrade_tier2"
+  }
+}

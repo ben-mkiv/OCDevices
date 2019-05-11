@@ -1,0 +1,22 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "top": "ocdevices:blocks/rack/top",
+      "bottom": "ocdevices:blocks/rack/top",
+      "front": "ocdevices:blocks/rack/front",
+      "side": "ocdevices:blocks/rack/side"
+    },
+    "model": "ocdevices:rack"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block" }],
+    "facing=north": { "model": "ocdevices:rack" },
+    "facing=south": { "model": "ocdevices:rack", "y": 180 },
+    "facing=west":  { "model": "ocdevices:rack", "y": 270 },
+    "facing=east":  { "model": "ocdevices:rack", "y": 90 }
+  }
+}
+
+

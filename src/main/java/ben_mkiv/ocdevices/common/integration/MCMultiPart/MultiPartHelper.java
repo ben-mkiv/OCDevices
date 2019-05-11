@@ -6,8 +6,13 @@ import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
 public class MultiPartHelper {
+    public static boolean isMultipartCapability(Capability cap){
+        return OCDevices.MCMultiPart && MCMultiPart.isMultipartCapability(cap);
+    }
+
     public static World getRealWorld(TileEntity tile){
         return OCDevices.MCMultiPart ? MCMultiPart.getRealWorld(tile) : tile.getWorld();
     }

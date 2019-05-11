@@ -1,7 +1,7 @@
 package ben_mkiv.ocdevices.common.drivers;
 
-import ben_mkiv.ocdevices.common.blocks.BlockRecipeDictionary;
-import ben_mkiv.ocdevices.common.component.ManagedDatabaseComponent;
+import ben_mkiv.ocdevices.common.blocks.BlockRedstone;
+import ben_mkiv.ocdevices.common.component.RedstoneComponent;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.item.HostAware;
@@ -13,12 +13,12 @@ import li.cil.oc.common.Tier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ManagedDatabaseDriver implements DriverItem, EnvironmentProvider, HostAware {
-    public static ManagedDatabaseDriver driver = new ManagedDatabaseDriver();
+public class RedstoneDriver implements DriverItem, EnvironmentProvider, HostAware {
+    public static final RedstoneDriver driver = new RedstoneDriver();
 
     @Override
     public boolean worksWith(ItemStack stack) {
-        return stack.getItem().equals(new ItemStack(BlockRecipeDictionary.DEFAULTITEM, 1).getItem());
+        return stack.getItem().equals(new ItemStack(BlockRedstone.DEFAULTITEM, 1).getItem());
     }
 
     @Override
@@ -28,22 +28,22 @@ public class ManagedDatabaseDriver implements DriverItem, EnvironmentProvider, H
 
     @Override
     public Class<? extends Environment> getEnvironment(ItemStack stack) {
-        return worksWith(stack) ? ManagedDatabaseComponent.class : null;
+        return worksWith(stack) ? RedstoneComponent.class : null;
     }
 
     @Override
     public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost container) {
-        return new ManagedDatabaseComponent(container, 0, "what?");
+        return new RedstoneComponent(container);
     }
 
     @Override
     public String slot(ItemStack stack){
-        return Slot.None;
+        return Slot.Upgrade;
     }
 
     @Override
     public int tier(ItemStack stack) {
-        return Tier.Four();
+        return Tier.Two();
     }
 
     @Override

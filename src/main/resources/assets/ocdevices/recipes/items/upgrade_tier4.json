@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DMD",
+    "TPT",
+    "DMD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "M": {
+      "item": "#opencomputers_chip3"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "T": {
+      "item": "#opencomputers_transistor"
+    }
+  },
+  "result": {
+    "item": "ocdevices:upgrade_tier4"
+  }
+}

@@ -17,7 +17,6 @@ import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.event.DrawMultipartHighlightEvent;
 import mcmultipart.api.multipart.IMultipartRegistry;
-import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.ref.MCMPCapabilities;
 import mcmultipart.api.slot.IPartSlot;
 import mcmultipart.api.world.IMultipartBlockAccess;
@@ -195,5 +194,8 @@ public class MCMultiPart implements IMCMPAddon {
             return mcmpTile.getWorld();
     }
 
+    static boolean isMultipartCapability(Capability cap){
+        return cap == mcmultipart.api.ref.MCMPCapabilities.MULTIPART_TILE;
+    }
 
 }

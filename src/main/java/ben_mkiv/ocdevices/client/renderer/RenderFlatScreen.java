@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.client.renderer;
 
+import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.Triangle;
@@ -21,19 +22,27 @@ public class RenderFlatScreen extends TileEntitySpecialRenderer<TileEntityFlatSc
         if(!screen.getMultiblock().initialized())
             return;
 
+        //OpenGlHelper.
+
         GlStateManager.disableTexture2D();
+
+        if(OCDevices.Albedo || OCDevices.Optifine)
+            GlStateManager.disableLighting();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
         renderScreenModelTESR(screen.getHelper());
 
-        renderScreenBackground(screen.getHelper());
 
+        renderScreenBackground(screen.getHelper());
         if(screen.buffer().isRenderingEnabled())
             renderScreenContent(screen);
 
         GlStateManager.popMatrix();
+
+        if(OCDevices.Albedo || OCDevices.Optifine)
+            GlStateManager.enableLighting();
 
         GlStateManager.enableTexture2D();
     }

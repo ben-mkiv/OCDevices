@@ -1,0 +1,10 @@
+{
+  "parent":  "opencomputers:block/rack",
+  "textures": {
+    "top": "#top",
+    "bottom": "#bottom",
+    "front": "#front",
+    "side": "#side",
+    "particle": "#top"
+  }
+}

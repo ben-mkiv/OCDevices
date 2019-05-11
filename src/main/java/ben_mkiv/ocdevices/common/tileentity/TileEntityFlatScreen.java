@@ -48,7 +48,7 @@ import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 //todo: add redstone support?
 //todo: add arrow or more generic hit by entity support?
 
-public class TileEntityFlatScreen extends TileEntityEnvironment implements SidedEnvironment, EnvironmentHost, ITickable, Analyzable {
+public class TileEntityFlatScreen extends TileEntityEnvironment implements SidedEnvironment, EnvironmentHost, ITickable, Analyzable, ColoredTile {
     private final FlatScreenComponent buffer;
     private final boolean isClient;
 

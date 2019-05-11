@@ -23,6 +23,12 @@ tile.case_workstation.name=Case (Workstation)
 tile.keyboard.name=Keyboard
 tile.recipe_dictionary.name=Recipe Dictionary
 tile.flat_screen.name=Flatscreen Panel
+tile.redstone.name=Advanced Redstone I/O
+
+item.upgrade_tier2.name=Upgrade (Tier 1 => 2)
+item.upgrade_tier3.name=Upgrade (Tier 2 => 3)
+item.upgrade_tier4.name=Upgrade (Tier 3 => 4)
+item.upgrade_blastresistance.name=Upgrade (Blast Resistance)
 
 oc:container.tileentitycase=Computer
 oc:container.tileentitycase_slim_oc=Computer

@@ -60,6 +60,12 @@
     }
   },
   {
+    "name": "opencomputers_geolyzer",
+    "ingredient": {
+      "item": "opencomputers:geolyzer", "data": 0
+    }
+  },
+  {
     "name": "opencomputers_texturepicker",
     "ingredient": {
       "item": "opencomputers:tool", "data": 3
@@ -69,6 +75,24 @@
     "name": "opencomputers_keyboard",
     "ingredient": {
       "item": "opencomputers:keyboard", "data": 0
+    }
+  },
+  {
+    "name": "opencomputers_transistor",
+    "ingredient": {
+      "item": "opencomputers:material", "data": 6
+    }
+  },
+  {
+    "name": "opencomputers_redstone_io",
+    "ingredient": {
+      "item": "opencomputers:redstone", "data": 0
+    }
+  },
+  {
+    "name": "opencomputers_upgradecontainer3",
+    "ingredient": {
+      "item": "opencomputers:upgrade", "data": 10
     }
   }
 ]

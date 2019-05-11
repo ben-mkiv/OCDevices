@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OOO",
+    "OIO",
+    "OOO"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_trapdoor"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "item": "ocdevices:upgrade_blastresistance"
+  }
+}

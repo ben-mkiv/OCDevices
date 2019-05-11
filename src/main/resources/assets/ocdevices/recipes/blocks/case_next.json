@@ -13,7 +13,7 @@
       "item": "minecraft:glass_pane"
     },
     "C": {
-      "item": "opencomputers:case3", "data": 0
+      "item": "opencomputers:case1", "data": 0
     }
   },
   "result": {

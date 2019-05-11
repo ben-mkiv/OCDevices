@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "UXG ",
+    "   ",
+    "   "
+  ],
+  "key": {
+    "X": {
+      "item": "#opencomputers_redstone_io"
+    },
+    "U": {
+      "item": "#opencomputers_upgradecontainer3"
+    },
+    "G": {
+      "item": "#opencomputers_geolyzer"
+    }
+  },
+  "result": {
+    "item": "ocdevices:redstone"
+  }
+}
