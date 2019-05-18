@@ -2,13 +2,13 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "top": "ocdevices:blocks/redstone/top",
-      "bottom": "ocdevices:blocks/redstone/bottom",
+      "up": "ocdevices:blocks/redstone/top",
+      "down": "ocdevices:blocks/redstone/bottom",
       "north": "ocdevices:blocks/redstone/north",
       "east": "ocdevices:blocks/redstone/east",
       "south": "ocdevices:blocks/redstone/south",
       "west": "ocdevices:blocks/redstone/west",
-      "particle": "ocdevices:blocks/redstone/west"
+      "particle": "ocdevices:blocks/redstone/plain"
     },
     "model": "minecraft:orientable"
   },

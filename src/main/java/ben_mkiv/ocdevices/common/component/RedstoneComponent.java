@@ -9,7 +9,6 @@ import li.cil.oc.server.component.Redstone;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-
 public class RedstoneComponent extends Redstone.Bundled {
 
     public RedstoneComponent(EnvironmentHost container){
@@ -38,7 +37,6 @@ public class RedstoneComponent extends Redstone.Bundled {
     private BlockPos getPos(){
         return new BlockPos(redstone().xPosition(), redstone().yPosition(), redstone().zPosition());
     }
-
 
 }
 
