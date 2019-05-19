@@ -7,7 +7,6 @@ import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenAABB;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenMultiblock;
-import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import li.cil.oc.api.API;
 import li.cil.oc.api.machine.Machine;
@@ -48,7 +47,7 @@ import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 //todo: add redstone support?
 //todo: add arrow or more generic hit by entity support?
 
-public class TileEntityFlatScreen extends TileEntityEnvironment implements SidedEnvironment, EnvironmentHost, ITickable, Analyzable, ColoredTile {
+public class TileEntityFlatScreen extends TileEntityEnvironment implements IMultiblockScreen, SidedEnvironment, EnvironmentHost, ITickable, Analyzable, ColoredTile {
     private final FlatScreenComponent buffer;
     private final boolean isClient;
 
@@ -106,7 +105,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
         if(isClient || !(entity instanceof EntityLivingBase))
             return;
 
-        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this);
+        BlockPos offset = IMultiblockScreen.MultiBlockOffset(this);
         origin().walk((EntityLivingBase) entity, new Vec3i(offset.getX() + 1, offset.getY() + 1, 0));
     }
 
@@ -159,36 +158,10 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
         if(!side.equals(facing()))
             return false;
 
-        switch(yaw()) {
-            case NORTH:
-                hitVect = new Vec3d(1 - hitVect.x, hitVect.y, -hitVect.z); break;
-            case EAST:
-                hitVect = new Vec3d(1 - hitVect.z, hitVect.y, hitVect.x); break;
-            case WEST:
-                hitVect = new Vec3d(hitVect.z, hitVect.y, -hitVect.x); break;
-        }
+        hitVect = unmapHitVector(hitVect);
 
-        switch(pitch()){
-            case DOWN:
-                switch(yaw()){
-                    case NORTH:
-                    case WEST: hitVect = new Vec3d(hitVect.x, 1+hitVect.z, hitVect.y); break;
-                    case SOUTH:
-                    case EAST: hitVect = new Vec3d(hitVect.x, hitVect.z, hitVect.y); break;
-                }
-                break;
-            case UP:
-                switch(yaw()){
-                    case SOUTH:
-                    case EAST: hitVect = new Vec3d(hitVect.x, 1-hitVect.z, hitVect.y); break;
-                    case NORTH:
-                    case WEST: hitVect = new Vec3d(hitVect.x, -hitVect.z, hitVect.y); break;
-                }
-                break;
-        }
-
-        BlockPos offset = FlatScreenHelper.MultiBlockOffset(this); //unprojected offset in the multiblock
-        hitVect = hitVect.add(new Vec3d(offset.getX(), offset.getY(), 0));
+        if(hitVect == null)
+            return false;
 
         double x = (double) origin().buffer().getViewportWidth() / getHelper().displayWidth;
         x*= hitVect.x;
@@ -222,10 +195,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
             if (isClient() || isConnected())
                 buffer().update();
         }
-    }
-
-    public EnumFacing facing(){
-        return pitch().getAxis().equals(EnumFacing.Axis.Y) ? pitch() : yaw();
     }
 
     public boolean hasKeyboard(){
@@ -299,14 +268,6 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
         return getMultiblock().height();
     }
 
-    public EnumFacing yaw(){
-        return yaw != null ? yaw : EnumFacing.NORTH;
-    }
-
-    public EnumFacing pitch(){
-        return pitch != null ? pitch : EnumFacing.NORTH;
-    }
-
     @Override
     public void onLoad(){
         super.onLoad();
@@ -338,6 +299,14 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
         onRotationChanged();
     }
 
+    public EnumFacing yaw(){
+        return yaw != null ? yaw : EnumFacing.NORTH;
+    }
+
+    public EnumFacing pitch(){
+        return pitch != null ? pitch : EnumFacing.NORTH;
+    }
+
     public void onColorChanged() {
         // nbt is parsed in network thread so we have update() to do the actual work
         multiblockInvalid = true;
@@ -354,8 +323,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt){
         nbt.setInteger("ocd:casecolor", getColor());
-        nbt.setInteger("ocd:yaw", yaw().ordinal());
-        nbt.setInteger("ocd:pitch", pitch().ordinal());
+        nbt = writeFacingToNBT(nbt);
         nbt.setBoolean("ocd:invertTouch", isTouchModeInverted());
 
         nbt.setTag("ocd:screenData", getData().writeToNBT(new NBTTagCompound()));
@@ -368,8 +336,7 @@ public class TileEntityFlatScreen extends TileEntityEnvironment implements Sided
     @Override
     public void readFromNBT(NBTTagCompound nbt){
         super.readFromNBT(nbt);
-        setYaw(EnumFacing.values()[nbt.getInteger("ocd:yaw")]);
-        setPitch(EnumFacing.values()[nbt.getInteger("ocd:pitch")]);
+        readFacingFromNBT(nbt);
         setTouchModeInverted(nbt.getBoolean("ocd:invertTouch"));
 
         if(nbt.hasKey("ocd:screenData"))

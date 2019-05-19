@@ -24,7 +24,7 @@ public class ocComponentHostTE extends ocComponentTE implements ManagedComponent
 
     private final boolean componentInventoryAccessable;
 
-    final ArrayList<ManagedComponent> components = new ArrayList<>();
+    protected ArrayList<ManagedComponent> components = new ArrayList<>();
 
     public ocComponentHostTE(String name, int componentCount, boolean inventoryAccess, boolean connectToHost, boolean bind, Visibility visibility){
         super(name, visibility);

@@ -6,14 +6,10 @@ import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.AABBHelper;
-import ben_mkiv.ocdevices.utils.UtilsCommon;
 import li.cil.oc.common.Tier;
-import li.cil.oc.common.block.property.PropertyRotatable;
-import li.cil.oc.common.block.property.PropertyTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -31,8 +27,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -135,14 +129,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
     @Override
     public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
-        EnumFacing yaw = UtilsCommon.getYawForPlacement(placer, pos, facing);
-        EnumFacing pitch = UtilsCommon.getPitchForPlacement(placer, pos, facing);
-
-        IBlockState state = getDefaultState();
-        state = state.withProperty(PropertyRotatable.Pitch(), pitch);
-        state = state.withProperty(PropertyRotatable.Yaw(), yaw);
-
-        return state;
+        return IOrientableBlock.getStateForPlacement(getDefaultState(), pos, facing, placer);
     }
 
     @Override
@@ -161,31 +148,25 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         return BlockFaceShape.CENTER;
     }
 
+    @Override
     public @Nonnull ExtendedBlockState createBlockState() {
-        return new ExtendedBlockState(this, ((new IProperty[]{PropertyRotatable.Pitch(), PropertyRotatable.Yaw()})), ((new IUnlistedProperty[]{PropertyTile.Tile()})));
+        return IOrientableBlock.createBlockState(this);
     }
 
+    @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(PropertyRotatable.Pitch()).ordinal() << 2 | state.getValue(PropertyRotatable.Yaw()).getHorizontalIndex();
+        return IOrientableBlock.getMetaFromState(state);
     }
 
+    @Override
     @Deprecated
     public @Nonnull IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(PropertyRotatable.Pitch(), EnumFacing.getFront(meta >> 2)).withProperty(PropertyRotatable.Yaw(), EnumFacing.getHorizontal(meta & 3));
+        return IOrientableBlock.getStateFromMeta(getDefaultState(), meta);
     }
 
+    @Override
     public @Nonnull IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
-
-        if (state instanceof IExtendedBlockState && tile instanceof TileEntityFlatScreen) {
-            TileEntityFlatScreen screen = (TileEntityFlatScreen)tile;
-            return ((IExtendedBlockState) state)
-                    .withProperty(PropertyTile.Tile(), screen)
-                    .withProperty(PropertyRotatable.Pitch(), screen.pitch())
-                    .withProperty(PropertyRotatable.Yaw(), screen.yaw());
-        }
-
-        return state;
+        return IOrientableBlock.getExtendedState(state, world, pos);
     }
 
     @Override

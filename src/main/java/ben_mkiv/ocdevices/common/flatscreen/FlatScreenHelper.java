@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.flatscreen;
 
+import ben_mkiv.ocdevices.common.tileentity.IMultiblockScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.utils.Triangle;
 import net.minecraft.util.EnumFacing;
@@ -39,7 +40,7 @@ public class FlatScreenHelper {
 
     // get the depth for the screen BLOCK in the argument to calculate BB
     public float[] getDepthForBlock(TileEntityFlatScreen screen){
-        BlockPos offset = MultiBlockOffset(screen);
+        BlockPos offset = IMultiblockScreen.MultiBlockOffset(screen);
 
         switch(screen.getData().tiltAxis) {
             case X:
@@ -72,22 +73,6 @@ public class FlatScreenHelper {
             case NONE:
                 return new float[]{ topLeft, topLeft, topLeft, topLeft };
         }
-    }
-
-    public static BlockPos MultiBlockOffset(TileEntityFlatScreen screen){
-        BlockPos worldOffset = screen.origin().getPos().subtract(screen.getPos());
-
-        int offsetX, offsetY;
-
-        if(!screen.pitch().getAxis().equals(EnumFacing.Axis.Y)) {
-            offsetX = screen.yaw().getAxis().equals(EnumFacing.Axis.Z) ? worldOffset.getX() : worldOffset.getZ();
-            offsetY = worldOffset.getY();
-        } else {
-            offsetX = screen.yaw().getAxis().equals(EnumFacing.Axis.Z) ? worldOffset.getX() : worldOffset.getZ();
-            offsetY = screen.yaw().getAxis().equals(EnumFacing.Axis.Z) ? worldOffset.getZ() : worldOffset.getX();
-        }
-
-        return new BlockPos(Math.abs(offsetX), Math.abs(offsetY), 0);
     }
 
     // calculate screen size for current panel tilt

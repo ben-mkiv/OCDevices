@@ -2,9 +2,11 @@ package ben_mkiv.ocdevices;
 
 import ben_mkiv.ocdevices.client.renderer.RenderCase;
 import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
+import ben_mkiv.ocdevices.client.renderer.RenderMatrix;
 import ben_mkiv.ocdevices.client.renderer.RenderRack;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
+import ben_mkiv.ocdevices.common.blocks.computronics.BlockCardDockComputronics;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.drivers.RedstoneDriver;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
@@ -66,6 +68,7 @@ public class OCDevices {
     public static boolean MCMultiPart = false;
     public static boolean Optifine = false;
     public static boolean Albedo = false;
+    public static boolean Computronics = false;
 
     public static boolean experimental = false;
 
@@ -82,9 +85,14 @@ public class OCDevices {
     public void preinit(FMLPreInitializationEvent event) {
         Config.preInit();
 
-        modBlocks.add(BlockCardDock.DEFAULTITEM = new BlockCardDock());
+        if(Computronics)
+            modBlocks.add(BlockCardDockComputronics.DEFAULTITEM = new BlockCardDockComputronics());
+        else
+            modBlocks.add(BlockCardDock.DEFAULTITEM = new BlockCardDock());
+
         modBlocks.add(BlockFlatScreen.DEFAULTITEM = new BlockFlatScreen());
         modBlocks.add(BlockKeyboard.DEFAULTITEM = new BlockKeyboard());
+        modBlocks.add(BlockMatrix.DEFAULTITEM = new BlockMatrix());
         modBlocks.add(BlockRecipeDictionary.DEFAULTITEM = new BlockRecipeDictionary());
         modBlocks.add(BlockRedstone.DEFAULTITEM = new BlockRedstone());
 
@@ -105,6 +113,7 @@ public class OCDevices {
 
         Optifine = Loader.isModLoaded("optifine");
         Albedo = Loader.isModLoaded("albedo");
+        Computronics = Loader.isModLoaded("computronics");
 
         if(Loader.isModLoaded("mcmultipart"))
             new MCMultiPart();
@@ -147,6 +156,8 @@ public class OCDevices {
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_slim_oc.class, new RenderCase(TileEntityCase_slim_oc.getPowerLED(), TileEntityCase_slim_oc.getStatusLED()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_ibm_5150.class, new RenderCase(TileEntityCase_ibm_5150.getPowerLED(), TileEntityCase_ibm_5150.getStatusLED()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_workstation.class, new RenderCase(TileEntityCase_workstation.getPowerLED(), TileEntityCase_workstation.getStatusLED()));
+
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMatrix.class, new RenderMatrix());
         }
 
         @SubscribeEvent
@@ -167,11 +178,17 @@ public class OCDevices {
             for(Block block : modBlocks)
                 event.getRegistry().register(block);
 
+
+            if(Computronics)
+                GameRegistry.registerTileEntity(ben_mkiv.ocdevices.common.tileentity.computronics.TileEntityCardDockComputronics.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
+            else
+                GameRegistry.registerTileEntity(ben_mkiv.ocdevices.common.tileentity.TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
+
             GameRegistry.registerTileEntity(TileEntityFlatScreen.class, new ResourceLocation(MOD_ID, BlockFlatScreen.NAME));
-            GameRegistry.registerTileEntity(TileEntityCardDock.class, new ResourceLocation(MOD_ID, BlockCardDock.NAME));
+            GameRegistry.registerTileEntity(TileEntityKeyboard.class, new ResourceLocation(MOD_ID, BlockKeyboard.NAME));
+            GameRegistry.registerTileEntity(TileEntityMatrix.class, new ResourceLocation(MOD_ID, BlockMatrix.NAME));
             GameRegistry.registerTileEntity(TileEntityRecipeDictionary.class, new ResourceLocation(MOD_ID, BlockRecipeDictionary.NAME));
             GameRegistry.registerTileEntity(TileEntityRedstone.class, new ResourceLocation(MOD_ID, BlockRedstone.NAME));
-            GameRegistry.registerTileEntity(TileEntityKeyboard.class, new ResourceLocation(MOD_ID, BlockKeyboard.NAME));
 
             GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));

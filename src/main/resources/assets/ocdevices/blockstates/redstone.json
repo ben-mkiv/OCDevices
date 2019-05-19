@@ -8,7 +8,7 @@
       "east": "ocdevices:blocks/redstone/east",
       "south": "ocdevices:blocks/redstone/south",
       "west": "ocdevices:blocks/redstone/west",
-      "particle": "ocdevices:blocks/redstone/plain"
+      "particle": "ocdevices:blocks/machine_side"
     },
     "model": "minecraft:orientable"
   },
