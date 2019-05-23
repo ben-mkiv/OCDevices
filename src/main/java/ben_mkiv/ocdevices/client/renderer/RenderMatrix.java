@@ -29,19 +29,19 @@ public class RenderMatrix extends TileEntitySpecialRenderer<TileEntityMatrix> {
 
         GlStateManager.rotate(180, 1, 0, 0);
 
-        switch(matrix.pitch()){
-            case UP: GlStateManager.rotate(90, 1, 0, 0); break;
-            case DOWN: GlStateManager.rotate(-90, 1, 0, 0); break;
+        switch(matrix.yaw().ordinal()){
+            case 5: GlStateManager.rotate(270, 0, 1, 0); break;
+            case 2: GlStateManager.rotate(180, 0, 1, 0); break;
+            case 4: GlStateManager.rotate(90, 0, 1, 0); break;
         }
 
-        switch(matrix.yaw()){
-            case EAST: GlStateManager.rotate(270, 0, 1, 0); break;
-            case SOUTH: GlStateManager.rotate(180, 0, 1, 0); break;
-            case WEST: GlStateManager.rotate(90, 0, 1, 0); break;
+        switch(matrix.pitch().ordinal()){
+            case 0: GlStateManager.rotate(90, 1, 0, 0); break;
+            case 1: GlStateManager.rotate(-90, 1, 0, 0); break;
         }
+
         GlStateManager.translate(-0.5, -0.5, -0.5);
         GlStateManager.scale(1, 1, -1);
-
 
         for(MatrixWidget widget : matrix.widgets.values())
             renderWidget(widget, scaleFactor);

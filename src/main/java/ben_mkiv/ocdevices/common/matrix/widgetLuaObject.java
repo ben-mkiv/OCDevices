@@ -13,14 +13,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class widgetLuaObject implements Value {
-    int index = -1;
-
-    TileEntityMatrix matrix;
+    private BlockPos position;
+    private int dim, index = -1;
+    private TileEntityMatrix matrix;
 
     public widgetLuaObject(int widgetIndex, TileEntityMatrix tileEntityMatrix){
         index = widgetIndex;
+        position = tileEntityMatrix.getPos();
+        dim = tileEntityMatrix.getWorld().provider.getDimension();
         matrix = tileEntityMatrix;
     }
+
+    public widgetLuaObject(){} //required by oc to load the object
 
     @Callback(doc = "function(Integer:fontSize):boolean sets the fontsize", direct = true)
     public Object[] setFontSize(Context context, Arguments args){
@@ -170,6 +174,13 @@ public class widgetLuaObject implements Value {
     }
 
     public TileEntityMatrix getTile(){
+        if(matrix == null) try {
+            World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dim);
+            TileEntity tile = world.getTileEntity(position);
+            if (tile instanceof TileEntityMatrix)
+                matrix = (TileEntityMatrix) tile;
+        } catch(Exception e){ e.printStackTrace(); }
+
         return matrix;
     }
 
@@ -191,17 +202,13 @@ public class widgetLuaObject implements Value {
 
     public void load(NBTTagCompound nbt){
         index = nbt.getInteger("index");
-        BlockPos position = NBTUtil.getPosFromTag(nbt);
-        int dimension = nbt.getInteger("dim");
-        World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
-        TileEntity tile = world.getTileEntity(position);
-        if(tile instanceof TileEntityMatrix)
-            matrix = (TileEntityMatrix) tile;
+        position = NBTUtil.getPosFromTag(nbt.getCompoundTag("position"));
+        dim = nbt.getInteger("dim");
     }
 
     public void save(NBTTagCompound nbt){
         nbt.setInteger("index", index);
-        NBTUtil.createPosTag(matrix.getPos());
-        nbt.setInteger("dim", matrix.getWorld().provider.getDimension());
+        nbt.setTag("position", NBTUtil.createPosTag(position));
+        nbt.setInteger("dim", dim);
     }
 }
