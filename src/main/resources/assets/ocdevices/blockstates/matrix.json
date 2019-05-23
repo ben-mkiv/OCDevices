@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "top": "ocdevices:blocks/machine_side",
+      "front": "ocdevices:blocks/machine_side",
+      "side": "ocdevices:blocks/machine_side",
+      "particle": "ocdevices:blocks/machine_side"
+    },
+    "model": "minecraft:orientable"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block" }],
+    "pitch=north,yaw=north": { "model": "minecraft:orientable" },
+    "pitch=north,yaw=south": { "model": "minecraft:orientable", "y": 180 },
+    "pitch=north,yaw=east":  { "model": "minecraft:orientable", "y": 270 },
+    "pitch=north,yaw=west":  { "model": "minecraft:orientable", "y": 90 },
+    "pitch=up,yaw=north": { "model": "minecraft:orientable", "x": 90 },
+    "pitch=up,yaw=south": { "model": "minecraft:orientable", "x": 90, "y": 180 },
+    "pitch=up,yaw=east":  { "model": "minecraft:orientable", "x": 90, "y": 270 },
+    "pitch=up,yaw=west":  { "model": "minecraft:orientable", "x": 90, "y": 90 },
+    "pitch=down,yaw=north": { "model": "minecraft:orientable", "x": -90 },
+    "pitch=down,yaw=south": { "model": "minecraft:orientable", "x": -90, "y": 180 },
+    "pitch=down,yaw=east":  { "model": "minecraft:orientable", "x": -90, "y": 270 },
+    "pitch=down,yaw=west":  { "model": "minecraft:orientable", "x": -90, "y": 90 }
+  }
+}
