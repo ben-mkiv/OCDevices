@@ -2,8 +2,8 @@ package ben_mkiv.ocdevices.common.integration.MCMultiPart;
 
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityKeyboard;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -17,12 +17,12 @@ public class MultiPartHelper {
         return OCDevices.MCMultiPart ? MCMultiPart.getRealWorld(tile) : tile.getWorld();
     }
 
-    public static TileEntityFlatScreen getScreenFromTile(TileEntity tile){
+    public static TileEntityMultiblockDisplay getScreenFromTile(TileEntity tile){
         if(tile == null || tile.isInvalid())
             return null;
 
-        if(tile instanceof TileEntityFlatScreen)
-            return (TileEntityFlatScreen) tile;
+        if(tile instanceof TileEntityMultiblockDisplay)
+            return (TileEntityMultiblockDisplay) tile;
 
         if(OCDevices.MCMultiPart)
             for(TileEntity mpTile : MCMultiPart.getMCMPTiles(tile).values())

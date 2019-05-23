@@ -3,50 +3,41 @@ package ben_mkiv.ocdevices.client.renderer;
 import ben_mkiv.ocdevices.client.models.ModelCube;
 import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMatrix;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import scala.actors.threadpool.Arrays;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class RenderMatrix extends TileEntitySpecialRenderer<TileEntityMatrix> {
+public class RenderMatrix extends RenderMultiblockDisplay {
     @Override
-    public void render(TileEntityMatrix matrix, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(TileEntityMultiblockDisplay matrix, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        if(!shouldRender(matrix))
+            return;
+
+        preRender(x, y, z, matrix.getHelper());
+        if(matrix.shouldRenderContent())
+            renderContent(matrix, matrix.getHelper().screenCountX, matrix.getHelper().screenCountY);
+        postRender();
+    }
+
+    @Override
+    public void renderScreenContent(TileEntityMultiblockDisplay screen){
+        renderMatrixContent((TileEntityMatrix) screen);
+    }
+
+    private void renderMatrixContent(TileEntityMatrix matrix){
         float scaleFactor = 1f/MatrixWidget.matrixResolution;
 
-        GlStateManager.pushMatrix();
-        //super.render(matrix, x, y, z, partialTicks, destroyStage, alpha);
-
-        GlStateManager.translate(x, y, z);
-
+        GlStateManager.scale(1, 1, -1);
         GlStateManager.disableLighting();
         setLightmapDisabled(true);
 
-        GlStateManager.translate(0.5, 0.5, 0.5);
-
-        GlStateManager.rotate(180, 1, 0, 0);
-
-        switch(matrix.yaw().ordinal()){
-            case 5: GlStateManager.rotate(270, 0, 1, 0); break;
-            case 2: GlStateManager.rotate(180, 0, 1, 0); break;
-            case 4: GlStateManager.rotate(90, 0, 1, 0); break;
-        }
-
-        switch(matrix.pitch().ordinal()){
-            case 0: GlStateManager.rotate(90, 1, 0, 0); break;
-            case 1: GlStateManager.rotate(-90, 1, 0, 0); break;
-        }
-
-        GlStateManager.translate(-0.5, -0.5, -0.5);
-        GlStateManager.scale(1, 1, -1);
-
-        for(MatrixWidget widget : matrix.widgets.values())
+        for(MatrixWidget widget : ((TileEntityMatrix) matrix.origin()).widgets.values())
             renderWidget(widget, scaleFactor);
-
-        GlStateManager.popMatrix();
     }
 
     private void renderWidget(MatrixWidget widget, float scaleFactor){

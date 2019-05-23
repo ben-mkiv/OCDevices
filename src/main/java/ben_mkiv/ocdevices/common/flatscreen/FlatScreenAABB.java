@@ -1,6 +1,7 @@
 package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import ben_mkiv.ocdevices.utils.AABBHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.precision;
 
 public class FlatScreenAABB {
-    public static ArrayList<AxisAlignedBB> updateScreenBB(TileEntityFlatScreen screen){
+    public static ArrayList<AxisAlignedBB> updateScreenBB(TileEntityMultiblockDisplay screen){
         ArrayList<AxisAlignedBB> boundingBoxes = new ArrayList<>();
 
         float[] l = screen.getHelper().getDepthForBlock(screen); // 0 = sTopLeft, 1 = sTopRight, 2 = sBottomLeft, 3 = sBottomRight

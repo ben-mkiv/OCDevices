@@ -1,18 +1,17 @@
 package ben_mkiv.ocdevices.common.blocks;
 
 import ben_mkiv.ocdevices.OCDevices;
-import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
+import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
-import ben_mkiv.ocdevices.utils.AABBHelper;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import li.cil.oc.common.Tier;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,16 +32,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static ben_mkiv.ocdevices.common.flatscreen.FlatScreen.maxScreenDepth;
-
-public class BlockFlatScreen extends Block implements ITileEntityProvider {
+public class BlockFlatScreen extends Block implements ITileEntityProvider, IScreenBlock {
     public final static int tier = Tier.Four();
     public final static String NAME = "flat_screen";
     public static Block DEFAULTITEM;
     public static final int GUI_ID = 4;
 
-    static final AxisAlignedBB minimalBB = new AxisAlignedBB(0, 0, 0.999, 1, 1, 1);
-    static final AxisAlignedBB emptyBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     public BlockFlatScreen() {
         super(Material.IRON);
@@ -51,13 +46,14 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         setCreativeTab(OCDevices.creativeTab);
     }
 
+    public int maxScreenDepth(){
+        return FlatScreen.maxScreenDepth;
+    }
+
     @Deprecated
     @SideOnly(Side.CLIENT)
     public @Nonnull AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos){
-        if(Minecraft.getMinecraft().player.isSneaking())
-            return FULL_BLOCK_AABB.offset(pos);
-
-        return emptyBB;
+        return getSelectionBox(pos);
     }
 
     @Override
@@ -88,38 +84,14 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
     @Deprecated
     public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
                                       @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entity, boolean advanced) {
-
-        TileEntityFlatScreen te = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-
-        if(te == null) {
-            collidingBoxes.add(getBoundingBox(state, world, pos));
-            return;
-        }
-
-        for(AxisAlignedBB bb : te.boundingBoxes)
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, bb);
+        collidingBoxes.addAll(getAABBList(state, world, pos, entityBox));
     }
 
     @Override
     @Deprecated
     @Nonnull
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)    {
-        TileEntityFlatScreen te = MultiPartHelper.getScreenFromTile(source.getTileEntity(pos));
-
-        if(te == null)
-            return FULL_BLOCK_AABB;
-
-        float minDepth = maxScreenDepth;
-        FlatScreenHelper helper = te.getHelper();
-        minDepth = Math.min(Math.min(minDepth, helper.topLeft), helper.bottomLeft);
-        minDepth = Math.min(Math.min(minDepth, helper.topRight), helper.bottomRight);
-
-        AxisAlignedBB bb = minDepth > 0 ? new AxisAlignedBB(0, 0, 1d - minDepth, 1, 1, 1) : minimalBB;
-
-        bb = AABBHelper.rotateVertical(bb, te.pitch());
-        bb = AABBHelper.rotateHorizontal(bb, te.yaw());
-
-        return bb;
+        return getAABB(state, source, pos);
     }
 
     @Override
@@ -134,7 +106,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
     @Override
     public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest){
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
         if(screen != null) screen.getMultiblock().split();
 
         return super.removedByPlayer(state, world, pos, player, willHarvest);
@@ -175,18 +147,18 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
             return ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
         // client only
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if (screen == null)
+        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen == null || !(screen instanceof TileEntityFlatScreen))
             return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
-        TileEntityFlatScreen origin = screen.origin();
+        TileEntityFlatScreen origin = (TileEntityFlatScreen) screen.origin();
 
         boolean touch = !origin.hasKeyboard();
         touch |=  origin.isTouchModeInverted() && !player.isSneaking();
         touch |= !origin.isTouchModeInverted() &&  player.isSneaking();
 
         if(touch) {
-            return screen.touchEvent(player, side, new Vec3d(hitX, hitY, hitZ));
+            return ((TileEntityFlatScreen) screen).touchEvent(player, side, new Vec3d(hitX, hitY, hitZ));
         }
 
         pos = origin.getPos();
@@ -205,11 +177,11 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
 
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entityIn){
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if (screen == null)
-            super.onEntityWalk(world, pos, entityIn);
+        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen instanceof TileEntityFlatScreen)
+            ((TileEntityFlatScreen) screen).walk(entityIn);
         else
-            screen.walk(entityIn);
+            super.onEntityWalk(world, pos, entityIn);
     }
 
     @Override
@@ -218,12 +190,11 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider {
         if(!entityIn.getPosition().equals(pos))
             return;
 
-        TileEntityFlatScreen screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if (screen == null)
-            super.onEntityCollidedWithBlock(world, pos, state, entityIn);
+        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if (screen instanceof TileEntityFlatScreen)
+            ((TileEntityFlatScreen) screen).walk(entityIn);
         else if(screen.pitch().equals(EnumFacing.UP))
-            screen.walk(entityIn);
+            super.onEntityCollidedWithBlock(world, pos, state, entityIn);
     }
-
 
 }

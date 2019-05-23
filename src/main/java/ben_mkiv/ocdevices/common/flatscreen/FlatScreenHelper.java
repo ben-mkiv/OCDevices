@@ -2,6 +2,7 @@ package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.tileentity.IMultiblockScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
+import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import ben_mkiv.ocdevices.utils.Triangle;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -20,16 +21,19 @@ public class FlatScreenHelper {
 
     public float topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1;
     public int opacity = 100;
-    public Color color;
+    public Color color = new Color(0x0);
 
     private float factorAC;
 
-    public void refresh(TileEntityFlatScreen tile){
+    public void refresh(TileEntityMultiblockDisplay tile){
         screenCountX = tile.width();
         screenCountY = tile.height();
         facing = tile.yaw();
         pitch = tile.pitch();
-        color = new Color(tile.getColor());
+
+        if(tile instanceof TileEntityFlatScreen)
+            color = new Color(((TileEntityFlatScreen) tile).getColor());
+
         displayWidth = screenCountX;
         displayHeight = screenCountY;
         opacity = tile.getData().opacity;
@@ -39,7 +43,7 @@ public class FlatScreenHelper {
 
 
     // get the depth for the screen BLOCK in the argument to calculate BB
-    public float[] getDepthForBlock(TileEntityFlatScreen screen){
+    public float[] getDepthForBlock(TileEntityMultiblockDisplay screen){
         BlockPos offset = IMultiblockScreen.MultiBlockOffset(screen);
 
         switch(screen.getData().tiltAxis) {
