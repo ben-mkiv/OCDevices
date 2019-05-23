@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 

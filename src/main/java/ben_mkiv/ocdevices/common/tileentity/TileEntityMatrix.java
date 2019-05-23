@@ -25,6 +25,9 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         if(!side.equals(facing()))
             return false;
 
+        if(!isOrigin())
+            return ((TileEntityMatrix) origin()).activated(side, hitVec);
+
         hitVec = unmapHitVector(hitVec);
 
         for(Map.Entry<Integer, MatrixWidget> widget : widgets.entrySet()) {
