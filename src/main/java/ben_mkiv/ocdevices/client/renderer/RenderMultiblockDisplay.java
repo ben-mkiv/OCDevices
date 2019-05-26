@@ -295,7 +295,7 @@ abstract class RenderMultiblockDisplay extends TileEntitySpecialRenderer<TileEnt
         GlStateManager.popMatrix();
     }
 
-    void renderContent(TileEntityMultiblockDisplay screen, float sizeX, float sizeY){
+    void renderContent(TileEntityMultiblockDisplay screen, float sizeX, float sizeY, float partialTicks){
         rotateByBlockOrigin(screen.getHelper());
 
         // Fit area to screen (bottom left = bottom left).
@@ -343,7 +343,7 @@ abstract class RenderMultiblockDisplay extends TileEntitySpecialRenderer<TileEnt
 
         GlStateManager.pushMatrix();
 
-        renderScreenContent(screen);
+        renderScreenContent(screen, partialTicks);
 
         GlStateManager.popMatrix();
 
@@ -354,6 +354,6 @@ abstract class RenderMultiblockDisplay extends TileEntitySpecialRenderer<TileEnt
     }
 
 
-    abstract void renderScreenContent(TileEntityMultiblockDisplay screen);
+    abstract void renderScreenContent(TileEntityMultiblockDisplay screen, float partialTicks);
 
 }

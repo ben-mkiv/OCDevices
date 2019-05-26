@@ -4,6 +4,7 @@ import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMatrix;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -127,6 +128,20 @@ public class BlockMatrix extends ocComponentBlock implements ITileEntityProvider
     public @Nonnull IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
         return IOrientableBlock.getExtendedState(state, world, pos);
     }
+
+    // avoid to connect to fences/glass panes
+    @Override
+    @Deprecated
+    public @Nonnull
+    BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        return BlockFaceShape.CENTER;
+    }
+
+    @Override
+    public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest){
+        return removedByPlayer(world, pos) && super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+
 
 
 }

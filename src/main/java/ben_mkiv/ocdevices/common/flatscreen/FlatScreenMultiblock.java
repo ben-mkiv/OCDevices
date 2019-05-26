@@ -1,7 +1,6 @@
 package ben_mkiv.ocdevices.common.flatscreen;
 
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
-import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;

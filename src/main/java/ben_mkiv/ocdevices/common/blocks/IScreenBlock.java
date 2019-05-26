@@ -57,13 +57,23 @@ public interface IScreenBlock {
         if(te == null) {
             for(AxisAlignedBB bb : te.boundingBoxes)
                 if(entityBox.intersects(bb.offset(pos)))
-                    collidingBoxes.add(bb);
+                    collidingBoxes.add(bb.offset(pos));
         } else {
-            AxisAlignedBB bb = getAABB(state, world, pos);
-            if(entityBox.intersects(bb.offset(pos)))
+            AxisAlignedBB bb = getAABB(state, world, pos).offset(pos);
+            if(entityBox.intersects(bb))
                 collidingBoxes.add(bb);
         }
 
         return collidingBoxes;
+    }
+
+    default boolean removedByPlayer(World world, @Nonnull BlockPos pos){
+        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
+        if(screen != null) {
+            screen.getMultiblock().split();
+            return true;
+        }
+
+        return false;
     }
 }

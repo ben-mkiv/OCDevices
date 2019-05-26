@@ -2,7 +2,10 @@ package ben_mkiv.ocdevices.client.renderer;
 
 import ben_mkiv.ocdevices.common.tileentity.TileEntityFlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
-import net.minecraft.client.renderer.*;
+import ben_mkiv.rendertoolkit.common.widgets.IRenderableWidget;
+import net.minecraft.client.Minecraft;
+
+import static ben_mkiv.rendertoolkit.surface.ClientSurface.vec3d000;
 
 public class RenderFlatScreen extends RenderMultiblockDisplay {
 
@@ -13,30 +16,18 @@ public class RenderFlatScreen extends RenderMultiblockDisplay {
 
         preRender(x, y, z, screen.getHelper());
 
-        if(screen.shouldRenderContent())
-            renderContent(screen, ((TileEntityFlatScreen) screen).buffer().renderWidth(), ((TileEntityFlatScreen) screen).buffer().renderHeight());
+        if(screen.shouldRenderContent()){
+            renderContent(screen, ((TileEntityFlatScreen) screen).buffer().renderWidth(), ((TileEntityFlatScreen) screen).buffer().renderHeight(), partialTicks);
+        }
 
         postRender();
     }
 
     @Override
-    public void renderScreenContent(TileEntityMultiblockDisplay screen){
-        renderFlatScreenContent((TileEntityFlatScreen) screen);
+    public void renderScreenContent(TileEntityMultiblockDisplay screen, float partialTicks){
+        IRenderableWidget widget = ((TileEntityFlatScreen) screen).widgetWorld.getRenderable();
+        widget.render(Minecraft.getMinecraft().player, vec3d000, ~0L);
     }
-
-    private void renderFlatScreenContent(TileEntityFlatScreen screen){
-        screen.buffer().renderText();
-
-        if(screen.getHelper().opacity != 100){
-            // render the whole text again on the backside as the oc method disables the depth mask
-            GlStateManager.translate(0, 0, .0002);
-            GlStateManager.disableCull();
-            screen.buffer().renderText();
-            GlStateManager.enableCull();
-        }
-    }
-
-
 
 
 }

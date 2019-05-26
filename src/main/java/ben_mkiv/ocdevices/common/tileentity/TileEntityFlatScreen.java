@@ -3,6 +3,8 @@ package ben_mkiv.ocdevices.common.tileentity;
 import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
 import ben_mkiv.ocdevices.common.component.FlatScreenComponent;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
+import ben_mkiv.rendertoolkit.common.widgets.component.common.ocScreenWidget;
+import ben_mkiv.rendertoolkit.common.widgets.component.world.ocScreen3D;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.network.*;
 import li.cil.oc.common.tileentity.Keyboard;
@@ -24,7 +26,7 @@ import java.util.HashSet;
 //todo: add redstone support?
 //todo: add arrow or more generic hit by entity support?
 
-public class TileEntityFlatScreen extends TileEntityMultiblockDisplay implements ColoredTile, SidedEnvironment {
+public class TileEntityFlatScreen extends TileEntityMultiblockDisplay implements ocScreen3D.IScreenBlock, ColoredTile {
     private final FlatScreenComponent buffer;
 
     private int color = 0;
@@ -32,16 +34,22 @@ public class TileEntityFlatScreen extends TileEntityMultiblockDisplay implements
     private boolean isTouchModeInverted = false;
     private final HashMap<EntityLivingBase, Vec3i> walkMap = new HashMap<>();
 
+    public ocScreenWidget widgetWorld = new ocScreen3D();
 
     public TileEntityFlatScreen() {
         super();
         buffer = new FlatScreenComponent(this);
     }
 
+    @Override
+    public void onLoad(){
+        super.onLoad();
+        widgetWorld.bind(this);
+    }
+
     public FlatScreenComponent buffer(){
         return buffer;
     }
-
 
     private void walk(EntityLivingBase entity, Vec3i pos){
         if(walkMap.containsKey(entity) && walkMap.get(entity).equals(pos))
@@ -61,13 +69,8 @@ public class TileEntityFlatScreen extends TileEntityMultiblockDisplay implements
     }
 
     @Override
-    public Node sidedNode(EnumFacing face){
-        return canConnect(face) ? node() : null;
-    }
-
-    @Override
     public boolean canConnect(EnumFacing face){
-        return !face.equals(facing()) || getKeyboard(face) != null;
+        return super.canConnect(face) || getKeyboard(face) != null;
     }
 
     private void pauseMachine(){

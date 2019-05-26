@@ -106,10 +106,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider, IScre
 
     @Override
     public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest){
-        TileEntityMultiblockDisplay screen = MultiPartHelper.getScreenFromTile(world.getTileEntity(pos));
-        if(screen != null) screen.getMultiblock().split();
-
-        return super.removedByPlayer(state, world, pos, player, willHarvest);
+        return removedByPlayer(world, pos) && super.removedByPlayer(state, world, pos, player, willHarvest);
     }
 
 

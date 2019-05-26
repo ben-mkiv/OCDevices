@@ -1,6 +1,7 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
 import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
+import ben_mkiv.ocdevices.common.matrix.buttonLuaObject;
 import ben_mkiv.ocdevices.common.matrix.widgetLuaObject;
 import li.cil.oc.api.API;
 import li.cil.oc.api.machine.Arguments;
@@ -46,7 +47,7 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         int index = getMaxIndex()+1;
         widgets.put(index, new MatrixWidget("widget" + index));
         markDirty();
-        return new Object[] { new widgetLuaObject(index, this) };
+        return new Object[] { new buttonLuaObject(index, this) };
     }
 
     @Callback(doc = "function():table; gets all widgets")
@@ -54,7 +55,7 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         Map<Object, Object> widgetList = new HashMap<>();
 
         for(Map.Entry<Integer, MatrixWidget> widget : widgets.entrySet())
-            widgetList.put(widget.getValue().getName(), new widgetLuaObject(widget.getKey(), this));
+            widgetList.put(widget.getValue().getName(), new buttonLuaObject(widget.getKey(), this));
 
         return new Object[] { widgetList };
     }
@@ -88,6 +89,11 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         }
 
         return super.writeToNBT(tag);
+    }
+
+    @Override
+    public boolean canMerge(TileEntityMultiblockDisplay screen){
+        return screen instanceof TileEntityMatrix && super.canMerge(screen);
     }
 
 }

@@ -31,7 +31,7 @@ import java.util.HashSet;
 
 import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 
-public class TileEntityMultiblockDisplay extends TileEntityEnvironment implements IMultiblockScreen, EnvironmentHost, ITickable, Analyzable {
+public class TileEntityMultiblockDisplay extends TileEntityEnvironment implements IMultiblockScreen, EnvironmentHost, SidedEnvironment, ITickable, Analyzable {
 
     public ArrayList<AxisAlignedBB> boundingBoxes = new ArrayList<>(Arrays.asList(FULL_BLOCK_AABB));
     public FlatScreenMultiblock flatScreenMultiblock = new FlatScreenMultiblock(this);
@@ -304,6 +304,18 @@ public class TileEntityMultiblockDisplay extends TileEntityEnvironment implement
         NBTTagCompound nbt = super.getUpdateTag();
         return writeToNBT(nbt);
     }
+
+
+    @Override
+    public Node sidedNode(EnumFacing face){
+        return canConnect(face) ? node() : null;
+    }
+
+    @Override
+    public boolean canConnect(EnumFacing face){
+        return !face.equals(facing());
+    }
+
 
 
 
