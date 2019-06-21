@@ -6,8 +6,12 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.Optional;
+import pl.asie.computronics.api.audio.IAudioSource;
 
-public class TileEntityCardDock extends ocComponentHostTE {
+@Optional.Interface(iface="pl.asie.computronics.api.audio.IAudioSource",modid="computronics")
+public class TileEntityCardDock extends ocComponentHostTE implements IAudioSource {
 
     public TileEntityCardDock() {
         super("carddock", 1, true, false, false, Visibility.Neighbors);
@@ -71,6 +75,24 @@ public class TileEntityCardDock extends ocComponentHostTE {
 
         if(nbt.hasKey("component"))
             components.get(0).readFromNBT(nbt.getCompoundTag("component"));
+    }
+
+    @Override
+    @Optional.Method(modid="computronics")
+    public int getSourceId(){
+        if(components.get(0).node() instanceof IAudioSource)
+            return ((IAudioSource) components.get(0).node().host()).getSourceId();
+
+        return -1;
+    }
+
+    @Override
+    @Optional.Method(modid="computronics")
+    public boolean connectsAudio(EnumFacing var1){
+        //if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT))
+        //    return components.get(0) instanceof pl.asie.computronics
+        // do something about clients... (if the carddock gui gets opened they disconnect cables)
+        return components.get(0).node() != null && components.get(0).node().host() instanceof IAudioSource;
     }
 
 }

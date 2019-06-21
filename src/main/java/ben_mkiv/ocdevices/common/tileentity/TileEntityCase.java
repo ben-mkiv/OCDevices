@@ -165,8 +165,6 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
         return nbt;
     }
 
-
-
     static int getTierFromConfig(String caseName){
         return Config.getConfig().getCategory("cases").get(caseName).getInt() - 1;
     }
@@ -216,17 +214,17 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
             return true;
         }
 
-        if(ItemStack.areItemsEqual(UpgradeTier2.DEFAULT_STACK, stack) && tier() == Tier.One()) {
+        if(ItemStack.areItemsEqual(UpgradeTier2.DEFAULT_STACK, stack) && tier() < Tier.Two()) {
             setTier(Tier.Two());
             return true;
         }
 
-        if(ItemStack.areItemsEqual(UpgradeTier3.DEFAULT_STACK, stack) && tier() == Tier.Two()) {
+        if(ItemStack.areItemsEqual(UpgradeTier3.DEFAULT_STACK, stack) && tier() < Tier.Three()) {
             setTier(Tier.Three());
             return true;
         }
 
-        if(ItemStack.areItemsEqual(UpgradeTier4.DEFAULT_STACK, stack) && tier() == Tier.Three()) {
+        if(ItemStack.areItemsEqual(UpgradeTier4.DEFAULT_STACK, stack) && tier() < Tier.Four()) {
             setTier(Tier.Four());
             return true;
         }

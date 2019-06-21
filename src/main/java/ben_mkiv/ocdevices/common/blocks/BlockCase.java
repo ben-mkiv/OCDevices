@@ -5,17 +5,22 @@ import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.IUpgradeBlock;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
+import ben_mkiv.ocdevices.utils.ItemUtils;
 import com.google.common.base.Optional;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Case;
 import li.cil.oc.common.block.property.PropertyRotatable;
+import net.minecraft.block.BlockFlowerPot;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -26,22 +31,20 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class BlockCase extends Case {
-    public static final int tier = Tier.Three();
     public static final int GUI_ID = 3;
 
     public static final caseTierProperty caseTier = new caseTierProperty();
 
     public BlockCase(String caseName){
-        super(tier);
+        super(Tier.One());
         setRegistryName(OCDevices.MOD_ID, caseName);
         setUnlocalizedName(caseName);
         setCreativeTab(OCDevices.creativeTab);
@@ -91,8 +94,23 @@ public class BlockCase extends Case {
             player.openGui(OCDevices.INSTANCE, GUI_ID, MultiPartHelper.getRealWorld(caseTile), pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-
         return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
+        String tierTag = "Tier 1";
+        if(stack.hasTagCompound()) {
+            NBTTagCompound stackTag = stack.getTagCompound();
+            if (stackTag.hasKey("tier"))
+                tierTag = "Tier " + (stackTag.getInteger("tier") + 1);
+
+            if(stackTag.hasKey("reinforced"))
+                tooltip.add("blast protected");
+        }
+
+        tooltip.add(tierTag);
     }
 
     @Override
@@ -121,8 +139,15 @@ public class BlockCase extends Case {
 
     @Override
     public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
+        int tier = Tier.One();
+
+        ItemStack placingStack = placer.getHeldItem(hand);
+
+        if(placingStack.hasTagCompound() && placingStack.getTagCompound().hasKey("tier"))
+            tier = placingStack.getTagCompound().getInteger("tier");
+
         EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
-        return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw).withProperty(caseTier, Tier.One());
+        return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw).withProperty(caseTier, tier);
     }
 
     @Override
@@ -137,6 +162,63 @@ public class BlockCase extends Case {
 
         return new ExtendedBlockState(this, props, new IUnlistedProperty[]{});
     }
+
+    @Override
+    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
+        int tier = state.getValue(caseTier);
+
+        ItemStack dropStack = new ItemStack(state.getBlock());
+
+        NBTTagCompound nbt = new NBTTagCompound();
+
+        if(tier > Tier.One()) {
+            nbt.setInteger("tier", tier);
+        }
+
+        TileEntity tile = world.getTileEntity(pos);
+
+        if(tile != null && ((TileEntityCase) tile).isBlastResistant())
+            nbt.setBoolean("reinforced", true);
+
+        if(!nbt.equals(new NBTTagCompound()))
+            dropStack.setTagCompound(nbt);
+
+        drops.add(dropStack);
+    }
+
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
+    {
+        super.harvestBlock(world, player, pos, state, te, tool);
+        world.setBlockToAir(pos);
+    }
+
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack){
+        if(worldIn.isRemote)
+            return;
+
+        if(stack.hasTagCompound()) {
+            // set tile to be blast resistant if the stack item is
+            if(stack.getTagCompound().hasKey("reinforced") && stack.getTagCompound().getBoolean("reinforced")) {
+                TileEntityCase tile = getTileEntity(worldIn, pos);
+                tile.makeBlastResistant();
+            }
+        }
+    }
+
+
 
     // avoid to connect to fences/glass panes
     @Override

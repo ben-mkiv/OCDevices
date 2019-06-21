@@ -27,9 +27,9 @@ tile.recipe_dictionary.name=Recipe Dictionary
 tile.redstone.name=Advanced Redstone I/O
 
 item.manual.name=OCDevices Manual
-item.upgrade_tier2.name=Upgrade (Tier 1 => 2)
-item.upgrade_tier3.name=Upgrade (Tier 2 => 3)
-item.upgrade_tier4.name=Upgrade (Tier 3 => Creative)
+item.upgrade_tier2.name=Upgrade (Any => Tier 2)
+item.upgrade_tier3.name=Upgrade (Any => Tier 3)
+item.upgrade_tier4.name=Upgrade (Any => Creative)
 item.upgrade_blastresistance.name=Upgrade (Blast Resistance)
 
 oc:container.tileentitycase=Computer
