@@ -100,6 +100,7 @@ task syncGitWiki(type: com.palominolabs.gradle.task.git.clone.GitCloneTask) {
     uri = 'https://github.com/ben-mkiv/OCDevices.wiki.git'
     treeish = "origin/master"
     forceFetch = true
+    reset = true
 }
 
 
