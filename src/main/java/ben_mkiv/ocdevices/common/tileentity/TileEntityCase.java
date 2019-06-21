@@ -80,6 +80,9 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
         disconnectComponents();
         dropAllSlots();
 
+        int caseColor = getColor();
+        boolean wasBlastResistant = isBlastResistant();
+
         try {
             IBlockState oldState = getWorld().getBlockState(getPos());
             IBlockState newState = oldState.withProperty(caseTier, newTier);
@@ -90,6 +93,10 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
                 for(ItemStack leftOverItem :  ((TileEntityCase) tile).insertItems(oldInventory)){
                     ItemUtils.dropItem(leftOverItem, getWorld(), getPos(), true, 0);
                 }
+
+                ((TileEntityCase) tile).setColor(caseColor);
+                if(wasBlastResistant)
+                    ((TileEntityCase) tile).makeBlastResistant();
             }
 
         } catch (Exception e){
@@ -192,11 +199,20 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
         return super.writeToNBT(tag);
     }
 
+    public boolean isBlastResistant(){
+        return getExplosionResistance() == 100000f;
+    }
+
+    public void makeBlastResistant(){
+        explosionResistance = 100000f;
+        hardness = 2f;
+        markDirty();
+    }
+
     @Override
     public boolean applyUpgrade(ItemStack stack){
-        if(ItemStack.areItemsEqual(UpgradeBlastResistance.DEFAULT_STACK, stack) && explosionResistance != 100000f) {
-            explosionResistance = 100000f;
-            hardness = 2f;
+        if(ItemStack.areItemsEqual(UpgradeBlastResistance.DEFAULT_STACK, stack) && !isBlastResistant()) {
+            makeBlastResistant();
             return true;
         }
 

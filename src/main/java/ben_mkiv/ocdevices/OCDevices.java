@@ -109,7 +109,7 @@ public class OCDevices {
         modItems.add(UpgradeTier2.DEFAULT_STACK = new ItemStack(new UpgradeTier2()));
         modItems.add(UpgradeTier3.DEFAULT_STACK = new ItemStack(new UpgradeTier3()));
         modItems.add(UpgradeTier4.DEFAULT_STACK = new ItemStack(new UpgradeTier4()));
-        
+
         proxy.preinit();
 
         Optifine = Loader.isModLoaded("optifine");
