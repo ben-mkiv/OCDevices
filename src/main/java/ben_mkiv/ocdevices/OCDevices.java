@@ -58,7 +58,7 @@ public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190325";
+    public static final String VERSION = "snapshot_20190621";
 
     public static final String GUIFACTORY = "ben_mkiv.ocdevices.config.ConfigGUI";
 
