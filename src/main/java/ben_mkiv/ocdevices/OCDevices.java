@@ -16,6 +16,7 @@ import ben_mkiv.ocdevices.common.items.UpgradeTier3;
 import ben_mkiv.ocdevices.common.items.UpgradeTier4;
 import ben_mkiv.ocdevices.common.tileentity.*;
 import ben_mkiv.ocdevices.config.Config;
+import ben_mkiv.ocdevices.manual.Manual;
 import ben_mkiv.ocdevices.proxy.CommonProxy;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
@@ -50,7 +51,7 @@ import java.util.logging.Logger;
         modid = OCDevices.MOD_ID,
         name = OCDevices.MOD_NAME,
         version = OCDevices.VERSION,
-        dependencies = "required-after:opencomputers",
+        dependencies = "required-after:opencomputers;after:rtfm;required-after:rendertoolkit",
         guiFactory = OCDevices.GUIFACTORY
 )
 public class OCDevices {
@@ -84,6 +85,7 @@ public class OCDevices {
     @Mod.EventHandler
     public void preinit(FMLPreInitializationEvent event) {
         Config.preInit();
+        Manual.preInit();
 
         if(Computronics)
             modBlocks.add(BlockCardDockComputronics.DEFAULTITEM = new BlockCardDockComputronics());
@@ -109,6 +111,9 @@ public class OCDevices {
         modItems.add(UpgradeTier2.DEFAULT_STACK = new ItemStack(new UpgradeTier2()));
         modItems.add(UpgradeTier3.DEFAULT_STACK = new ItemStack(new UpgradeTier3()));
         modItems.add(UpgradeTier4.DEFAULT_STACK = new ItemStack(new UpgradeTier4()));
+
+        for(Item item : Manual.items)
+            modItems.add(new ItemStack(item));
 
         proxy.preinit();
 

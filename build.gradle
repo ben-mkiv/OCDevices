@@ -8,6 +8,7 @@ buildscript {
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath 'com.palominolabs.gradle.task:gradle-git-clone-task:0.0.3'
     }
 }
 
@@ -38,18 +39,28 @@ repositories {
     }
 }
 
+configurations {
+    extraLibs
+    compileOnly.extendsFrom extraLibs
+}
 
 def openComputersVersion = "MC1.12.2-1.7.+"
 def ae2Version = "rv6-stable-1"
 def projredVersion="1.12.2-4.9.0.86"
 def MCMPVersion = "2.5.3"
+def rtfmVersion = "MC1.12-1.0.1.4"
+def commons_version = "MC1.12.2-1.0.3"
 
 dependencies {
     deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
 
+    compileOnly "li.cil.manual:RTFM:${rtfmVersion}"
+
     deobfCompile "MCMultiPart2:MCMultiPart:${MCMPVersion}"
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    extraLibs files("libs/commons0815/Commons0815-${commons_version}-dev.jar")
 
     // all those just for the case block =>
     provided ("appeng:appliedenergistics2:${ae2Version}:api") {
@@ -83,3 +94,28 @@ processResources {
         exclude "mcmod.info"
     }
 }
+
+task syncGitWiki(type: com.palominolabs.gradle.task.git.clone.GitCloneTask) {
+    dir = file("src/main/resources/assets/ocdevices/doc")
+    uri = 'https://github.com/ben-mkiv/OCDevices.wiki.git'
+    treeish = "origin/master"
+    forceFetch = true
+}
+
+
+jar {
+    manifest {
+        attributes([
+                "Maven-Artifact":"${project.group}:${project.archivesBaseName}:${project.version}",
+                'Timestamp': System.currentTimeMillis(),
+                'ContainedDeps': "Commons0815-${commons_version}.jar"
+        ])
+    }
+
+    from("libs/Commons0815-${commons_version}.jar"){
+        into ("META-INF/libraries")
+    }
+}
+
+
+build.dependsOn(syncGitWiki)

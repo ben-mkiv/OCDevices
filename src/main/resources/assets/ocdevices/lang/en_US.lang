@@ -26,6 +26,7 @@ tile.matrix.name=Matrix
 tile.recipe_dictionary.name=Recipe Dictionary
 tile.redstone.name=Advanced Redstone I/O
 
+item.manual.name=OCDevices Manual
 item.upgrade_tier2.name=Upgrade (Tier 1 => 2)
 item.upgrade_tier3.name=Upgrade (Tier 2 => 3)
 item.upgrade_tier4.name=Upgrade (Tier 3 => Creative)
