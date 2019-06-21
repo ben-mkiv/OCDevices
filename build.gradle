@@ -95,6 +95,10 @@ processResources {
     }
 }
 
+task flushWiki(type: Delete) {
+    delete "src/main/resources/assets/ocdevices/doc"
+}
+
 task syncGitWiki(type: com.palominolabs.gradle.task.git.clone.GitCloneTask) {
     dir = file("src/main/resources/assets/ocdevices/doc")
     uri = 'https://github.com/ben-mkiv/OCDevices.wiki.git'
@@ -118,5 +122,5 @@ jar {
     }
 }
 
-
+syncGitWiki.dependsOn(flushWiki)
 build.dependsOn(syncGitWiki)
