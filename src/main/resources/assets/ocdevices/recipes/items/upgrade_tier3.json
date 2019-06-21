@@ -3,7 +3,7 @@
   "pattern": [
     "DMD",
     "TPT",
-    "   "
+    "MCM"
   ],
   "key": {
     "D": {
@@ -17,6 +17,9 @@
     },
     "T": {
       "item": "#opencomputers_transistor"
+    },
+    "C": {
+      "item": "#opencomputers_componentbus3"
     }
   },
   "result": {

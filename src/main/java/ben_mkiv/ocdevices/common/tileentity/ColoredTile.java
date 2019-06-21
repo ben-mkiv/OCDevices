@@ -35,9 +35,11 @@ public interface ColoredTile {
     static boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
         TileEntity tile = world.getTileEntity(pos);
 
-        if (tile instanceof ColoredTile && !world.isRemote) {
-            // serverside only check if the player recolored the keyboard
-            return ((ColoredTile) tile).setColor(player.getHeldItem(hand));
+        if (tile instanceof ColoredTile) {
+            if(world.isRemote)
+                return ((ColoredTile) tile).isColoringItem(player.getHeldItem(hand));
+            else
+                return ((ColoredTile) tile).setColor(player.getHeldItem(hand));
         }
 
         return false;

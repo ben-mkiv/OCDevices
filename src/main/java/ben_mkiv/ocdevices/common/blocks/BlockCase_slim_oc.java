@@ -35,7 +35,7 @@ public class BlockCase_slim_oc extends BlockCase {
 
 
     @Override
-    public TileEntityCase createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityCase_slim_oc();
+    public TileEntityCase createTileEntity(World worldIn, IBlockState state) {
+        return new TileEntityCase_slim_oc(state.getValue(caseTier));
     }
 }

@@ -1,8 +1,6 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
-import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
-import ben_mkiv.ocdevices.common.matrix.buttonLuaObject;
-import ben_mkiv.ocdevices.common.matrix.widgetLuaObject;
+import ben_mkiv.ocdevices.common.matrix.*;
 import li.cil.oc.api.API;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
@@ -41,13 +39,20 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         return false;
     }
 
-
     @Callback(doc = "function():boolean; adds a widget")
-    public Object[] addWidget(Context context, Arguments args){
+    public Object[] addBox(Context context, Arguments args){
         int index = getMaxIndex()+1;
-        widgets.put(index, new MatrixWidget("widget" + index));
+        widgets.put(index, new ButtonWidget("widget" + index));
         markDirty();
         return new Object[] { new buttonLuaObject(index, this) };
+    }
+
+    @Callback(doc = "function():boolean; adds a widget")
+    public Object[] addItem(Context context, Arguments args){
+        int index = getMaxIndex()+1;
+        widgets.put(index, new ItemWidget("widget" + index));
+        markDirty();
+        return new Object[] { new itemLuaObject(index, this) };
     }
 
     @Callback(doc = "function():table; gets all widgets")
@@ -58,6 +63,13 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
             widgetList.put(widget.getValue().getName(), new buttonLuaObject(widget.getKey(), this));
 
         return new Object[] { widgetList };
+    }
+
+    @Callback(doc = "function():table; removes all widgets")
+    public Object[] removeAll(Context context, Arguments args){
+        widgets.clear();
+        markDirty();
+        return new Object[] { widgets.size() == 0 };
     }
 
     private int getMaxIndex(){
@@ -73,7 +85,17 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
         widgets.clear();
         for(int i=0; tag.hasKey("widget"+i); i++){
             NBTTagCompound nbt = tag.getCompoundTag("widget"+i);
-            widgets.put(nbt.getInteger("index"), new MatrixWidget(nbt));
+            int index = nbt.getInteger("index");
+
+            switch(nbt.getString("type")){
+                case "item":
+                    widgets.put(index, new ItemWidget(nbt));
+                    break;
+                case "button":
+                    widgets.put(index, new ButtonWidget(nbt));
+                    break;
+            }
+
         }
         super.readFromNBT(tag);
     }

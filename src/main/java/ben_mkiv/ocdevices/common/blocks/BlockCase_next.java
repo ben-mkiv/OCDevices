@@ -35,7 +35,7 @@ public class BlockCase_next extends BlockCase {
 
 
     @Override
-    public TileEntityCase createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityCase_next();
+    public TileEntityCase createTileEntity(World worldIn, IBlockState state) {
+        return new TileEntityCase_next(state.getValue(caseTier));
     }
 }

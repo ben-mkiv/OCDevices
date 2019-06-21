@@ -1,8 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "   ",
-    "III",
+    " D ",
+    "IPc",
     "ICI"
   ],
   "key": {
@@ -10,7 +10,16 @@
       "item": "minecraft:iron_ingot"
     },
     "C": {
-      "item": "opencomputers:case1", "data": 0
+      "item": "#opencomputers_powerconverter"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "D": {
+      "item": "#opencomputers_diskdrive"
+    },
+    "c": {
+      "item": "#opencomputers_componentbus1"
     }
   },
   "result": {

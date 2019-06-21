@@ -7,7 +7,6 @@ import ben_mkiv.ocdevices.OCDevices;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -49,38 +48,6 @@ public class Config extends PermissionAPI {
         Property damageOrDestroyOnRecipeLookup = config.get("recipedict", "damageOrDestroyOnRecipeLookup", false);
         damageOrDestroyOnRecipeLookup.setLanguageKey("gui.config.recipedict.damageOrDestroyOnRecipeLookup");
         damageOrDestroyOnRecipeLookup.setComment("if set to true items will be damaged on recipe lookup, or destroyed if they cant handle damage");
-
-        Property tier_ibm5150 = config.get("cases", "tier_ibm5150", 3);
-        tier_ibm5150.setLanguageKey("gui.config.cases.tier_ibm5150");
-        tier_ibm5150.setComment("downgrading on existing worlds might result in losing already installed components");
-        tier_ibm5150.setMinValue(1);
-        tier_ibm5150.setMaxValue(3);
-        if(isClient)
-            tier_ibm5150.setConfigEntryClass(GuiConfigEntries.NumberSliderEntry.class);
-
-        Property tier_next = config.get("cases", "tier_next", 3);
-        tier_next.setLanguageKey("gui.config.cases.tier_next");
-        tier_next.setComment("downgrading on existing worlds might result in losing already installed components");
-        tier_next.setMinValue(1);
-        tier_next.setMaxValue(3);
-        if(isClient)
-            tier_next.setConfigEntryClass(GuiConfigEntries.NumberSliderEntry.class);
-
-        Property tier_oc_slim = config.get("cases", "tier_oc_slim", 3);
-        tier_oc_slim.setLanguageKey("gui.config.cases.tier_oc_slim");
-        tier_oc_slim.setComment("downgrading on existing worlds might result in losing already installed components");
-        tier_oc_slim.setMinValue(1);
-        tier_oc_slim.setMaxValue(3);
-        if(isClient)
-            tier_oc_slim.setConfigEntryClass(GuiConfigEntries.NumberSliderEntry.class);
-
-        Property tier_workstation = config.get("cases", "tier_workstation", 3);
-        tier_workstation.setLanguageKey("gui.config.cases.tier_workstation");
-        tier_workstation.setComment("downgrading on existing worlds might result in losing already installed components");
-        tier_workstation.setMinValue(1);
-        tier_workstation.setMaxValue(3);
-        if(isClient)
-            tier_workstation.setConfigEntryClass(GuiConfigEntries.NumberSliderEntry.class);
 
         if (config.hasChanged())
             config.save();

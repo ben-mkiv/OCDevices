@@ -5,10 +5,13 @@ import ben_mkiv.ocdevices.common.integration.MCMultiPart.MultiPartHelper;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.IUpgradeBlock;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityCase;
+import com.google.common.base.Optional;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Case;
 import li.cil.oc.common.block.property.PropertyRotatable;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,13 +23,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class BlockCase extends Case {
     public static final int tier = Tier.Three();
     public static final int GUI_ID = 3;
+
+    public static final caseTierProperty caseTier = new caseTierProperty();
 
     public BlockCase(String caseName){
         super(tier);
@@ -67,15 +79,13 @@ public class BlockCase extends Case {
     }
 
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if(!world.isRemote) {
-            if(ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ))
-                return true;
 
-            if(IUpgradeBlock.onBlockActivated(world, pos, player, hand))
-                return true;
-        }
+        if(ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ))
+            return true;
 
-        // from here client only, use our own gui handler to unwrap multiparts before opening the container gui
+        if(IUpgradeBlock.onBlockActivated(world, pos, player, hand))
+            return true;
+
         TileEntityCase caseTile = MultiPartHelper.getCaseFromTile(world.getTileEntity(pos));
         if (caseTile != null) {
             player.openGui(OCDevices.INSTANCE, GUI_ID, MultiPartHelper.getRealWorld(caseTile), pos.getX(), pos.getY(), pos.getZ());
@@ -97,9 +107,35 @@ public class BlockCase extends Case {
     }
 
     @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(PropertyRotatable.Facing()).getHorizontalIndex() << 2 | state.getValue(caseTier);
+    }
+
+    @Deprecated
+    @Nonnull
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(PropertyRotatable.Facing(), EnumFacing.getHorizontal(meta >> 2)).withProperty(caseTier, meta & 3);
+    }
+
+
+    @Override
     public @Nonnull IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @Nonnull EntityLivingBase placer, EnumHand hand){
         EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
-        return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw);
+        return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw).withProperty(caseTier, Tier.One());
+    }
+
+    @Override
+    public BlockStateContainer createBlockState() {
+        ArrayList<IProperty> properties = new ArrayList<IProperty>(super.createBlockState().getProperties());
+
+        IProperty[] props = new IProperty[properties.size()+1];
+        for(int i=0; i < properties.size(); i++)
+            props[i] = properties.get(i);
+
+        props[properties.size()] = caseTier;
+
+        return new ExtendedBlockState(this, props, new IUnlistedProperty[]{});
     }
 
     // avoid to connect to fences/glass panes

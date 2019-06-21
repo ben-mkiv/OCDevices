@@ -1,6 +1,7 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
 import ben_mkiv.ocdevices.client.renderer.RenderCase;
+import li.cil.oc.common.Tier;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 
@@ -13,7 +14,7 @@ public class TileEntityCase_ibm_5150 extends TileEntityCase {
     }
 
     public TileEntityCase_ibm_5150(){
-        this(getTierFromConfig("tier_ibm5150"));
+        this(Tier.One());
     }
 
     public static RenderCase.statusLED getPowerLED(){

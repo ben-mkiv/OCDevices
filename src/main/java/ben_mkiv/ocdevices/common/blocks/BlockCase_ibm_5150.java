@@ -27,7 +27,7 @@ public class BlockCase_ibm_5150 extends BlockCase {
     }
 
     @Override
-    public TileEntityCase createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityCase_ibm_5150();
+    public TileEntityCase createTileEntity(World worldIn, IBlockState state) {
+        return new TileEntityCase_ibm_5150(state.getValue(caseTier));
     }
 }

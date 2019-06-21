@@ -1,19 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "QQQ",
-    "PCQ",
-    "QQQ"
+    "QDQ",
+    "GPc",
+    "QCQ"
   ],
   "key": {
     "Q": {
       "item": "minecraft:quartz"
     },
-    "P": {
+    "G": {
       "item": "minecraft:glass_pane"
     },
     "C": {
-      "item": "opencomputers:case1", "data": 0
+      "item": "#opencomputers_powerconverter"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "D": {
+      "item": "#opencomputers_diskdrive"
+    },
+    "c": {
+      "item": "#opencomputers_componentbus1"
     }
   },
   "result": {

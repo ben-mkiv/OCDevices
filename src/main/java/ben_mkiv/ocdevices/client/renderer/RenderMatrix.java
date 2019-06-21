@@ -1,16 +1,25 @@
 package ben_mkiv.ocdevices.client.renderer;
 
 import ben_mkiv.ocdevices.client.models.ModelCube;
+import ben_mkiv.ocdevices.common.matrix.ButtonWidget;
+import ben_mkiv.ocdevices.common.matrix.ItemWidget;
 import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMatrix;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.ItemBlock;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static ben_mkiv.rendertoolkit.surface.ClientSurface.vec3d000;
 
 public class RenderMatrix extends RenderMultiblockDisplay {
     @Override
@@ -36,8 +45,9 @@ public class RenderMatrix extends RenderMultiblockDisplay {
         GlStateManager.disableLighting();
         setLightmapDisabled(true);
 
-        for(MatrixWidget widget : ((TileEntityMatrix) matrix.origin()).widgets.values())
+        for(MatrixWidget widget : ((TileEntityMatrix) matrix.origin()).widgets.values()) {
             renderWidget(matrix, widget, scaleFactor);
+        }
     }
 
     private void renderWidget(TileEntityMatrix matrix, MatrixWidget widget, float scaleFactor){
@@ -45,7 +55,12 @@ public class RenderMatrix extends RenderMultiblockDisplay {
         GlStateManager.disableTexture2D();
         renderBox(matrix, widget, scaleFactor);
         GlStateManager.enableTexture2D();
-        renderLabel(matrix, widget, scaleFactor);
+
+        if(widget instanceof ItemWidget)
+            renderItem(matrix, (ItemWidget) widget, scaleFactor);
+        else if(widget instanceof ButtonWidget)
+            renderLabel(matrix, (ButtonWidget) widget, scaleFactor);
+
         GlStateManager.popMatrix();
     }
 
@@ -58,11 +73,61 @@ public class RenderMatrix extends RenderMultiblockDisplay {
         box.drawCube();
     }
 
-    private void renderLabel(TileEntityMatrix matrix, MatrixWidget widget, float scaleFactor){
+    private void renderLabel(TileEntityMatrix matrix, ButtonWidget widget, float scaleFactor){
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(widget.getLabel().split("\n")));
 
         for(int line = 0; line < lines.size(); line++)
             renderLine(matrix, widget, lines.get(line), scaleFactor, line);
+    }
+
+    private void renderItem(TileEntityMatrix matrix, ItemWidget widget, float scaleFactor){
+        if(widget.renderable == null)
+            return;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(scaleFactor * widget.x, scaleFactor * widget.y, 0.0115);
+
+        /*
+        GlStateManager.translate(0.5, 0.5, 0);
+        GlStateManager.rotate(180, 1, 1, 0);
+        GlStateManager.translate(-0.5, -0.5, 0);
+        */
+
+        GlStateManager.disableNormalize();
+
+        GlStateManager.scale(scaleFactor * widget.width, -scaleFactor * widget.height, 0.001);
+
+        if(widget.stack.getItem() instanceof ItemBlock) {
+            GlStateManager.translate(0.5, -0.5, 0.5);
+            GlStateManager.scale(0.75, 0.75, 0.75);
+            GlStateManager.rotate(180, 0f, 1f, 0.20f);
+            GlStateManager.rotate(45, 0f, -1, 0f);
+        }
+
+        //GlStateManager.disableDepth();
+        //GlStateManager.depthMask(false);
+
+        //GlStateManager.enableRescaleNormal();
+
+        //widget.renderable.render(Minecraft.getMinecraft().player, vec3d000, ~0L);
+
+        IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(widget.stack);
+
+
+        //GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        //GL11.glEnable(GL11.GL_SCISSOR_BOX);
+        //GL11.glScissor(0, 0, 16, 16);
+        Minecraft.getMinecraft().getRenderItem().renderItem(widget.stack, model);
+
+        //GL11.glDisable(GL11.GL_SCISSOR_BOX);
+        //GL11.glDisable(GL11.GL_SCISSOR_TEST);
+
+        //Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRenderer, widget.stack, 0, 0, "what");
+
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+
+        GlStateManager.popMatrix();
     }
 
     private void renderLine(TileEntityMatrix matrix, MatrixWidget widget, String text, float scaleFactor, int line){
@@ -80,7 +145,6 @@ public class RenderMatrix extends RenderMultiblockDisplay {
         while(widget.x * scaleFactor + ((2 * paddingLeft + fontRenderer.getStringWidth(text)) * scaleFactor/12) > matrix.width())
             text = text.substring(0, text.length()-1);
 
-
         switch (widget.textAlignment){
             case RIGHT:
                 paddingLeft = (int) (((double) widget.width/scaleFactor) - 2 * fontRenderer.getStringWidth(text)) - paddingLeft;
@@ -92,7 +156,6 @@ public class RenderMatrix extends RenderMultiblockDisplay {
             default:
                break;
         }
-
 
         fontRenderer.drawString(text, paddingLeft, paddingTop, widget.foregroundColor);
 

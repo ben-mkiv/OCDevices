@@ -70,7 +70,7 @@ public class OCDevices {
     public static boolean Albedo = false;
     public static boolean Computronics = false;
 
-    public static boolean experimental = false;
+    public static boolean experimental = true;
 
     @Mod.Instance(MOD_ID)
     public static OCDevices INSTANCE;
@@ -103,12 +103,13 @@ public class OCDevices {
 
         if(experimental) {
             modBlocks.add(BlockRack.DEFAULTITEM = new BlockRack());
-            modItems.add(UpgradeBlastResistance.DEFAULT_STACK = new ItemStack(new UpgradeBlastResistance()));
-            modItems.add(UpgradeTier2.DEFAULT_STACK = new ItemStack(new UpgradeTier2()));
-            modItems.add(UpgradeTier3.DEFAULT_STACK = new ItemStack(new UpgradeTier3()));
-            modItems.add(UpgradeTier4.DEFAULT_STACK = new ItemStack(new UpgradeTier4()));
         }
 
+        modItems.add(UpgradeBlastResistance.DEFAULT_STACK = new ItemStack(new UpgradeBlastResistance()));
+        modItems.add(UpgradeTier2.DEFAULT_STACK = new ItemStack(new UpgradeTier2()));
+        modItems.add(UpgradeTier3.DEFAULT_STACK = new ItemStack(new UpgradeTier3()));
+        modItems.add(UpgradeTier4.DEFAULT_STACK = new ItemStack(new UpgradeTier4()));
+        
         proxy.preinit();
 
         Optifine = Loader.isModLoaded("optifine");
@@ -158,6 +159,11 @@ public class OCDevices {
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_workstation.class, new RenderCase(TileEntityCase_workstation.getPowerLED(), TileEntityCase_workstation.getStatusLED()));
 
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMatrix.class, new RenderMatrix());
+
+            ModelLoader.setCustomStateMapper(BlockCase_next.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_next.caseTier).build());
+            ModelLoader.setCustomStateMapper(BlockCase_slim_oc.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_slim_oc.caseTier).build());
+            ModelLoader.setCustomStateMapper(BlockCase_ibm_5150.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_ibm_5150.caseTier).build());
+            ModelLoader.setCustomStateMapper(BlockCase_workstation.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_workstation.caseTier).build());
         }
 
         @SubscribeEvent

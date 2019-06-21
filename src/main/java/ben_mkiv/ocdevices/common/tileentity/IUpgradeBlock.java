@@ -19,11 +19,16 @@ public interface IUpgradeBlock {
         ItemStack stack = player.getHeldItem(hand);
         TileEntity tile = world.getTileEntity(pos);
 
-        if(tile instanceof IUpgradeBlock && ((IUpgradeBlock) tile).applyUpgrade(stack)) {
-            ItemStack newStack = stack.copy();
-            newStack.setCount(stack.getCount()-1);
-            player.setHeldItem(hand, newStack);
-            return true;
+        if(tile instanceof IUpgradeBlock && ((IUpgradeBlock) tile).isValidUpgradeItem(stack)) {
+            if(player.world.isRemote)
+                return true;
+
+            if(((IUpgradeBlock) tile).applyUpgrade(stack)) {
+                ItemStack newStack = stack.copy();
+                newStack.setCount(stack.getCount() - 1);
+                player.setHeldItem(hand, newStack);
+                return true;
+            }
         }
 
         return false;

@@ -36,6 +36,18 @@
     }
   },
   {
+    "name": "opencomputers_componentbus2",
+    "ingredient": {
+      "item": "opencomputers:component", "data": 4
+    }
+  },
+  {
+    "name": "opencomputers_componentbus3",
+    "ingredient": {
+      "item": "opencomputers:component", "data": 5
+    }
+  },
+  {
     "name": "opencomputers_chip1",
     "ingredient": {
       "item": "opencomputers:material", "data": 7
@@ -93,6 +105,18 @@
     "name": "opencomputers_upgradecontainer3",
     "ingredient": {
       "item": "opencomputers:upgrade", "data": 10
+    }
+  },
+  {
+    "name": "opencomputers_powerconverter",
+    "ingredient": {
+      "item": "opencomputers:powerconverter", "data": 0
+    }
+  },
+  {
+    "name": "opencomputers_diskdrive",
+    "ingredient": {
+      "item": "opencomputers:diskdrive", "data": 0
     }
   }
 ]

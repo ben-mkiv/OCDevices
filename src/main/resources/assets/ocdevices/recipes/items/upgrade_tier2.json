@@ -3,7 +3,7 @@
   "pattern": [
     "GMG",
     "TPT",
-    "   "
+    "MCM"
   ],
   "key": {
     "G": {
@@ -17,6 +17,9 @@
     },
     "T": {
       "item": "#opencomputers_transistor"
+    },
+    "C": {
+      "item": "#opencomputers_componentbus2"
     }
   },
   "result": {

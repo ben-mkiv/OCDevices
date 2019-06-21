@@ -35,7 +35,7 @@ public class BlockCase_workstation extends BlockCase {
 
 
     @Override
-    public TileEntityCase createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityCase_workstation();
+    public TileEntityCase createTileEntity(World worldIn, IBlockState state) {
+        return new TileEntityCase_workstation(state.getValue(caseTier));
     }
 }

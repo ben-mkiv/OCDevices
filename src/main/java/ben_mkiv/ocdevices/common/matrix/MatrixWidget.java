@@ -7,43 +7,22 @@ public class MatrixWidget {
 
     public static int matrixResolution = 16;
 
-    public int x, y, width, height, backgroundColor, foregroundColor, fontSize;
+    public int x = 0, y = 0, width = 0, height = 0, backgroundColor = 0x0, foregroundColor = 0xFFFFFF, fontSize = 12;
     public double depth;
 
     public enum textAlignments { LEFT, CENTER, RIGHT }
 
     public textAlignments textAlignment = textAlignments.LEFT;
 
-    private String name, label;
+    private String name, label = "";
 
     public MatrixWidget(String name){
-        this(0, 0, 0, 0, 0, name);
+        this.name = name;
     }
 
     public MatrixWidget(NBTTagCompound nbt){
         this("");
         readFromNBT(nbt);
-    }
-
-    public MatrixWidget(int posX, int posY, int w, int h, String widgetName){
-        this(posX, posY, 0, w, h, widgetName);
-    }
-
-    public MatrixWidget(int posX, int posY, double widgetDepth, int w, int h, String widgetName){
-        this(posX, posY, widgetDepth, w, h, widgetName, "", 0x0, 0xFFFFFF, 12);
-    }
-
-    public MatrixWidget(int posX, int posY, double widgetDepth, int w, int h, String widgetName, String widgetLabel, int bgColor, int fgColor, int textSize){
-        x = posX;
-        y = posY;
-        width = w;
-        height = h;
-        depth = widgetDepth;
-        name = widgetName;
-        label = widgetLabel;
-        backgroundColor = bgColor;
-        foregroundColor = fgColor;
-        fontSize = textSize;
     }
 
     public boolean hovered(Vec3d hitVec){
