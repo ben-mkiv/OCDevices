@@ -1,103 +1,109 @@
 package ben_mkiv.ocdevices.client.renderer;
 
-import ben_mkiv.ocdevices.client.models.ModelServerRack;
+import ben_mkiv.ocdevices.client.models.ModelRack;
 import ben_mkiv.ocdevices.common.blocks.BlockRack;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityRack;
 import li.cil.oc.api.event.RackMountableRenderEvent;
 import li.cil.oc.client.renderer.block.ServerRackModel;
 import li.cil.oc.common.tileentity.Rack;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.model.animation.FastTESR;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
-import java.util.List;
+import java.nio.Buffer;
 
 public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
-    static ServerRackModel model;
+    private static ModelRack modelRack = new ModelRack();
+    private static ServerRackModel ocModel;
 
     @Override
-    public void render(TileEntityRack rack, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        IBlockState state = BlockRack.DEFAULTITEM.getDefaultState();
+    public void render(TileEntityRack rack,  double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 
-        if(model == null)
-            model = new ModelServerRack(Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(BlockRack.DEFAULTITEM.getDefaultState()));
+        if(ocModel == null)
+            ocModel = new ServerRackModel(Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(BlockRack.DEFAULTITEM.getDefaultState()));
 
-        GlStateManager.pushAttrib();
+        //todo: remove this line when done with modeling
+        modelRack = new ModelRack();
+
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
+        GlStateManager.translate(x, y, z);
+        GlStateManager.disableBlend();
 
-        GlStateManager.rotate(rack.yaw().getHorizontalAngle(), 0, 1, 0);
+        // render rack case in world
+        modelRack.render(rack, 0.0625F, null);
 
-        GlStateManager.scale(1, -1, -1);
-        GlStateManager.translate(-0.5D, -0.5D, -0.5D);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBuffer();
-        /*
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        for(EnumFacing face : EnumFacing.values()) {
-            if (face.equals(EnumFacing.NORTH))
-                GlStateManager.translate(0, 0, 0.4);
-
-            for (BakedQuad quad : model.parent().getQuads(state, face, 0))
-                LightUtil.renderQuadColor(vertexbuffer, quad, 0);
-
-            if (face.equals(EnumFacing.NORTH))
-                GlStateManager.translate(0, 0, -0.4);
+        bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        GlStateManager.scale(-1, 1, -0.95);
+        GlStateManager.rotate(180, 0, 1, 0);
+        GlStateManager.translate(0, 0, 0.05);
+        for(int rackSlot=0; rackSlot < rack.getSizeInventory(); rackSlot++) {
+            renderSlot(rack, rackSlot, null);
         }
-        tessellator.draw();
-        */
 
-        BlockModelRenderer renderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
-        renderer.renderModel(getWorld(), model, state, rack.getPos(), vertexbuffer, false, 0);
-
-        for(int slot=0; slot < rack.getSizeInventory(); slot++)
-            renderSlot(rack, slot);
-
+        GlStateManager.enableBlend();
         GlStateManager.popMatrix();
-        GlStateManager.popAttrib();
     }
 
-    private void renderQuads(BufferBuilder renderer, List<BakedQuad> quads, int color) {
-        for (int j = quads.size(), i = 0; i < j; ++i)
-            LightUtil.renderQuadColor(renderer, quads.get(i), color);
-    }
-
-    private void renderSlot(Rack rack, int rackSlot) {
+    private void renderSlot(Rack rack, int rackSlot, BufferBuilder buffer) {
         if(rack.getStackInSlot(rackSlot).isEmpty())
             return;
 
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
 
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        renderServerBox(rack, rackSlot, buffer);
+        renderStatusLED(rack, rackSlot);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBuffer();
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-        for(BakedQuad quad : model.bakeQuads(model.Servers()[rackSlot], model.serverTexture(), 0))
-            LightUtil.renderQuadColor(vertexbuffer, quad, 0);
-
-        tessellator.draw();
-
-        float v0 = 0.125F + (float)rackSlot * 0.1875F;
-        float v1 = v0 + 0.1875F;
-
-        MinecraftForge.EVENT_BUS.post(new RackMountableRenderEvent.TileEntity(rack, rackSlot, rack.lastData()[rackSlot], v0, v1));
         GlStateManager.popAttrib();
         GlStateManager.popMatrix();
+    }
+
+    private void renderServerBox(Rack rack, int rackSlot, BufferBuilder bufferBuilder){
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        RackMountableRenderEvent.Block event = new RackMountableRenderEvent.Block(rack, rackSlot, rack.lastData()[rackSlot], EnumFacing.DOWN);
+        MinecraftForge.EVENT_BUS.post(event);
+
+        Tessellator tess = Tessellator.getInstance();
+        bufferBuilder = tess.getBuffer();
+
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+
+        TextureAtlasSprite[] rackTextures = ocModel.serverTexture();
+
+        // override the default server texture if the event holds reference to a custom texture
+        if(event.getFrontTextureOverride() != null)
+            rackTextures[2] = event.getFrontTextureOverride();
+
+        // finally put the data to the buffer
+        for(BakedQuad quad : ocModel.bakeQuads(ocModel.Servers()[rackSlot], rackTextures, 0)) {
+            LightUtil.renderQuadColor(bufferBuilder, quad, 0);
+        }
+
+        tess.draw();
+
+    }
+
+    private void renderStatusLED(Rack rack, int rackSlot){
+        float v0 = 0.125F + (float)rackSlot * 1F/16 * 3;
+        float v1 = v0 + 0.1875F;
+
+        GlStateManager.rotate(180, 0, 0, 1);
+        GlStateManager.translate(-1, -1, 0);
+
+        MinecraftForge.EVENT_BUS.post(new RackMountableRenderEvent.TileEntity(rack, rackSlot, rack.lastData()[rackSlot], v0, v1));
     }
 
 }

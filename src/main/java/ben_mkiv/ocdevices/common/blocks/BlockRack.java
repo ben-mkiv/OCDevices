@@ -11,8 +11,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public class BlockRack extends Rack {
     public final static String NAME = "rack";
@@ -27,6 +32,12 @@ public class BlockRack extends Rack {
         setRegistryName(OCDevices.MOD_ID, rackName);
         setUnlocalizedName(rackName);
         setCreativeTab(OCDevices.creativeTab);
+    }
+
+    @Deprecated
+    @SideOnly(Side.CLIENT)
+    public @Nonnull AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos){
+        return new AxisAlignedBB(0, 0, 0, 1, 1, 1);
     }
 
     public TileEntityRack getTileEntity(World world, BlockPos pos){

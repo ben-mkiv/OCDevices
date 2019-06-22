@@ -5,7 +5,6 @@ import ben_mkiv.ocdevices.common.items.UpgradeBlastResistance;
 import ben_mkiv.ocdevices.common.items.UpgradeTier2;
 import ben_mkiv.ocdevices.common.items.UpgradeTier3;
 import ben_mkiv.ocdevices.common.items.UpgradeTier4;
-import ben_mkiv.ocdevices.config.Config;
 import ben_mkiv.ocdevices.utils.ItemUtils;
 import li.cil.oc.common.Tier;
 import li.cil.oc.common.tileentity.Case;
@@ -13,18 +12,12 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -129,58 +122,6 @@ public class TileEntityCase extends Case implements ColoredTile, IUpgradeBlock {
             return !oldState.getValue(caseTier).equals(newSate.getValue(caseTier)) || super.shouldRefresh(world, pos, oldState, newSate);
 
         return super.shouldRefresh(world, pos, oldState, newSate);
-    }
-
-    @Nullable
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        handleUpdateTag(packet.getNbtCompound());
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void handleUpdateTag(@Nonnull NBTTagCompound nbt){
-        readFromNBT(nbt);
-    }
-
-
-    @Override
-    public void markDirty(){
-        if(getWorld() == null) return;
-        IBlockState state = getWorld().getBlockState(getPos());
-        getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-        super.markDirty();
-    }
-
-    @Override
-    public @Nonnull NBTTagCompound getUpdateTag() {
-        NBTTagCompound nbt = super.getUpdateTag();
-        writeToNBTForClient(nbt);
-        return nbt;
-    }
-
-    static int getTierFromConfig(String caseName){
-        return Config.getConfig().getCategory("cases").get(caseName).getInt() - 1;
-    }
-
-    @Override
-    public void readFromNBTForClient(NBTTagCompound tag){
-        super.readFromNBTForClient(tag);
-        explosionResistance = tag.getFloat("ocd:blastResistant");
-        hardness = tag.getFloat("ocd:hardness");
-    }
-
-    @Override
-    public void writeToNBTForClient(NBTTagCompound tag){
-        tag.setFloat("ocd:blastResistant", getExplosionResistance());
-        tag.setFloat("ocd:hardness", getHardness());
-        super.writeToNBTForClient(tag);
     }
 
     @Override

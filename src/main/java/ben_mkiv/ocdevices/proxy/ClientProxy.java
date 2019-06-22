@@ -24,6 +24,8 @@ public class ClientProxy extends CommonProxy{
         mc.registerBlockColorHandler(new ColorHandler(), BlockCase_next.DEFAULTITEM);
         mc.registerBlockColorHandler(new ColorHandler(), BlockCase_workstation.DEFAULTITEM);
 
+        mc.registerBlockColorHandler(new ColorHandler(), BlockRack.DEFAULTITEM);
+
         mc.registerBlockColorHandler(new ColorHandler(), BlockKeyboard.DEFAULTITEM);
     }
 

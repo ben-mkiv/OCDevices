@@ -187,8 +187,7 @@ public class BlockCase extends Case {
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-    {
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)    {
         if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
         return super.removedByPlayer(state, world, pos, player, willHarvest);
     }
@@ -197,12 +196,10 @@ public class BlockCase extends Case {
      * Block.removedByPlayer
      */
     @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
-    {
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)    {
         super.harvestBlock(world, player, pos, state, te, tool);
         world.setBlockToAir(pos);
     }
-
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack){
@@ -217,8 +214,6 @@ public class BlockCase extends Case {
             }
         }
     }
-
-
 
     // avoid to connect to fences/glass panes
     @Override
