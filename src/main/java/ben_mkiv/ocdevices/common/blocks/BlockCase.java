@@ -203,6 +203,8 @@ public class BlockCase extends Case {
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack){
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+
         if(worldIn.isRemote)
             return;
 

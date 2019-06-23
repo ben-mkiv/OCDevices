@@ -37,19 +37,29 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
         modelRack = new ModelRack();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, z);
+        GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+        switch(rack.yaw()) {
+            case EAST: GlStateManager.rotate(-90, 0, 1, 0); break;
+            case SOUTH: GlStateManager.rotate(180, 0, 1, 0); break;
+            case WEST: GlStateManager.rotate(90, 0, 1, 0); break;
+        }
+        GlStateManager.translate(-0.5, -0.5, -0.5);
+
         GlStateManager.disableBlend();
 
-        // render rack case in world
-        modelRack.render(rack, 0.0625F, null);
 
         bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        GlStateManager.pushMatrix();
         GlStateManager.scale(-1, 1, -0.95);
         GlStateManager.rotate(180, 0, 1, 0);
         GlStateManager.translate(0, 0, 0.05);
         for(int rackSlot=0; rackSlot < rack.getSizeInventory(); rackSlot++) {
             renderSlot(rack, rackSlot, null);
         }
+        GlStateManager.popMatrix();
+
+        // render rack case in world
+        modelRack.render(rack, 0.0625F, null);
 
         GlStateManager.enableBlend();
         GlStateManager.popMatrix();
@@ -93,7 +103,6 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
         }
 
         tess.draw();
-
     }
 
     private void renderStatusLED(Rack rack, int rackSlot){

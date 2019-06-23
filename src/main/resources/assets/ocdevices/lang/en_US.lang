@@ -25,6 +25,7 @@ tile.keyboard.name=Keyboard
 tile.matrix.name=Matrix
 tile.recipe_dictionary.name=Recipe Dictionary
 tile.redstone.name=Advanced Redstone I/O
+tile.rack.name=Server Rack
 
 item.manual.name=OCDevices Manual
 item.upgrade_tier2.name=Upgrade (Any => Tier 2)
@@ -37,3 +38,4 @@ oc:container.tileentitycase_slim_oc=Computer
 oc:container.tileentitycase_next=Computer
 oc:container.tileentitycase_ibm_5150=Computer
 oc:container.tileentitycase_workstation=Computer
+oc:container.tileentityrack=Server Rack
