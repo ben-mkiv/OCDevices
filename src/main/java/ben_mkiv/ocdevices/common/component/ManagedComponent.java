@@ -57,6 +57,11 @@ public class ManagedComponent {
 
         if(driver != null)
             environment = driver.createEnvironment(stack, componentHost);
+
+        if(stack.hasTagCompound() && stack.getTagCompound().hasKey("oc:data")) {
+            NBTTagCompound tag = stack.getTagCompound().getCompoundTag("oc:data");
+            environment.load(tag);
+        }
     }
 
     public Node node() {

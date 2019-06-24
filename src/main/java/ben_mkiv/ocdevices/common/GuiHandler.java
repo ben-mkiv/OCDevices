@@ -1,13 +1,8 @@
 package ben_mkiv.ocdevices.common;
 
-import ben_mkiv.ocdevices.client.gui.CardDockGUI;
-import ben_mkiv.ocdevices.client.gui.CaseGUI;
-import ben_mkiv.ocdevices.client.gui.RecipeDictionaryGUI;
-import ben_mkiv.ocdevices.client.gui.ScreenGUI;
-import ben_mkiv.ocdevices.common.blocks.BlockCardDock;
-import ben_mkiv.ocdevices.common.blocks.BlockCase;
-import ben_mkiv.ocdevices.common.blocks.BlockFlatScreen;
-import ben_mkiv.ocdevices.common.blocks.BlockRecipeDictionary;
+import ben_mkiv.ocdevices.client.gui.*;
+import ben_mkiv.ocdevices.common.blocks.*;
+import ben_mkiv.ocdevices.common.inventory.BridgeContainer;
 import ben_mkiv.ocdevices.common.inventory.CardDockContainer;
 import ben_mkiv.ocdevices.common.inventory.CaseContainer;
 import ben_mkiv.ocdevices.common.inventory.RecipeDictionaryContainer;
@@ -34,6 +29,9 @@ public class GuiHandler implements IGuiHandler {
             case BlockCase.GUI_ID:
                 return new CaseContainer(player.inventory, te);
 
+            case BlockBridge.GUI_ID:
+                return new BridgeContainer(player.inventory, te);
+
             default: return null;
         }
     }
@@ -56,6 +54,9 @@ public class GuiHandler implements IGuiHandler {
             case BlockFlatScreen.GUI_ID:
                 ScreenGUI.screen = te;
                 return new ScreenGUI();
+
+            case BlockBridge.GUI_ID:
+                return new BridgeGUI(player.inventory, te);
 
             default: return null;
         }

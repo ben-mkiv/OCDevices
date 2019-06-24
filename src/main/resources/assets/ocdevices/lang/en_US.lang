@@ -26,6 +26,7 @@ tile.matrix.name=Matrix
 tile.recipe_dictionary.name=Recipe Dictionary
 tile.redstone.name=Advanced Redstone I/O
 tile.rack.name=Server Rack
+tile.bridge.name=Bridge
 
 item.manual.name=OCDevices Manual
 item.upgrade_tier2.name=Upgrade (Any => Tier 2)

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "cPc",
+    "ICI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "#opencomputers_powerconverter"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "c": {
+      "item": "#opencomputers_componentbus3"
+    }
+  },
+  "result": {
+    "item": "ocdevices:rack"
+  }
+}

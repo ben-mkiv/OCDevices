@@ -98,9 +98,11 @@ public class OCDevices {
         modBlocks.add(BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc());
         modBlocks.add(BlockCase_workstation.DEFAULTITEM = new BlockCase_workstation());
 
+        modBlocks.add(BlockRack.DEFAULTITEM = new BlockRack());
+
         if(experimental) {
-            modBlocks.add(BlockRack.DEFAULTITEM = new BlockRack());
             modBlocks.add(BlockMatrix.DEFAULTITEM = new BlockMatrix());
+            modBlocks.add(BlockBridge.DEFAULTITEM = new BlockBridge());
         }
 
         modItems.add(UpgradeBlastResistance.DEFAULT_STACK = new ItemStack(new UpgradeBlastResistance()));
@@ -149,10 +151,10 @@ public class OCDevices {
             
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlatScreen.class, new RenderFlatScreen());
 
-            if(experimental){
-                ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRack.class, new RenderRack());
-                ModelLoader.setCustomStateMapper(BlockRack.DEFAULTITEM, new StateMap.Builder().ignore(PropertyRotatable.Facing()).build());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRack.class, new RenderRack());
+            ModelLoader.setCustomStateMapper(BlockRack.DEFAULTITEM, new StateMap.Builder().ignore(PropertyRotatable.Facing()).build());
 
+            if(experimental){
                 ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMatrix.class, new RenderMatrix());
             }
 
@@ -198,8 +200,11 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityCase_slim_oc.class, new ResourceLocation(MOD_ID, BlockCase_slim_oc.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_workstation.class, new ResourceLocation(MOD_ID, BlockCase_workstation.NAME));
 
+            GameRegistry.registerTileEntity(TileEntityRack.class, new ResourceLocation(MOD_ID, BlockRack.NAME));
+
+
             if(experimental) {
-                GameRegistry.registerTileEntity(TileEntityRack.class, new ResourceLocation(MOD_ID, BlockRack.NAME));
+                GameRegistry.registerTileEntity(TileEntityBridge.class, new ResourceLocation(MOD_ID, BlockBridge.NAME));
                 GameRegistry.registerTileEntity(TileEntityMatrix.class, new ResourceLocation(MOD_ID, BlockMatrix.NAME));
             }
         }
