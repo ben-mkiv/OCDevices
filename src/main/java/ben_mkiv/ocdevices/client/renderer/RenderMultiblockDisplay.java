@@ -300,7 +300,7 @@ abstract class RenderMultiblockDisplay extends TileEntitySpecialRenderer<TileEnt
 
         // Fit area to screen (bottom left = bottom left).
         // and Slightly offset the text on the z-axis so it doesn't clip into the screen.
-        GlStateManager.translate(0, 1f, 1.0001f);
+        GlStateManager.translate(0, 1f, 1.0005f);
 
 
         GlStateManager.translate(0, screen.getHelper().screenCountY-1, 0);

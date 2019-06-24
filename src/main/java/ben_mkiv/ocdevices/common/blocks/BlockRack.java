@@ -1,10 +1,10 @@
 package ben_mkiv.ocdevices.common.blocks;
 
+import appeng.api.implementations.tiles.IColorableTile;
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.IUpgradeBlock;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityRack;
-import li.cil.oc.common.Tier;
 import li.cil.oc.common.block.Rack;
 import li.cil.oc.common.block.property.PropertyRotatable;
 import net.minecraft.block.Block;
@@ -25,6 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Option;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,15 +58,30 @@ public class BlockRack extends Rack {
     }
 
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if(!world.isRemote) {
-            if(ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ))
-                return true;
+        TileEntityRack rack = getTileEntity(world, pos);
 
+        if(ColoredTile.isColoringItem(player.getHeldItem(hand))) {
+            Option<Object> slotData = rack.slotAt(side, hitX, hitY, hitZ);
+
+            if (!slotData.isEmpty() && slotData.get() instanceof Integer) {
+                int slot = (Integer) slotData.get();
+                if (!rack.getStackInSlot(slot).isEmpty()) {
+                    rack.setColorServer(slot, ColoredTile.getColorFromStack(player.getHeldItem(hand)));
+                    return true;
+                }
+            }
+        }
+
+        if(ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ))
+            return true;
+
+        if(!world.isRemote) {
             if(IUpgradeBlock.onBlockActivated(world, pos, player, hand))
                 return true;
         }
 
-        TileEntityRack rack = getTileEntity(world, pos);
+
+
 
         if(side.equals(rack.facing())) {
             if (!rack.isDoorOpened() || player.isSneaking()) {
@@ -117,6 +133,7 @@ public class BlockRack extends Rack {
         if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
         return super.removedByPlayer(state, world, pos, player, willHarvest);
     }
+
     /**
      * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
      * Block.removedByPlayer
@@ -142,7 +159,6 @@ public class BlockRack extends Rack {
             }
         }
     }
-
 
     @SideOnly(Side.CLIENT)
     @Override

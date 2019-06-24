@@ -15,11 +15,11 @@ public interface ColoredTile {
     void setColor(int color);
     void onColorChanged();
 
-    default boolean isColoringItem(ItemStack stack) {
+    static boolean isColoringItem(ItemStack stack) {
         return stack.getItem() instanceof ItemDye;
     }
 
-    default int getColorFromStack(ItemStack stack){
+    static int getColorFromStack(ItemStack stack){
         float[] vals = li.cil.oc.util.Color.dyeColor(stack).getColorComponentValues();
         return new java.awt.Color(vals[0], vals[1], vals[2]).getRGB();
     }
@@ -37,7 +37,7 @@ public interface ColoredTile {
 
         if (tile instanceof ColoredTile) {
             if(world.isRemote)
-                return ((ColoredTile) tile).isColoringItem(player.getHeldItem(hand));
+                return isColoringItem(player.getHeldItem(hand));
             else
                 return ((ColoredTile) tile).setColor(player.getHeldItem(hand));
         }

@@ -29,6 +29,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -201,6 +202,13 @@ public class OCDevices {
                 GameRegistry.registerTileEntity(TileEntityRack.class, new ResourceLocation(MOD_ID, BlockRack.NAME));
                 GameRegistry.registerTileEntity(TileEntityMatrix.class, new ResourceLocation(MOD_ID, BlockMatrix.NAME));
             }
+        }
+
+        @SubscribeEvent
+        public static void onTextureStitch(TextureStitchEvent.Pre evt){
+            RenderRack.serverTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_server"));
+            RenderRack.diskDriveTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_disk_drive"));
+            RenderRack.terminalServerTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_terminal_server"));
         }
     }
 

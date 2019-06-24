@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
     private int color = 0;
+    private int[] serverColors = new int[]{ 0, 0, 0, 0 };
 
     private float hardness = 0.5f;
     private float explosionResistance = 1f;
@@ -30,10 +31,21 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
         return this.color;
     }
 
+    public int getServerColor(int slot){
+        return serverColors[slot];
+    }
+
     @Override
     public void setColor(int color){
         if(this.color != color) {
             this.color = color;
+            onColorChanged();
+        }
+    }
+
+    public void setColorServer(int slot, int color){
+        if(this.serverColors[slot] != color) {
+            this.serverColors[slot] = color;
             onColorChanged();
         }
     }
@@ -82,40 +94,57 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
         markDirty();
     }
 
-    @Override
-    public void readFromNBT(NBTTagCompound nbt){
-        super.readFromNBT(nbt);
-        this.color = nbt.getInteger("color");
-        explosionResistance = nbt.getFloat("ocd:blastResistant");
-        hardness = nbt.getFloat("ocd:hardness");
-        doorOpened = nbt.getBoolean("ocd:doorOpened");
+    public void setDoor(boolean state){
+        if(state == isDoorOpened())
+            return;
+
+        doorAnimationProgress = System.currentTimeMillis();
+        doorOpened = state;
     }
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt){
+    private void readNBT(NBTTagCompound nbt){
+        this.color = nbt.getInteger("color");
+
+        for(int slot=0; slot < getSizeInventory(); slot++)
+            serverColors[slot] = nbt.getInteger("serverColor"+slot);
+
+        explosionResistance = nbt.getFloat("ocd:blastResistant");
+        hardness = nbt.getFloat("ocd:hardness");
+        setDoor(nbt.getBoolean("ocd:doorOpened"));
+    }
+
+    private NBTTagCompound writeNBT(NBTTagCompound nbt){
         nbt.setFloat("ocd:blastResistant", getExplosionResistance());
         nbt.setFloat("ocd:hardness", getHardness());
         nbt.setBoolean("ocd:doorOpened", doorOpened);
         nbt.setInteger("color", this.color);
-        return super.writeToNBT(nbt);
+
+        for(int slot=0; slot < getSizeInventory(); slot++)
+            nbt.setInteger("serverColor"+slot, serverColors[slot]);
+
+        return nbt;
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt){
+        super.readFromNBT(nbt);
+        this.readNBT(nbt);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt){
+        return super.writeToNBT(this.writeNBT(nbt));
     }
 
     @Override
     public void readFromNBTForClient(NBTTagCompound nbt){
         super.readFromNBTForClient(nbt);
-        this.color = nbt.getInteger("color");
-        boolean newDoorState = nbt.getBoolean("ocd:doorOpened");
-        if(newDoorState != isDoorOpened())
-            doorAnimationProgress = System.currentTimeMillis();
-
-        doorOpened = newDoorState;
+        this.readNBT(nbt);
     }
 
     @Override
     public void writeToNBTForClient(NBTTagCompound nbt){
-        super.writeToNBTForClient(nbt);
-        nbt.setInteger("color", this.color);
-        nbt.setBoolean("ocd:doorOpened", isDoorOpened());
+        super.writeToNBTForClient(this.writeNBT(nbt));
     }
 
     @Nullable
@@ -134,6 +163,15 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
     @SideOnly(Side.CLIENT)
     public void handleUpdateTag(@Nonnull NBTTagCompound nbt){
         readFromNBTForClient(nbt);
+    }
+
+    // no idea why this gets an invalid index sometimes, so we catch it here for now
+    @Override
+    public NBTTagCompound getMountableData(int var1){
+        if(var1 >= 0 && var1 <= getSizeInventory())
+            return super.getMountableData(var1);
+        else
+            return new NBTTagCompound();
     }
 
 
