@@ -165,7 +165,7 @@ public class BlockRack extends Rack {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
         if(stack.hasTagCompound()) {
             NBTTagCompound stackTag = stack.getTagCompound();
-            if(stackTag.hasKey("reinforced"))
+            if(stackTag.hasKey("reinforced") && stackTag.getBoolean("reinforced"))
                 tooltip.add("blast protected");
         }
     }

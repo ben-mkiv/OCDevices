@@ -2,12 +2,6 @@ itemGroup.OCDevices=OCDevices
 
 gui.config.title=OCDevices Configuration
 
-gui.config.cases=Cases
-gui.config.cases.tier_workstation=Tier Workstation Case
-gui.config.cases.tier_oc_slim=Tier OC-Slim Case
-gui.config.cases.tier_next=Tier Next Case
-gui.config.cases.tier_ibm5150=Tier IBM5150 Case
-
 gui.config.recipedict=Recipe Dictionary
 gui.config.recipedict.enableCreativeRecipeLookup=allow creative recipe lookup
 gui.config.recipedict.damageOrDestroyOnRecipeLookup=damage/destroy items on recipe lookup

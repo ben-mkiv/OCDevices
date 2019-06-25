@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ECE",
+    "MPe",
+    "ici"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:end_crystal"
+    },
+    "c": {
+      "item": "opencomputers:cable", "data": 0
+    },
+    "C": {
+      "item": "#opencomputers_cardcontainer3"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "E": {
+      "item": "minecraft:end_rod"
+    },
+    "M": {
+      "item": "#opencomputers_chip3"
+    }
+
+  },
+  "result": {
+    "item": "ocdevices:bridge"
+  }
+}
