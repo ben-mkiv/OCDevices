@@ -51,15 +51,14 @@ import java.util.logging.Logger;
 @Mod(
         modid = OCDevices.MOD_ID,
         name = OCDevices.MOD_NAME,
-        version = OCDevices.VERSION,
+        version = BuildInfo.versionNumber + "-" + BuildInfo.buildNumber,
         dependencies = "required-after:opencomputers;required-after:rendertoolkit;after:rtfm",
         guiFactory = OCDevices.GUIFACTORY
 )
 public class OCDevices {
 
-    public static final String MOD_ID = "ocdevices";
-    public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "@VERSION@";
+    public static final String MOD_ID = BuildInfo.modID;
+    public static final String MOD_NAME = BuildInfo.modName;
 
     public static final String GUIFACTORY = "ben_mkiv.ocdevices.config.ConfigGUI";
 
