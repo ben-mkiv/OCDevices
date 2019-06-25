@@ -103,6 +103,7 @@ public class OCDevices {
         if(experimental) {
             modBlocks.add(BlockMatrix.DEFAULTITEM = new BlockMatrix());
             modBlocks.add(BlockBridge.DEFAULTITEM = new BlockBridge());
+            modBlocks.add(BlockDatabaseAdapter.DEFAULTITEM = new BlockDatabaseAdapter());
         }
 
         modItems.add(UpgradeBlastResistance.DEFAULT_STACK = new ItemStack(new UpgradeBlastResistance()));
@@ -205,6 +206,7 @@ public class OCDevices {
 
             if(experimental) {
                 GameRegistry.registerTileEntity(TileEntityBridge.class, new ResourceLocation(MOD_ID, BlockBridge.NAME));
+                GameRegistry.registerTileEntity(TileEntityDatabaseAdapter.class, new ResourceLocation(MOD_ID, BlockDatabaseAdapter.NAME));
                 GameRegistry.registerTileEntity(TileEntityMatrix.class, new ResourceLocation(MOD_ID, BlockMatrix.NAME));
             }
         }

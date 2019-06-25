@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EaE",
+    "EAE",
+    "EtE"
+  ],
+  "key": {
+    "t": {
+      "item": "#opencomputers_texturepicker"
+    },
+    "A": {
+      "item": "#opencomputers_adapter"
+    },
+    "a": {
+      "item": "#opencomputers_analyzer"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result": {
+    "item": "ocdevices:database_adapter"
+  }
+}

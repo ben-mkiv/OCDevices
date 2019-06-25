@@ -10,7 +10,7 @@
       "item": "opencomputers:disassembler", "data": 0
     },
     "T": {
-      "item": "#opencomputers_texturepicker"
+      "item": "ocdevices:database_adapter"
     },
     "D": {
       "item": "#opencomputers_db3"

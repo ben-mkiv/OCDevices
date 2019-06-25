@@ -118,5 +118,11 @@
     "ingredient": {
       "item": "opencomputers:diskdrive", "data": 0
     }
+  },
+  {
+    "name": "opencomputers_adapter",
+    "ingredient": {
+      "item": "opencomputers:adapter", "data": 0
+    }
   }
 ]

@@ -16,11 +16,12 @@ tile.case_ibm_5150.name=Case (IBM 5150)
 tile.case_workstation.name=Case (Workstation)
 tile.flat_screen.name=Flatscreen Panel
 tile.keyboard.name=Keyboard
-tile.matrix.name=Matrix
+tile.matrix.name=Matrix (WIP!)
 tile.recipe_dictionary.name=Recipe Dictionary
 tile.redstone.name=Advanced Redstone I/O
 tile.rack.name=Server Rack
 tile.bridge.name=Bridge
+tile.database_adapter.name=Database Adapter
 
 item.manual.name=OCDevices Manual
 item.upgrade_tier2.name=Upgrade (Any => Tier 2)

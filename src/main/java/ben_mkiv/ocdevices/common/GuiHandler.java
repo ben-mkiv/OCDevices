@@ -2,10 +2,7 @@ package ben_mkiv.ocdevices.common;
 
 import ben_mkiv.ocdevices.client.gui.*;
 import ben_mkiv.ocdevices.common.blocks.*;
-import ben_mkiv.ocdevices.common.inventory.BridgeContainer;
-import ben_mkiv.ocdevices.common.inventory.CardDockContainer;
-import ben_mkiv.ocdevices.common.inventory.CaseContainer;
-import ben_mkiv.ocdevices.common.inventory.RecipeDictionaryContainer;
+import ben_mkiv.ocdevices.common.inventory.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +29,9 @@ public class GuiHandler implements IGuiHandler {
             case BlockBridge.GUI_ID:
                 return new BridgeContainer(player.inventory, te);
 
+            case BlockDatabaseAdapter.GUI_ID:
+                return new DatabaseAdapterContainer(player.inventory, te);
+
             default: return null;
         }
     }
@@ -57,6 +57,9 @@ public class GuiHandler implements IGuiHandler {
 
             case BlockBridge.GUI_ID:
                 return new BridgeGUI(player.inventory, te);
+
+            case BlockDatabaseAdapter.GUI_ID:
+                return new DatabaseAdapterGUI(player.inventory, te);
 
             default: return null;
         }
