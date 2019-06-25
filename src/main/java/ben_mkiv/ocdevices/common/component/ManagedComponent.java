@@ -18,6 +18,7 @@ public class ManagedComponent {
 
     private boolean autoConnectToHost;
     private boolean autoBind;
+    private boolean connectedToHost;
 
 
     public ManagedComponent(ManagedComponentHost host, boolean connectToHost, boolean bind){
@@ -58,9 +59,11 @@ public class ManagedComponent {
         if(driver != null)
             environment = driver.createEnvironment(stack, componentHost);
 
-        if(stack.hasTagCompound() && stack.getTagCompound().hasKey("oc:data")) {
-            NBTTagCompound tag = stack.getTagCompound().getCompoundTag("oc:data");
-            environment.load(tag);
+        if(environment != null && stack.hasTagCompound()){
+            if(stack.getTagCompound().hasKey("oc:data")) {
+                NBTTagCompound tag = stack.getTagCompound().getCompoundTag("oc:data");
+                environment.load(tag);
+            }
         }
     }
 
@@ -86,7 +89,7 @@ public class ManagedComponent {
         if(getBoundMachine() != null)
             unbindMachine(getBoundMachine());
         try {
-            if (autoConnectToHost && node() != null && componentHost.node() != null) {
+            if (connectedToHost && autoConnectToHost && node() != null && componentHost.node() != null) {
                 componentHost.node().network().disconnect(componentHost.node(), node());
             }
         } catch(Exception ex){
@@ -101,6 +104,7 @@ public class ManagedComponent {
             return;
 
         componentHost.node().connect(node());
+        connectedToHost = true;
     }
 
     private void connect(ItemStack newStack){
@@ -144,17 +148,25 @@ public class ManagedComponent {
             boundToAddress = data.getString("host");
 
         // 2nd restore environment for the card
-        if(data.hasKey("environment")) {
+        if(!inventory.getStackInSlot(0).isEmpty()) {
             setupEnvironment(inventory.getStackInSlot(0));
+        }
+            /*
 
             if(environment != null) {
-                environment.load(data.getCompoundTag("environment"));
+                //environment.load(data.getCompoundTag("environment"));
                 // 3rd restore card data
-                if (data.hasKey("card") && node() != null) {
-                    node().load(data.getCompoundTag("card"));
-                }
+                //if (data.hasKey("card") && node() != null) {
+                //    node().load(data.getCompoundTag("card"));
+                //}
             }
         }
+        */
+    }
+
+    public void onLoad(){
+        if(!inventory.getStackInSlot(0).isEmpty())
+            setupEnvironment(inventory.getStackInSlot(0));
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound data) {
@@ -163,7 +175,8 @@ public class ManagedComponent {
         if(environment != null) {
             final NBTTagCompound environmentNBT = new NBTTagCompound();
             environment.save(environmentNBT);
-            data.setTag("environment", environmentNBT);
+            //getComponentItem().setTagCompound(environmentNBT);
+
 
             final NBTTagCompound cardNBT = new NBTTagCompound();
             node().save(cardNBT);

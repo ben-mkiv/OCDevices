@@ -7,10 +7,13 @@ import li.cil.oc.integration.opencomputers.DriverLinkedCard$;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BridgeSlot extends SlotItemHandler {
+public class BridgeSlot extends SlotItemHandler implements ISlotTooltip {
     private final TileEntityBridge tileEntity;
 
     public BridgeSlot(TileEntityBridge tileEntity, IItemHandler itemHandler, int index, int xPosition, int yPosition) {
@@ -28,6 +31,11 @@ public class BridgeSlot extends SlotItemHandler {
     public void onSlotChanged() {
         super.onSlotChanged();
         tileEntity.markDirty();
+    }
+
+    @Override
+    public List<String> getTooltip(){
+        return new ArrayList<>(Arrays.asList(new String[]{"Accepted Items:", "OpenComputers Linked Card"}));
     }
 
 }

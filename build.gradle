@@ -14,16 +14,14 @@ buildscript {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 
-version = "snapshot_20190621"
+version = modVersion
 group = modGroup
 archivesBaseName = modBaseName
 
-
-
 minecraft {
-    version = "1.12.2-14.23.5.2768"
+    version = "${minecraftVersion}-${forge_version}"
     runDir = "run"
-    mappings = "snapshot_20180701"
+    mappings = mcp_mappings
     makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "@VERSION@", project.version
 }
@@ -41,15 +39,8 @@ repositories {
 
 configurations {
     extraLibs
-    compileOnly.extendsFrom extraLibs
+    provided.extendsFrom extraLibs
 }
-
-def openComputersVersion = "MC1.12.2-1.7.+"
-def ae2Version = "rv6-stable-1"
-def projredVersion="1.12.2-4.9.0.86"
-def MCMPVersion = "2.5.3"
-def rtfmVersion = "MC1.12-1.0.1.4"
-def commons_version = "MC1.12.2-1.0.3"
 
 dependencies {
     deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
@@ -58,7 +49,7 @@ dependencies {
 
     deobfCompile "MCMultiPart2:MCMultiPart:${MCMPVersion}"
 
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    provided fileTree(include: ['*.jar'], dir: 'libs')
 
     extraLibs files("libs/commons0815/Commons0815-${commons_version}-dev.jar")
 
@@ -73,7 +64,6 @@ dependencies {
         exclude module: "jei_1.12"
         exclude module: "ForgeMultipart"
     }
-
 }
 
 processResources {
@@ -106,7 +96,6 @@ task syncGitWiki(type: com.palominolabs.gradle.task.git.clone.GitCloneTask) {
     forceFetch = true
     reset = true
 }
-
 
 jar {
     manifest {

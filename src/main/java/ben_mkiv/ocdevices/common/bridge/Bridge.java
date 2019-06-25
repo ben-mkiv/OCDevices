@@ -31,6 +31,10 @@ public class Bridge {
 
     public static String add(TileEntityBridge tile){
         Bridge br = new Bridge(tile);
+
+        if(br.linkId.length() == 0)
+            return "";
+
         if(!bridges.containsKey(br.linkId)){
             bridges.put(br.linkId, br);
         }
@@ -79,5 +83,9 @@ public class Bridge {
         }
 
         return tiles;
+    }
+
+    public static void onServerStopped(){
+        bridges.clear();
     }
 }

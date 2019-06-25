@@ -7,10 +7,13 @@ import li.cil.oc.api.driver.item.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CardDockSlot extends SlotItemHandler {
+public class CardDockSlot extends SlotItemHandler implements ISlotTooltip {
     private final TileEntityCardDock tileEntity;
 
     public CardDockSlot(TileEntityCardDock tileEntity, IItemHandler itemHandler, int index, int xPosition, int yPosition) {
@@ -28,6 +31,11 @@ public class CardDockSlot extends SlotItemHandler {
     public void onSlotChanged() {
         super.onSlotChanged();
         tileEntity.markDirty();
+    }
+
+    @Override
+    public List<String> getTooltip(){
+        return new ArrayList<>(Arrays.asList(new String[]{"Accepted Items:", "OpenComputers cards", "addon cards"}));
     }
 
 }

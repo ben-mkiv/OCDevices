@@ -56,7 +56,7 @@ public class ocComponentHostTE extends ocComponentTE implements ManagedComponent
         }
     }
 
-    private void onInventoryUpdate(int slot, ItemStack newStack){
+    public void onInventoryUpdate(int slot, ItemStack newStack){
         components.get(slot).set(newStack);
         markDirty();
     }
@@ -67,6 +67,14 @@ public class ocComponentHostTE extends ocComponentTE implements ManagedComponent
 
         for(ManagedComponent component : components)
             component.onConnect(arg0);
+    }
+
+    @Override
+    public void onLoad(){
+        for(ManagedComponent component : components)
+            component.onLoad();
+
+        super.onLoad();
     }
 
     @Override

@@ -6,6 +6,7 @@ import ben_mkiv.ocdevices.client.renderer.RenderMatrix;
 import ben_mkiv.ocdevices.client.renderer.RenderRack;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
+import ben_mkiv.ocdevices.common.bridge.Bridge;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.drivers.RedstoneDriver;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
@@ -51,14 +52,14 @@ import java.util.logging.Logger;
         modid = OCDevices.MOD_ID,
         name = OCDevices.MOD_NAME,
         version = OCDevices.VERSION,
-        dependencies = "required-after:opencomputers;after:rtfm;required-after:rendertoolkit",
+        dependencies = "required-after:opencomputers;required-after:rendertoolkit;after:rtfm",
         guiFactory = OCDevices.GUIFACTORY
 )
 public class OCDevices {
 
     public static final String MOD_ID = "ocdevices";
     public static final String MOD_NAME = "OCDevices";
-    public static final String VERSION = "snapshot_20190621";
+    public static final String VERSION = "@VERSION@";
 
     public static final String GUIFACTORY = "ben_mkiv.ocdevices.config.ConfigGUI";
 
@@ -214,6 +215,13 @@ public class OCDevices {
             RenderRack.serverTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_server"));
             RenderRack.diskDriveTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_disk_drive"));
             RenderRack.terminalServerTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_terminal_server"));
+        }
+
+
+        @Mod.EventHandler
+        public static void onServerStopped(FMLServerStoppedEvent event){
+            // clear static server side caches
+            Bridge.onServerStopped();
         }
     }
 

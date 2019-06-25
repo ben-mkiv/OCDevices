@@ -2,9 +2,9 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "top": "ocdevices:blocks/machine_side",
-      "front": "ocdevices:blocks/machine_side",
-      "side": "ocdevices:blocks/machine_side"
+      "top": "ocdevices:blocks/bridge",
+      "front": "ocdevices:blocks/bridge",
+      "side": "ocdevices:blocks/bridge"
     },
     "model": "minecraft:orientable"
   },

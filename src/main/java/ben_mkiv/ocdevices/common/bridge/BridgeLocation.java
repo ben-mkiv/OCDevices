@@ -4,6 +4,7 @@ import ben_mkiv.ocdevices.common.tileentity.TileEntityBridge;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class BridgeLocation{
@@ -20,9 +21,9 @@ public class BridgeLocation{
     }
 
     public TileEntityBridge getLinkedBlock(){
-        World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
+        World world = DimensionManager.getWorld(dimension);
 
-        if(!world.isBlockLoaded(position))
+        if(world == null || !world.isBlockLoaded(position))
             return null;
 
         TileEntity tile = world.getTileEntity(position);
