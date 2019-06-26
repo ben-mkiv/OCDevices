@@ -6,21 +6,24 @@ import li.cil.manual.api.manual.PathProvider;
 import li.cil.manual.api.prefab.manual.TextureTabIconRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ManualPathProviderRTFM extends ManualPathProvider implements PathProvider {
-    static ManualDefinition manual;
+    private static ManualDefinition manual;
 
-    public void initialize(ResourceLocation iconResourceLocation, String tooltip, String path) {
+    void initialize(ResourceLocation iconResourceLocation, String tooltip, String path) {
         manual = ManualAPI.createManual(false);
 
-        manual.addProvider(new ManualPathProviderRTFM());
-        manual.addProvider(new ManualContentProviderRTFM());
-        manual.setDefaultPage(path);
-
-        manual.addTab(new TextureTabIconRenderer(iconResourceLocation), tooltip, path);
+        if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT)) {
+            manual.addProvider(new ManualPathProviderRTFM());
+            manual.addProvider(new ManualContentProviderRTFM());
+            manual.setDefaultPage(path);
+            manual.addTab(new TextureTabIconRenderer(iconResourceLocation), tooltip, path);
+        }
     }
 
-    public static Item getManualItem(){
+    static Item getManualItem(){
         return ManualAPI.createItemForManual(manual);
     }
 
