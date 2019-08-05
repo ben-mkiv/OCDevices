@@ -32,7 +32,7 @@ public class BlockKeyboard extends Keyboard {
     public BlockKeyboard() {
         super();
         setRegistryName(OCDevices.MOD_ID, NAME);
-        setUnlocalizedName(NAME);
+        setTranslationKey(NAME);
         setCreativeTab(OCDevices.creativeTab);
     }
 

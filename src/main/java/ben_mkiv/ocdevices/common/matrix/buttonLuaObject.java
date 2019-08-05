@@ -1,9 +1,12 @@
 package ben_mkiv.ocdevices.common.matrix;
 
+import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMatrix;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.awt.*;
 
 public class buttonLuaObject extends widgetLuaObject {
     public buttonLuaObject(){} //required by oc to load the object
@@ -17,17 +20,22 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(0))
             return new Object[]{ false, "integer font size required as first parameter" };
 
-        get().fontSize = args.checkInteger(0);
+        get().fontSize = Math.max(0, args.checkInteger(0));
         markDirty();
         return new Object[]{ true };
     }
 
-    @Callback(doc = "function(Integer:color):boolean sets the background color", direct = true)
+    @Callback(doc = "function(Float:red, Float:green, Float:blue, [Float:alpha]):boolean sets the background color", direct = true)
     public Object[] setBackground(Context context, Arguments args){
-        if(!args.isInteger(0))
-            return new Object[]{ false, "integer color required as first parameter" };
 
-        get().backgroundColor = args.checkInteger(0);
+        float r = (float) Math.max(0, Math.min(1, args.checkDouble(0)));
+        float g = (float) Math.max(0, Math.min(1, args.checkDouble(1)));
+        float b = (float) Math.max(0, Math.min(1, args.checkDouble(2)));
+        float alpha = (float) Math.max(0, Math.min(1, args.optDouble(3, 1)));
+
+        Color col = new Color(r, g, b, alpha);
+
+        get().backgroundColor = col.getRGB();
         markDirty();
         return new Object[]{ true };
     }
@@ -42,12 +50,16 @@ public class buttonLuaObject extends widgetLuaObject {
         return new Object[]{ true };
     }
 
-    @Callback(doc = "function(Integer:color):boolean sets the foreground color", direct = true)
+    @Callback(doc = "function(Float:red, Float:green, Float:blue, [Float:alpha]):boolean sets the foreground color", direct = true)
     public Object[] setForeground(Context context, Arguments args){
-        if(!args.isInteger(0))
-            return new Object[]{ false, "integer color required as first parameter" };
+        float r = (float) Math.max(0, Math.min(1, args.checkDouble(0)));
+        float g = (float) Math.max(0, Math.min(1, args.checkDouble(1)));
+        float b = (float) Math.max(0, Math.min(1, args.checkDouble(2)));
+        float alpha = (float) Math.max(0, Math.min(1, args.optDouble(3, 1)));
 
-        get().foregroundColor = args.checkInteger(0);
+        Color col = new Color(r, g, b, alpha);
+
+        get().foregroundColor = col.getRGB();
         markDirty();
         return new Object[]{ true };
     }
@@ -59,8 +71,8 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(1))
             return new Object[]{ false, "y position has to be a valid integer value" };
 
-        get().x = args.checkInteger(0);
-        get().y = args.checkInteger(1);
+        get().x = Math.max(0, args.checkInteger(0));
+        get().y = Math.max(0, args.checkInteger(1));
         markDirty();
         return new Object[]{ true };
     }
@@ -70,7 +82,7 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(0))
             return new Object[]{ false, "x position has to be a valid integer value" };
 
-        get().x = args.checkInteger(0);
+        get().x = Math.max(0, args.checkInteger(0));
         markDirty();
         return new Object[]{ true };
     }
@@ -80,7 +92,7 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(0))
             return new Object[]{ false, "y position has to be a valid integer value" };
 
-        get().y = args.checkInteger(0);
+        get().y = Math.max(0, args.checkInteger(0));
         markDirty();
         return new Object[]{ true };
     }
@@ -92,8 +104,8 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(1))
             return new Object[]{ false, "height has to be a valid integer value" };
 
-        get().width = args.checkInteger(0);
-        get().height = args.checkInteger(1);
+        get().width = Math.max(0, args.checkInteger(0));
+        get().height = Math.max(0, args.checkInteger(1));
         markDirty();
         return new Object[]{ true };
     }
@@ -103,7 +115,7 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(0))
             return new Object[]{ false, "width has to be a valid integer value" };
 
-        get().width = args.checkInteger(0);
+        get().width = Math.max(0, args.checkInteger(0));
         markDirty();
         return new Object[]{ true };
     }
@@ -113,7 +125,7 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isInteger(0))
             return new Object[]{ false, "height has to be a valid integer value" };
 
-        get().height = args.checkInteger(0);
+        get().height = Math.max(0, args.checkInteger(0));
         markDirty();
         return new Object[]{ true };
     }
@@ -123,7 +135,7 @@ public class buttonLuaObject extends widgetLuaObject {
         if(!args.isDouble(0))
             return new Object[]{ false, "depth has to be a valid integer/double value" };
 
-        get().depth = args.checkDouble(0);
+        get().depth = Math.min(Math.max(0, args.checkDouble(0)), FlatScreen.maxScreenDepth);
         markDirty();
         return new Object[]{ true };
     }

@@ -212,6 +212,7 @@ public class OCDevices {
         }
 
         @SubscribeEvent
+        @SideOnly(Side.CLIENT)
         public static void onTextureStitch(TextureStitchEvent.Pre evt){
             RenderRack.serverTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_server"));
             RenderRack.diskDriveTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_disk_drive"));
@@ -230,7 +231,7 @@ public class OCDevices {
     public static final CreativeTabs creativeTab = new CreativeTabs(MOD_NAME) {
         @Override
         @SideOnly(Side.CLIENT)
-        public @Nonnull ItemStack getTabIconItem() {
+        public @Nonnull ItemStack createIcon() {
             return new ItemStack(Item.getItemFromBlock(BlockFlatScreen.DEFAULTITEM));
         }
     };

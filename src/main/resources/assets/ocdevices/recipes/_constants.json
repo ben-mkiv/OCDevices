@@ -124,5 +124,11 @@
     "ingredient": {
       "item": "opencomputers:adapter", "data": 0
     }
+  },
+  {
+    "name": "opencomputers_gpu3",
+    "ingredient": {
+      "item": "opencomputers:card", "data": 3
+    }
   }
 ]

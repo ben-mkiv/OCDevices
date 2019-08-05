@@ -42,4 +42,9 @@ public class TileEntityDatabaseAdapter extends ocComponentHostTE {
 
         return new Object[]{ true };
     }
+
+    @Callback(doc = "function():string; -- returns the address of the database or false when theres no DB in the inventory")
+    public Object[] getDatabase(Context context, Arguments args){
+        return new Object[] { !componentInventory.getStackInSlot(0).isEmpty() ? getDatabase().node().address() : false } ;
+    }
 }

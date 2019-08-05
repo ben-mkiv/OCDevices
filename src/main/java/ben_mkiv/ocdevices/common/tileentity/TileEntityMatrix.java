@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
+import ben_mkiv.ocdevices.common.flatscreen.FlatScreen;
 import ben_mkiv.ocdevices.common.matrix.*;
 import li.cil.oc.api.API;
 import li.cil.oc.api.machine.Arguments;
@@ -78,6 +79,15 @@ public class TileEntityMatrix extends TileEntityMultiblockDisplay {
             max = Math.max(max, index);
 
         return max;
+    }
+
+    @Callback(doc = "function(int:depth, String:side):boolean; sets the screen sides depth")
+    public Object[] setDepth(Context context, Arguments args) {
+        int depth = args.optInteger(0, FlatScreen.maxScreenDepth);
+        String side = args.optString(1, "all").toLowerCase();
+        Object[] returnVals = getData().setDepth(depth, side);
+        updateNeighbours();
+        return returnVals;
     }
 
     @Override

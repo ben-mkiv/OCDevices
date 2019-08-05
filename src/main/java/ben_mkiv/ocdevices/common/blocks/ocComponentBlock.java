@@ -29,9 +29,9 @@ public class ocComponentBlock extends Block implements DriverItem, HostAware, En
         super(Material.IRON);
         setCreativeTab(OCDevices.creativeTab);
         setRegistryName(name);
+        setTranslationKey(name);
         setHardness(3.0F);
         setLightLevel(0.3F);
-        setUnlocalizedName(name);
         this.componentClass = clazz;
     }
 

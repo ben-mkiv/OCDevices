@@ -46,7 +46,7 @@ public class BlockCase extends Case {
     public BlockCase(String caseName){
         super(Tier.One());
         setRegistryName(OCDevices.MOD_ID, caseName);
-        setUnlocalizedName(caseName);
+        setTranslationKey(caseName);
         setCreativeTab(OCDevices.creativeTab);
     }
 
@@ -133,7 +133,7 @@ public class BlockCase extends Case {
     @Nonnull
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(PropertyRotatable.Facing(), EnumFacing.getHorizontal(meta >> 2)).withProperty(caseTier, meta & 3);
+        return getDefaultState().withProperty(PropertyRotatable.Facing(), EnumFacing.byHorizontalIndex(meta >> 2)).withProperty(caseTier, meta & 3);
     }
 
 

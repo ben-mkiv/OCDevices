@@ -19,6 +19,7 @@ public class ItemWidget extends ButtonWidget {
 
     public ItemWidget(String name){
         super(name);
+        width = height = 8;
     }
 
     public ItemWidget(NBTTagCompound nbt){

@@ -42,8 +42,8 @@ public class BlockRack extends Rack {
     public BlockRack(String rackName){
         super();
         setRegistryName(OCDevices.MOD_ID, rackName);
-        setUnlocalizedName(rackName);
         setCreativeTab(OCDevices.creativeTab);
+        setTranslationKey(NAME);
     }
 
     @Deprecated

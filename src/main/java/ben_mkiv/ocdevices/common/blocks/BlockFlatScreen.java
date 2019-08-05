@@ -42,8 +42,8 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider, IScre
     public BlockFlatScreen() {
         super(Material.IRON);
         setRegistryName(OCDevices.MOD_ID, NAME);
-        setUnlocalizedName(NAME);
         setCreativeTab(OCDevices.creativeTab);
+        setTranslationKey(NAME);
     }
 
     public int maxScreenDepth(){
@@ -182,7 +182,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider, IScre
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn){
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entityIn){
         // return if the entity is not supposed to activate the current block (as it can collide with multiple blocks)
         if(!entityIn.getPosition().equals(pos))
             return;
@@ -191,7 +191,7 @@ public class BlockFlatScreen extends Block implements ITileEntityProvider, IScre
         if (screen instanceof TileEntityFlatScreen)
             ((TileEntityFlatScreen) screen).walk(entityIn);
         else if(screen.pitch().equals(EnumFacing.UP))
-            super.onEntityCollidedWithBlock(world, pos, state, entityIn);
+            super.onEntityCollision(world, pos, state, entityIn);
     }
 
 }

@@ -5,6 +5,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface IMultiblockScreen extends IOrientable {
+    // getPos() in TileEntity is obfuscated at runtime, so we need or own method for the IMultiblockScreen Interface
+    BlockPos getPosition();
+
+    IMultiblockScreen origin();
+
     default Vec3d unmapHitVector(Vec3d hitVect){
         switch(yaw()) {
             case NORTH:
@@ -40,12 +45,8 @@ public interface IMultiblockScreen extends IOrientable {
         return hitVect;
     }
 
-    BlockPos getPos();
-
-    IMultiblockScreen origin();
-
     static BlockPos MultiBlockOffset(IMultiblockScreen screen){
-        BlockPos worldOffset = screen.origin().getPos().subtract(screen.getPos());
+        BlockPos worldOffset = screen.origin().getPosition().subtract(screen.getPosition());
 
         int offsetX, offsetY;
 

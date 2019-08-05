@@ -18,6 +18,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -317,6 +318,10 @@ public class TileEntityMultiblockDisplay extends TileEntityEnvironment implement
     }
 
 
-
+    // getPos() in TileEntity is obfuscated at runtime, so we need or own method for the IMultiblockScreen Interface
+    @Override
+    public BlockPos getPosition(){
+        return super.getPos();
+    }
 
 }

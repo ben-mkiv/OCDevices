@@ -39,7 +39,7 @@ public interface IOrientableBlock {
 
     @Deprecated
     static @Nonnull IBlockState getStateFromMeta(IBlockState state, int meta) {
-        return state.withProperty(PropertyRotatable.Pitch(), EnumFacing.getFront(meta >> 2)).withProperty(PropertyRotatable.Yaw(), EnumFacing.getHorizontal(meta & 3));
+        return state.withProperty(PropertyRotatable.Pitch(), EnumFacing.byIndex(meta >> 2)).withProperty(PropertyRotatable.Yaw(), EnumFacing.byHorizontalIndex(meta & 3));
     }
 
     static @Nonnull IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
