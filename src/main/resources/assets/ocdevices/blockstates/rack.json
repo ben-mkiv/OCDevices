@@ -2,10 +2,10 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "top": "ocdevices:blocks/rack/top",
-      "bottom": "ocdevices:blocks/rack/top",
-      "front": "ocdevices:blocks/rack/front",
-      "side": "ocdevices:blocks/rack/side"
+      "top": "ocdevices:blocks/machine_side",
+      "bottom": "ocdevices:blocks/machine_side",
+      "front": "ocdevices:blocks/machine_side",
+      "side": "ocdevices:blocks/machine_side"
     },
     "model": "ocdevices:rack"
   },

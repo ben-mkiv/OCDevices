@@ -1,11 +1,11 @@
 package ben_mkiv.ocdevices.client.renderer;
 
-import ben_mkiv.ocdevices.client.models.ModelCube;
 import ben_mkiv.ocdevices.common.matrix.ButtonWidget;
 import ben_mkiv.ocdevices.common.matrix.ItemWidget;
 import ben_mkiv.ocdevices.common.matrix.MatrixWidget;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMatrix;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
+import ben_mkiv.rendertoolkit.client.ModelCube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;

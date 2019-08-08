@@ -1,12 +1,15 @@
 package ben_mkiv.ocdevices.common.tileentity;
 
 import ben_mkiv.ocdevices.common.items.UpgradeBlastResistance;
+import ben_mkiv.ocdevices.utils.AABBHelper;
 import li.cil.oc.common.tileentity.Rack;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -75,6 +78,13 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
         }
 
         return false;
+    }
+
+    @Override
+    public void setInventorySlotContents(int slot, ItemStack stack) {
+        super.setInventorySlotContents(slot, stack);
+        //set new rack content black
+        setColorServer(slot, ColoredTile.getColorFromStack(new ItemStack(Items.DYE, 1, 0)));
     }
 
     public float getHardness(){
@@ -172,6 +182,12 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
             return super.getMountableData(var1);
         else
             return new NBTTagCompound();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public AxisAlignedBB getRenderBoundingBox(){
+        return AABBHelper.rotateHorizontal(new AxisAlignedBB(-1, 0, -1, 1, 1, 1).offset(getPos()), facing());
     }
 
 

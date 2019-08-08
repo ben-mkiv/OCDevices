@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " F ",
+    " G ",
+    "   "
+  ],
+  "key": {
+    "F": {
+      "item": "ocdevices:flat_screen"
+    },
+    "G": {
+      "item": "#opencomputers_gpu3"
+    }
+  },
+  "result": {
+    "item": "ocdevices:matrix"
+  }
+}

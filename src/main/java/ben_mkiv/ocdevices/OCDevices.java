@@ -20,7 +20,6 @@ import ben_mkiv.ocdevices.manual.Manual;
 import ben_mkiv.ocdevices.proxy.CommonProxy;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
-import li.cil.oc.common.block.property.PropertyRotatable;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -153,7 +152,6 @@ public class OCDevices {
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlatScreen.class, new RenderFlatScreen());
 
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRack.class, new RenderRack());
-            ModelLoader.setCustomStateMapper(BlockRack.DEFAULTITEM, new StateMap.Builder().ignore(PropertyRotatable.Facing()).build());
 
             if(experimental){
                 ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMatrix.class, new RenderMatrix());

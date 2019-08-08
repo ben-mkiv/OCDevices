@@ -1,6 +1,5 @@
 package ben_mkiv.ocdevices.common.blocks;
 
-import appeng.api.implementations.tiles.IColorableTile;
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.tileentity.ColoredTile;
 import ben_mkiv.ocdevices.common.tileentity.IUpgradeBlock;
@@ -58,18 +57,24 @@ public class BlockRack extends Rack {
     }
 
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if(!hand.equals(EnumHand.MAIN_HAND))
+            return false;
+
         TileEntityRack rack = getTileEntity(world, pos);
+        Option<Object> slotData = rack.slotAt(side, hitX, hitY, hitZ);
 
-        if(ColoredTile.isColoringItem(player.getHeldItem(hand))) {
-            Option<Object> slotData = rack.slotAt(side, hitX, hitY, hitZ);
+        int slotHit = -1;
 
-            if (!slotData.isEmpty() && slotData.get() instanceof Integer) {
-                int slot = (Integer) slotData.get();
-                if (!rack.getStackInSlot(slot).isEmpty()) {
-                    rack.setColorServer(slot, ColoredTile.getColorFromStack(player.getHeldItem(hand)));
-                    return true;
-                }
+        if (!slotData.isEmpty() && slotData.get() instanceof Integer) {
+            int slot = (Integer) slotData.get();
+            if (!rack.getStackInSlot(slot).isEmpty()) {
+                slotHit = slot;
             }
+        }
+
+        if(slotHit != -1 && ColoredTile.isColoringItem(player.getHeldItem(hand))) {
+            rack.setColorServer(slotHit, ColoredTile.getColorFromStack(player.getHeldItem(hand)));
+            return true;
         }
 
         if(ColoredTile.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ))
@@ -80,14 +85,12 @@ public class BlockRack extends Rack {
                 return true;
         }
 
-
-
-
         if(side.equals(rack.facing())) {
             if (!rack.isDoorOpened() || player.isSneaking()) {
-                if(!world.isRemote)
+                boolean doorActivated = !rack.isDoorOpened() || !super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+                if(!world.isRemote && doorActivated)
                     rack.toggleDoor();
-                return true;
+                return doorActivated;
             }
         }
 
@@ -175,5 +178,6 @@ public class BlockRack extends Rack {
         EnumFacing yaw = EnumFacing.fromAngle(placer.rotationYaw).getOpposite();
         return getDefaultState().withProperty(PropertyRotatable.Facing(), yaw);
     }
+
 
 }
