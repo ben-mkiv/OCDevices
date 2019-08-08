@@ -3,37 +3,22 @@ package ben_mkiv.ocdevices.client.renderer;
 import ben_mkiv.ocdevices.client.models.ModelRack;
 import ben_mkiv.ocdevices.common.blocks.BlockRack;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityRack;
-import ben_mkiv.rendertoolkit.client.ModelCube;
-import ben_mkiv.rendertoolkit.client.ModelCubeTESR;
 import li.cil.oc.api.component.RackMountable;
 import li.cil.oc.api.event.RackMountableRenderEvent;
 import li.cil.oc.client.renderer.block.ServerRackModel;
-import li.cil.oc.client.renderer.tileentity.RackRenderer;
-import li.cil.oc.client.renderer.tileentity.RackRenderer$;
 import li.cil.oc.common.component.TerminalServer;
-import li.cil.oc.common.tileentity.Rack;
 import li.cil.oc.server.component.DiskDriveMountable;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.common.MinecraftForge;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLSync;
-import org.lwjgl.util.vector.Matrix2f;
-import pl.asie.computronics.oc.client.RackMountableRenderer;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
 import java.awt.*;
 
 public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
@@ -56,12 +41,8 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
     public void render(TileEntityRack rack,  double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         init();
 
-
-
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
-
-
 
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
         switch(rack.yaw()) {

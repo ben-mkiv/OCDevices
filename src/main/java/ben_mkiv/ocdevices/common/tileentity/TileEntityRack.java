@@ -84,7 +84,8 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
     public void setInventorySlotContents(int slot, ItemStack stack) {
         super.setInventorySlotContents(slot, stack);
         //set new rack content black
-        setColorServer(slot, ColoredTile.getColorFromStack(new ItemStack(Items.DYE, 1, 0)));
+        if(!world.isRemote)
+            setColorServer(slot, ColoredTile.getColorFromStack(new ItemStack(Items.DYE, 1, 0)));
     }
 
     public float getHardness(){
@@ -187,7 +188,7 @@ public class TileEntityRack extends Rack implements ColoredTile, IUpgradeBlock {
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getRenderBoundingBox(){
-        return AABBHelper.rotateHorizontal(new AxisAlignedBB(-1, 0, -1, 1, 1, 1).offset(getPos()), facing());
+        return AABBHelper.rotateHorizontal(new AxisAlignedBB(-1, 0, -1, 1, 1, 1), facing()).offset(getPos());
     }
 
 
