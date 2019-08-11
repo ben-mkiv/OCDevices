@@ -23,6 +23,7 @@ import li.cil.oc.api.driver.EnvironmentProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -31,6 +32,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -44,6 +46,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -143,6 +146,8 @@ public class OCDevices {
         public static void onRegisterModels(ModelRegistryEvent event) {
             if(verbose) logger.info("register models");
 
+            OBJLoader.INSTANCE.addDomain(MOD_ID);
+
             for(ItemStack itemStack : modItems)
                 ModelLoader.setCustomModelResourceLocation(itemStack.getItem(), 0, new ModelResourceLocation(itemStack.getItem().getRegistryName().toString()));
 
@@ -209,14 +214,56 @@ public class OCDevices {
             }
         }
 
+
         @SubscribeEvent
         @SideOnly(Side.CLIENT)
         public static void onTextureStitch(TextureStitchEvent.Pre evt){
-            RenderRack.serverTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_server"));
-            RenderRack.diskDriveTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_disk_drive"));
-            RenderRack.terminalServerTex = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/rack_terminal_server"));
+            TextureAtlasSprite textureServer = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_server"));
+
+            // opencomputers servers (creative, tier1, tier2, tier3)
+            addRackTexture("opencomputers:component", 12, textureServer);
+            addRackTexture("opencomputers:component", 13, textureServer);
+            addRackTexture("opencomputers:component", 14, textureServer);
+            addRackTexture("opencomputers:component", 15, textureServer);
+
+            // opencomputers terminal server
+            addRackTexture("opencomputers:component", 19, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_terminal_server")));
+
+            // opencomputers disk drive
+            addRackTexture("opencomputers:component", 20, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_disk_drive")));
+
+            if(Computronics){
+                // computronics boom board
+                addRackTexture("computronics:oc_parts", 11, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/boomboard")));
+
+                // computronics rack capacitor
+                addRackTexture("computronics:oc_parts", 12, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/rack_capacitor")));
+
+                // computronics switch board
+                addRackTexture("computronics:oc_parts", 13, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/switchboard")));
+
+                // computronics light board
+                addRackTexture("computronics:oc_parts", 10, "default", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_1")));
+                addRackTexture("computronics:oc_parts", 10, "mode2", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_2")));
+                addRackTexture("computronics:oc_parts", 10, "mode3", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_3")));
+                addRackTexture("computronics:oc_parts", 10, "mode4", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_4")));
+                addRackTexture("computronics:oc_parts", 10, "mode5", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_5")));
+            }
         }
 
+        private static void addRackTexture(String itemName, int itemMeta, TextureAtlasSprite sprite){
+            addRackTexture(itemName, itemMeta, "default", sprite);
+        }
+        
+        private static void addRackTexture(String itemName, int itemMeta, String state, TextureAtlasSprite sprite){
+            String id = itemName + ":" + itemMeta;
+            HashMap<String, TextureAtlasSprite> map = new HashMap<>();
+            if(RenderRack.textures.containsKey(id))
+                map.putAll(RenderRack.textures.get(id));
+
+            map.put(state, sprite);
+            RenderRack.textures.put(id, map);
+        }
 
         @Mod.EventHandler
         public static void onServerStopped(FMLServerStoppedEvent event){

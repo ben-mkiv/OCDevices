@@ -15,18 +15,24 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
     private static ModelRack modelRack = new ModelRack();
     private static ServerRackModel ocModel;
     private static TextureAtlasSprite[] rackTextures;
 
-    public static TextureAtlasSprite serverTex, terminalServerTex, diskDriveTex, ocServerTex;
+    public static TextureAtlasSprite ocServerTex;
+
+    public static HashMap<String, HashMap<String, TextureAtlasSprite>> textures = new HashMap<>();
 
     public static void init(){
         if(ocModel != null)
@@ -66,8 +72,11 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
             //int l = rack.world().getCombinedLight(rack.getPos(), 0);
             //OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, l % 65536, l / 65536);
 
+            bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE); //required as computronics binds another texture when boards are active
+            GlStateManager.pushAttrib();
             renderServerBox(rack, rackSlot);
             renderStatusLED(rack, rackSlot);
+            GlStateManager.popAttrib();
         }
         GlStateManager.popMatrix();
 
@@ -83,9 +92,9 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
 
         Color color = new Color(colorValue);
 
-        if(colorValue != -14869215){ // != black
-            rackTextures[2] = getMountableTexture(rack.getMountable(rackSlot));
 
+        if(colorValue != -14869215){ // != black
+            rackTextures[2] = getMountableTexture(rack, rackSlot);
             GlStateManager.color(1f/255 * color.getRed(), 1f/255 * color.getGreen(), 1f/255 * color.getBlue(), 1);
         }
         else { // use original oc server textures if the mountable is black colored
@@ -98,15 +107,15 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
                 rackTextures[2] = ocServerTex;
         }
 
-        //BlockRendererDispatcher blockRendererDispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        rackTextures[3] = rackTextures[4] = rackTextures[5] = rackTextures[2];
+
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tess.getBuffer();
-
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         // finally put the data to the buffer
-        for(BakedQuad quad : ocModel.bakeQuads(ocModel.Servers()[rackSlot], rackTextures, colorValue)) {
-            LightUtil.renderQuadColor(bufferBuilder, quad, colorValue);
+        for(BakedQuad quad : ocModel.bakeQuads(ocModel.Servers()[rackSlot], rackTextures, 0)) {
+            LightUtil.renderQuadColor(bufferBuilder, quad, 0);
         }
 
         tess.draw();
@@ -114,13 +123,28 @@ public class RenderRack extends TileEntitySpecialRenderer<TileEntityRack> {
 
     }
 
-    private TextureAtlasSprite getMountableTexture(RackMountable mountable){
-        if(mountable instanceof TerminalServer)
-            return terminalServerTex;
-        else if(mountable instanceof DiskDriveMountable)
-            return diskDriveTex;
-        else
-            return serverTex;
+    private TextureAtlasSprite getMountableTexture(TileEntityRack rack, int slot){
+        ItemStack stack = rack.getStackInSlot(slot);
+
+        if(!stack.isEmpty()) {
+            String id = stack.getItem().getRegistryName() + ":" + stack.getMetadata();
+            HashMap<String, TextureAtlasSprite> map = textures.get(id);
+            if(map != null){
+
+                if(id.equals("computronics:oc_parts:10")){
+                    NBTTagCompound nbt = stack.getTagCompound();
+                    if(nbt != null && nbt.hasKey("oc:data") && nbt.getCompoundTag("oc:data").hasKey("m")) {
+                        int mode = nbt.getCompoundTag("oc:data").getInteger("m");
+                        if(map.containsKey("mode"+mode))
+                            return map.get("mode"+mode);
+                    }
+                }
+
+                return map.containsKey("default") ? map.get("default") : ocServerTex;
+            }
+        }
+
+        return ocServerTex;
     }
 
     private void renderStatusLED(TileEntityRack rack, int rackSlot){
