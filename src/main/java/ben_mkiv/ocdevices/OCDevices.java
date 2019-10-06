@@ -1,5 +1,6 @@
 package ben_mkiv.ocdevices;
 
+import ben_mkiv.ocdevices.client.EventHandler;
 import ben_mkiv.ocdevices.client.renderer.RenderCase;
 import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
 import ben_mkiv.ocdevices.client.renderer.RenderMatrix;
@@ -23,7 +24,6 @@ import li.cil.oc.api.driver.EnvironmentProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -40,13 +40,13 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -216,53 +216,15 @@ public class OCDevices {
 
 
         @SubscribeEvent
+        public static void registerEntities(RegistryEvent.Register<EntityEntry> event){
+            //EntityRegistry.registerModEntity(new ResourceLocation(MOD_ID, BugEntity.NAME), BugEntity.class, BugEntity.NAME, 0, INSTANCE, 80, 3, true, 0x000000, 0x00FFFF);
+        }
+
+
+        @SubscribeEvent
         @SideOnly(Side.CLIENT)
         public static void onTextureStitch(TextureStitchEvent.Pre evt){
-            TextureAtlasSprite textureServer = evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_server"));
-
-            // opencomputers servers (creative, tier1, tier2, tier3)
-            addRackTexture("opencomputers:component", 12, textureServer);
-            addRackTexture("opencomputers:component", 13, textureServer);
-            addRackTexture("opencomputers:component", 14, textureServer);
-            addRackTexture("opencomputers:component", 15, textureServer);
-
-            // opencomputers terminal server
-            addRackTexture("opencomputers:component", 19, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_terminal_server")));
-
-            // opencomputers disk drive
-            addRackTexture("opencomputers:component", 20, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/opencomputers/rack_disk_drive")));
-
-            if(Computronics){
-                // computronics boom board
-                addRackTexture("computronics:oc_parts", 11, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/boomboard")));
-
-                // computronics rack capacitor
-                addRackTexture("computronics:oc_parts", 12, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/rack_capacitor")));
-
-                // computronics switch board
-                addRackTexture("computronics:oc_parts", 13, evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/switchboard")));
-
-                // computronics light board
-                addRackTexture("computronics:oc_parts", 10, "default", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_1")));
-                addRackTexture("computronics:oc_parts", 10, "mode2", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_2")));
-                addRackTexture("computronics:oc_parts", 10, "mode3", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_3")));
-                addRackTexture("computronics:oc_parts", 10, "mode4", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_4")));
-                addRackTexture("computronics:oc_parts", 10, "mode5", evt.getMap().registerSprite(new ResourceLocation(MOD_ID, "blocks/rack/computronics/lightboard_5")));
-            }
-        }
-
-        private static void addRackTexture(String itemName, int itemMeta, TextureAtlasSprite sprite){
-            addRackTexture(itemName, itemMeta, "default", sprite);
-        }
-        
-        private static void addRackTexture(String itemName, int itemMeta, String state, TextureAtlasSprite sprite){
-            String id = itemName + ":" + itemMeta;
-            HashMap<String, TextureAtlasSprite> map = new HashMap<>();
-            if(RenderRack.textures.containsKey(id))
-                map.putAll(RenderRack.textures.get(id));
-
-            map.put(state, sprite);
-            RenderRack.textures.put(id, map);
+            EventHandler.onTextureStitch(evt);
         }
 
         @Mod.EventHandler

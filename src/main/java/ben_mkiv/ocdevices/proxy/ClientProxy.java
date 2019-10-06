@@ -14,6 +14,8 @@ public class ClientProxy extends CommonProxy{
     public void preinit() {
         super.preinit();
         Config.clientPreInit();
+
+        //RenderingRegistry.registerEntityRenderingHandler(BugEntity.class, RenderBug.FACTORY);
     }
 
     @Override
