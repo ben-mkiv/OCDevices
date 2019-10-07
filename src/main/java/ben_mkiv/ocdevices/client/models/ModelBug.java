@@ -1,5 +1,5 @@
 package ben_mkiv.ocdevices.client.models;
-
+/*
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.entity.BugEntity;
 import net.minecraft.client.renderer.GlStateManager;
@@ -43,3 +43,4 @@ public class ModelBug extends ModelOBJBVH {
 
 
 }
+*/
