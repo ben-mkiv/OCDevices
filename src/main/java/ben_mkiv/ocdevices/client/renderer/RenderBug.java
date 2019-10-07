@@ -16,14 +16,14 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 public class RenderBug extends Render<BugEntity> {
     public static Factory FACTORY = new Factory();
 
-    private static ModelBug model;
+   // private static ModelBug model;
 
     private static final ResourceLocation textureLoc = new ResourceLocation(OCDevices.MOD_ID + ":textures/model/bug.png");
 
     public RenderBug(RenderManager manager){
         super(manager);
-        if(model == null)
-            model = new ModelBug();
+        //if(model == null)
+        //    model = new ModelBug();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class RenderBug extends Render<BugEntity> {
         GlStateManager.translate(x, y, z);
         //GlStateManager.rotate(entity.prevRotationYaw + ((entityYaw-entity.prevRotationYaw) * partialTicks), 0, 1, 0);
 
-        model.render(entity, entityYaw, partialTicks);
+        //model.render(entity, entityYaw, partialTicks);
 
         GlStateManager.popMatrix();
         GlStateManager.enableTexture2D();
