@@ -1,5 +1,5 @@
 package ben_mkiv.ocdevices.client.renderer;
-
+/*
 import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.client.models.ModelBug;
 import ben_mkiv.ocdevices.common.entity.BugEntity;
@@ -55,3 +55,4 @@ public class RenderBug extends Render<BugEntity> {
 
 
 }
+*/
