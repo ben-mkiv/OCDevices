@@ -1,5 +1,6 @@
 {
 	"credit": "Made with Blockbench",
+	"parent":  "block/block",
 	"textures": {
 		"0": "ocdevices:blocks/next/case_top",
 		"7": "ocdevices:blocks/next/case_side",
@@ -9,9 +10,6 @@
 		"5": "ocdevices:items/cases/cpu2",
 		"6": "ocdevices:items/cases/graphicscard2",
 		"particle": "ocdevices:blocks/next/case_top"
-	},
-	"display": {
-		"gui": { "rotation": [ 22.5, 205, 0 ], "scale": [0.75, 0.75, 0.75 ] }
 	},
 	"elements": [
 		{

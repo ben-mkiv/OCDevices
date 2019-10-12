@@ -1,5 +1,6 @@
 {
 	"credit": "Made with Blockbench",
+	"parent":  "block/block",
 	"textures": {
 		"0": "ocdevices:blocks/ibm_5150/case_side",
 		"1": "ocdevices:blocks/ibm_5150/case_back",
@@ -9,9 +10,6 @@
 		"5": "ocdevices:blocks/ibm_5150/case_top",
 		"6": "ocdevices:blocks/ibm_5150/case_bottom",
 		"particle": "ocdevices:blocks/ibm_5150/case_front"
-	},
-	"display": {
-		"gui": { "rotation": [ 22.5, 205, 0 ], "scale": [0.75, 0.75, 0.75 ], "translation": [0, 0.5, 0] }
 	},
 	"elements": [
 		{

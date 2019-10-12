@@ -1,5 +1,6 @@
 {
   "credit": "Made with Blockbench",
+  "parent":  "block/block",
   "textures": {
     "0": "ocdevices:blocks/workstation/case_front",
     "1": "ocdevices:blocks/workstation/case_top",
@@ -7,9 +8,6 @@
     "3": "ocdevices:blocks/workstation/case_side_2",
     "4": "ocdevices:blocks/workstation/case_back",
     "particle": "ocdevices:blocks/workstation/case_front"
-  },
-  "display": {
-    "gui": { "rotation": [ 22.5, 205, 0 ], "scale": [0.75, 0.75, 0.75 ] }
   },
   "elements": [
     {
