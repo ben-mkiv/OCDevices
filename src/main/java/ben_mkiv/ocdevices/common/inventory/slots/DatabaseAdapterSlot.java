@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DatabaseAdapterSlot  extends SlotItemHandler implements ISlotTooltip {
+public class DatabaseAdapterSlot extends SlotItemHandler implements ISlotTooltip {
     private final TileEntityDatabaseAdapter tileEntity;
 
     public DatabaseAdapterSlot(TileEntityDatabaseAdapter tileEntity, IItemHandler itemHandler, int index, int xPosition, int yPosition) {

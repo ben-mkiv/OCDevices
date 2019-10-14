@@ -22,12 +22,14 @@ tile.redstone.name=Advanced Redstone I/O
 tile.rack.name=Server Rack
 tile.bridge.name=Bridge
 tile.database_adapter.name=Database Adapter
+tile.itembench.name=ItemBench
 
 item.manual.name=OCDevices Manual
 item.upgrade_tier2.name=Upgrade (Any => Tier 2)
 item.upgrade_tier3.name=Upgrade (Any => Tier 3)
 item.upgrade_tier4.name=Upgrade (Any => Creative)
 item.upgrade_blastresistance.name=Upgrade (Blast Resistance)
+
 
 oc:container.tileentitycase=Computer
 oc:container.tileentitycase_slim_oc=Computer

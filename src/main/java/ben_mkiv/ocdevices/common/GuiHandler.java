@@ -32,6 +32,9 @@ public class GuiHandler implements IGuiHandler {
             case BlockDatabaseAdapter.GUI_ID:
                 return new DatabaseAdapterContainer(player.inventory, te);
 
+            case BlockItemBench.GUI_ID:
+                return new ItemBenchContainer(player.inventory, te);
+
             default: return null;
         }
     }
@@ -60,6 +63,9 @@ public class GuiHandler implements IGuiHandler {
 
             case BlockDatabaseAdapter.GUI_ID:
                 return new DatabaseAdapterGUI(player.inventory, te);
+
+            case BlockItemBench.GUI_ID:
+                return new ItemBenchGUI(player.inventory, te);
 
             default: return null;
         }

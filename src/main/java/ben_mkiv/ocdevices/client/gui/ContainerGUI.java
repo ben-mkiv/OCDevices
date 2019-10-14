@@ -16,12 +16,15 @@ public abstract class ContainerGUI extends GuiContainer {
     }
 
     void drawCenteredString(String string, int y, int color){
-        FontRenderer fr = mc.fontRenderer;
-        fr.drawString(string, getXSize()/2 - fr.getStringWidth(string)/2, y, color);
+        drawString(string, getXSize()/2 - mc.fontRenderer.getStringWidth(string)/2, y, color);
     }
 
     void drawStringAlignRight(String string, int x, int y, int color){
-        mc.fontRenderer.drawString(string, x-mc.fontRenderer.getStringWidth(string), y, color);
+        drawString(string, x-mc.fontRenderer.getStringWidth(string), y, color);
+    }
+
+    void drawString(String string, int x, int y, int color){
+        mc.fontRenderer.drawString(string, x, y, color);
     }
 
     private boolean isSlotHovered(Slot slot, int mouseX, int mouseY){

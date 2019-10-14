@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "all": "ocdevices:blocks/machine_side",
+      "front": "ocdevices:blocks/machine_side",
+      "side": "ocdevices:blocks/machine_side",
+      "particle": "ocdevices:blocks/machine_side"
+    },
+    "model": "ocdevices:itembench"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block" }]
+  }
+}

@@ -1,23 +1,22 @@
 package ben_mkiv.ocdevices;
 
 import ben_mkiv.ocdevices.client.EventHandler;
-import ben_mkiv.ocdevices.client.renderer.RenderCase;
-import ben_mkiv.ocdevices.client.renderer.RenderFlatScreen;
-import ben_mkiv.ocdevices.client.renderer.RenderMatrix;
-import ben_mkiv.ocdevices.client.renderer.RenderRack;
+import ben_mkiv.ocdevices.client.renderer.*;
 import ben_mkiv.ocdevices.common.GuiHandler;
 import ben_mkiv.ocdevices.common.blocks.*;
 import ben_mkiv.ocdevices.common.bridge.Bridge;
+import ben_mkiv.ocdevices.common.nanoAnalyzer.capability.IanalyzeCapability;
+import ben_mkiv.ocdevices.common.nanoAnalyzer.capability.analyzeProvider;
+import ben_mkiv.ocdevices.common.nanoAnalyzer.capability.analyzeStorage;
 import ben_mkiv.ocdevices.common.drivers.FlatScreenDriver;
 import ben_mkiv.ocdevices.common.drivers.RedstoneDriver;
 import ben_mkiv.ocdevices.common.integration.MCMultiPart.MCMultiPart;
-import ben_mkiv.ocdevices.common.items.UpgradeBlastResistance;
-import ben_mkiv.ocdevices.common.items.UpgradeTier2;
-import ben_mkiv.ocdevices.common.items.UpgradeTier3;
-import ben_mkiv.ocdevices.common.items.UpgradeTier4;
+import ben_mkiv.ocdevices.common.items.*;
+import ben_mkiv.ocdevices.common.nanoAnalyzer.NanoAnalyzer;
 import ben_mkiv.ocdevices.common.tileentity.*;
 import ben_mkiv.ocdevices.config.Config;
 import ben_mkiv.ocdevices.manual.Manual;
+import ben_mkiv.ocdevices.network.OCDevicesNetwork;
 import ben_mkiv.ocdevices.proxy.CommonProxy;
 import li.cil.oc.api.driver.DriverItem;
 import li.cil.oc.api.driver.EnvironmentProvider;
@@ -25,14 +24,13 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -72,6 +70,7 @@ public class OCDevices {
     public static boolean Optifine = false;
     public static boolean Albedo = false;
     public static boolean Computronics = false;
+    public static boolean Techguns = false;
 
     public static boolean experimental = true;
 
@@ -95,6 +94,8 @@ public class OCDevices {
         modBlocks.add(BlockRecipeDictionary.DEFAULTITEM = new BlockRecipeDictionary());
         modBlocks.add(BlockRedstone.DEFAULTITEM = new BlockRedstone());
 
+        modBlocks.add(BlockItemBench.DEFAULTITEM = new BlockItemBench());
+
         modBlocks.add(BlockCase_ibm_5150.DEFAULTITEM = new BlockCase_ibm_5150());
         modBlocks.add(BlockCase_next.DEFAULTITEM = new BlockCase_next());
         modBlocks.add(BlockCase_slim_oc.DEFAULTITEM = new BlockCase_slim_oc());
@@ -113,6 +114,7 @@ public class OCDevices {
         modItems.add(UpgradeTier3.DEFAULT_STACK = new ItemStack(new UpgradeTier3()));
         modItems.add(UpgradeTier4.DEFAULT_STACK = new ItemStack(new UpgradeTier4()));
 
+
         for(Item item : Manual.items)
             modItems.add(new ItemStack(item));
 
@@ -121,9 +123,12 @@ public class OCDevices {
         Optifine = Loader.isModLoaded("optifine");
         Albedo = Loader.isModLoaded("albedo");
         Computronics = Loader.isModLoaded("computronics");
+        Techguns = Loader.isModLoaded("techguns");
 
         if(Loader.isModLoaded("mcmultipart"))
             new MCMultiPart();
+
+        NanoAnalyzer.registerEvents();
     }
 
     @Mod.EventHandler
@@ -135,6 +140,8 @@ public class OCDevices {
 
         li.cil.oc.api.Driver.add((EnvironmentProvider) RedstoneDriver.driver);
         li.cil.oc.api.Driver.add((DriverItem) RedstoneDriver.driver);
+
+        OCDevicesNetwork.init();
 
         proxy.registerBlockColorHandlers();
     }
@@ -167,10 +174,15 @@ public class OCDevices {
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_ibm_5150.class, new RenderCase(TileEntityCase_ibm_5150.getPowerLED(), TileEntityCase_ibm_5150.getStatusLED()));
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCase_workstation.class, new RenderCase(TileEntityCase_workstation.getPowerLED(), TileEntityCase_workstation.getStatusLED()));
 
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityItemBench.class, new RenderItemBench());
+
             ModelLoader.setCustomStateMapper(BlockCase_next.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_next.caseTier).build());
             ModelLoader.setCustomStateMapper(BlockCase_slim_oc.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_slim_oc.caseTier).build());
             ModelLoader.setCustomStateMapper(BlockCase_ibm_5150.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_ibm_5150.caseTier).build());
             ModelLoader.setCustomStateMapper(BlockCase_workstation.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_workstation.caseTier).build());
+
+            CapabilityManager.INSTANCE.register(IanalyzeCapability.class, new analyzeStorage(), analyzeProvider::new);
+
         }
 
         @SubscribeEvent
@@ -198,6 +210,7 @@ public class OCDevices {
             GameRegistry.registerTileEntity(TileEntityKeyboard.class, new ResourceLocation(MOD_ID, BlockKeyboard.NAME));
             GameRegistry.registerTileEntity(TileEntityRecipeDictionary.class, new ResourceLocation(MOD_ID, BlockRecipeDictionary.NAME));
             GameRegistry.registerTileEntity(TileEntityRedstone.class, new ResourceLocation(MOD_ID, BlockRedstone.NAME));
+            GameRegistry.registerTileEntity(TileEntityItemBench.class, new ResourceLocation(MOD_ID, BlockItemBench.NAME));
 
             GameRegistry.registerTileEntity(TileEntityCase_ibm_5150.class, new ResourceLocation(MOD_ID, BlockCase_ibm_5150.NAME));
             GameRegistry.registerTileEntity(TileEntityCase_next.class, new ResourceLocation(MOD_ID, BlockCase_next.NAME));
@@ -219,6 +232,7 @@ public class OCDevices {
         public static void registerEntities(RegistryEvent.Register<EntityEntry> event){
             //EntityRegistry.registerModEntity(new ResourceLocation(MOD_ID, BugEntity.NAME), BugEntity.class, BugEntity.NAME, 0, INSTANCE, 80, 3, true, 0x000000, 0x00FFFF);
         }
+
 
 
         @SubscribeEvent
