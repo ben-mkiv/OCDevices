@@ -4,6 +4,7 @@ import ben_mkiv.ocdevices.OCDevices;
 import ben_mkiv.ocdevices.common.flatscreen.FlatScreenHelper;
 import ben_mkiv.ocdevices.common.tileentity.TileEntityMultiblockDisplay;
 import ben_mkiv.ocdevices.utils.Triangle;
+import ben_mkiv.rendertoolkit.renderToolkit;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -21,16 +22,17 @@ abstract class RenderMultiblockDisplay extends TileEntitySpecialRenderer<TileEnt
     }
 
     void preRender(double x, double y, double z, FlatScreenHelper helper){
-        if(OCDevices.Albedo || OCDevices.Optifine)
+        if(OCDevices.Albedo || renderToolkit.Optifine)
             GlStateManager.disableLighting();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
         GlStateManager.disableTexture2D();
+        GlStateManager.disableAlpha();
         renderScreenModelTESR(helper);
-
         renderScreenBackground(helper);
+        GlStateManager.enableAlpha();
     }
 
     void postRender(){
