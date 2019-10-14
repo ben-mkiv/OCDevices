@@ -135,13 +135,8 @@ jar {
     manifest {
         attributes([
                 "Maven-Artifact":"${project.group}:${project.archivesBaseName}:${project.version}",
-                'Timestamp': System.currentTimeMillis(),
-                'ContainedDeps': "Commons0815-${commons_version}.jar"
+                'Timestamp': System.currentTimeMillis()
         ])
-    }
-
-    from("libs/Commons0815-${commons_version}.jar"){
-        into ("META-INF/libraries")
     }
 }
 
