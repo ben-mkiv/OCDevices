@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "pCp",
+    "MPM",
+    "ici"
+  ],
+  "key": {
+    "p": {
+      "item": "minecraft:piston"
+    },
+    "c": {
+      "item": "opencomputers:cable", "data": 0
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "P": {
+      "item": "#opencomputers_pcb"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "M": {
+      "item": "#opencomputers_chip3"
+    }
+
+  },
+  "result": {
+    "item": "ocdevices:itembench"
+  }
+}
