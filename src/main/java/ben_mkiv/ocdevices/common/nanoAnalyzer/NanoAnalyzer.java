@@ -16,8 +16,11 @@ import static net.minecraftforge.energy.CapabilityEnergy.ENERGY;
 public class NanoAnalyzer {
     public static void registerEvents(){
         MinecraftForge.EVENT_BUS.register(PlayerTick.class);
-        MinecraftForge.EVENT_BUS.register(TooltipEvent.class);
         MinecraftForge.EVENT_BUS.register(CapabilityEvent.class);
+    }
+
+    public static void registerClientEvents(){
+        MinecraftForge.EVENT_BUS.register(TooltipEvent.class);
     }
 
     public static boolean isValid(ItemStack stack){

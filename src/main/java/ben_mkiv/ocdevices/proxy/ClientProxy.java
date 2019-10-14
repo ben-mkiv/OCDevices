@@ -1,6 +1,7 @@
 package ben_mkiv.ocdevices.proxy;
 
 import ben_mkiv.ocdevices.common.blocks.*;
+import ben_mkiv.ocdevices.common.nanoAnalyzer.NanoAnalyzer;
 import ben_mkiv.ocdevices.config.Config;
 import ben_mkiv.ocdevices.utils.ColorHandler;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,7 @@ public class ClientProxy extends CommonProxy{
     public void preinit() {
         super.preinit();
         Config.clientPreInit();
-
+        NanoAnalyzer.registerClientEvents();
         //RenderingRegistry.registerEntityRenderingHandler(BugEntity.class, RenderBug.FACTORY);
     }
 
