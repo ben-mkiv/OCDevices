@@ -128,6 +128,9 @@ public class OCDevices {
         if(Loader.isModLoaded("mcmultipart"))
             new MCMultiPart();
 
+
+        CapabilityManager.INSTANCE.register(IanalyzeCapability.class, new analyzeStorage(), analyzeProvider::new);
+
         NanoAnalyzer.registerEvents();
     }
 
@@ -180,9 +183,6 @@ public class OCDevices {
             ModelLoader.setCustomStateMapper(BlockCase_slim_oc.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_slim_oc.caseTier).build());
             ModelLoader.setCustomStateMapper(BlockCase_ibm_5150.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_ibm_5150.caseTier).build());
             ModelLoader.setCustomStateMapper(BlockCase_workstation.DEFAULTITEM, new StateMap.Builder().ignore(BlockCase_workstation.caseTier).build());
-
-            CapabilityManager.INSTANCE.register(IanalyzeCapability.class, new analyzeStorage(), analyzeProvider::new);
-
         }
 
         @SubscribeEvent
