@@ -80,9 +80,8 @@ dependencies {
 
     provided fileTree(include: ['*.jar'], dir: 'libs')
 
-    //extraLibs files("libs/commons0815/Commons0815-${commons_version}-dev.jar")
-    provided "commons0815:Commons0815:1.12.2:${commons_version}"
-
+    extraLibs files("libs/commons0815/Commons0815-${commons_version}-dev.jar")
+    
     compileOnly group: 'techguns', name: 'Techguns', version: '1.12.2', classifier: '2.0.2.0_pre3.1', ext: 'jar'
 
     // all those just for the case block =>

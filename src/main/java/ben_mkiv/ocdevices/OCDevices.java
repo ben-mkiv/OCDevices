@@ -52,7 +52,10 @@ import java.util.logging.Logger;
         modid = OCDevices.MOD_ID,
         name = OCDevices.MOD_NAME,
         version = BuildInfo.versionNumber + "-" + BuildInfo.buildNumber,
-        dependencies = "required-after:opencomputers;required-after:rendertoolkit;after:rtfm",
+        dependencies = "required-after:opencomputers;" +
+                "required-after:commons0815@[1.3.2,);" +
+                "required-after:rendertoolkit;" +
+                "after:rtfm",
         guiFactory = OCDevices.GUIFACTORY
 )
 public class OCDevices {
