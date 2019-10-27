@@ -30,8 +30,13 @@ public class NanoAnalyzer {
         valid|=stack.getItem() instanceof ItemSword;
 
         valid|=(OCDevices.Techguns && stack.getItem() instanceof GenericGun);
-        valid|=stack.hasCapability(ENERGY, null);
-        valid|=stack.getMaxDamage() != 0;
+
+        try {
+            valid |= stack.hasCapability(ENERGY, null);
+            valid |= stack.getMaxDamage() != 0;
+        } catch(Throwable failFish){
+            OCDevices.logger.info("couldnt safely determine if item '"+stack.getItem().getRegistryName()+"' could be used with NanoAnalyzer, skipping.");
+        }
 
         return valid;
     }
