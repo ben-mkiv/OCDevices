@@ -66,7 +66,9 @@ public class TileEntityBridge extends ocComponentHostTE {
 
     @Override
     public void onLoad(){
-        exposeCoords = !FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0).getGameRules().getBoolean("reducedDebugInfo");
+        if(!getWorld().isRemote) {
+            exposeCoords = !FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0).getGameRules().getBoolean("reducedDebugInfo");
+        }
         updateLink();
         super.onLoad();
     }
